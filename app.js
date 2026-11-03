@@ -770,6 +770,7 @@
     $('tombol-menu').addEventListener('click', () => ($('menu').hidden ? bukaMenu() : tutupMenu()));
     $('menu-perbarui').addEventListener('click', perbaruiData);
     $('menu-tatib').hidden = DEMO;
+    $('menu-wa').hidden = DEMO;
     $('menu-kirim').addEventListener('click', () => { tutupMenu(); kirimAntrean(); });
     $('menu-keluar').addEventListener('click', keluar);
     $('tombol-antre').addEventListener('click', kirimAntrean);
