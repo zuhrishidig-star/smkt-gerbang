@@ -3,7 +3,7 @@
 Dua modul dengan satu login Google, gratis: di-hosting di GitHub Pages, servernya Google Apps Script, datanya Google Sheets SMKT.
 
 - **Gerbang** (`index.html`) untuk guru piket: scan QR kartu pelajar, foto siswa tampil 2 detik untuk dicocokkan, lalu tersimpan otomatis.
-- **Tata Tertib** (`tatib.html`) untuk semua guru: catat pelanggaran yang ditemukan dan langsung dapat panduan siapa yang menangani, langkahnya, dan kapan harus diteruskan. Pelanggaran ringan selesai di tangan guru yang menemukan; yang perlu diteruskan masuk ke menu *Tindak lanjut* wali kelas, BK, atau Tim Tatib. Menu lain muncul sesuai peran: Riwayat siswa, Zona merah dan surat pernyataan, Pemulihan, serta Izin/sakit.
+- **Tata Tertib** (`tatib.html`) untuk semua guru: laporkan pelanggaran yang ditemukan dan aplikasi menentukan tangga penanganannya (guru yang menemukan, wali kelas, BK, Tim Tatib, pimpinan) beserta alasan dan tembusannya. Pelanggaran ringan selesai di tangan guru yang menemukan; yang naik tangga masuk ke *Kotak Masuk* penerimanya. Beranda menampilkan siswa yang terlambat hari ini dengan tombol WA (wa.me) ke orang tua dan wali kelas. Menu lain muncul sesuai peran: Siswa, Waspada dan surat pernyataan, Pulih, serta Absen.
 
 Guru yang tidak berperan Piket otomatis dibawa ke Tata Tertib setelah login.
 
