@@ -40,6 +40,7 @@
     <div id="menu" class="menu tt-menu" hidden>
       <p class="menu-info" id="menu-info"></p>
       <a href="./" id="menu-gerbang" class="menu-tautan" hidden>Buka Gerbang (scan masuk)</a>
+      <button type="button" id="menu-ujiwa" hidden>Kirim WA uji ke nomor saya</button>
       <button type="button" id="menu-perbarui">Perbarui data</button>
       <button type="button" id="menu-keluar">Keluar</button>
     </div>
@@ -159,6 +160,48 @@
           <label class="label" for="iz-ket-isi">Keterangan</label>
           <textarea id="iz-ket-isi" class="isian" rows="2" maxlength="300" placeholder="Contoh: demam, surat dokter menyusul"></textarea>
           <button id="iz-simpan" class="tombol tombol-utama" type="button">Simpan</button>
+        </div>
+      </section>
+
+      <!-- EKSKUL -->
+      <section id="p-ekskul" class="panel" hidden>
+        <p class="memuat" id="e-ket" hidden></p>
+        <div id="e-isi" hidden>
+          <div class="eks-kepala">
+            <div id="e-pilih"></div>
+            <div class="segmen segmen-3" id="e-mode" role="group" aria-label="Tampilan ekskul">
+              <button type="button" data-mode="absen" aria-pressed="true">Absensi</button>
+              <button type="button" data-mode="rekap" aria-pressed="false">Rekap</button>
+              <button type="button" data-mode="anggota" aria-pressed="false">Anggota</button>
+            </div>
+          </div>
+
+          <div id="e-absen">
+            <div class="blok">
+              <label class="label" for="e-tanggal">Tanggal latihan</label>
+              <input id="e-tanggal" class="isian" type="date">
+              <div class="eks-ringkas" id="e-ringkas" aria-live="polite"></div>
+              <button id="e-scan" class="tombol tombol-utama" type="button">Scan kartu anggota</button>
+              <button id="e-sisa" class="tombol tombol-garis" type="button" hidden>Tandai sisanya Alpa</button>
+              <p class="status-simpan" id="e-simpan" aria-live="polite"></p>
+            </div>
+            <p class="keterangan" id="e-kosong" hidden>Belum ada anggota. Tambahkan lewat tab Anggota, lalu kembali ke sini untuk absensi.</p>
+            <ul class="eks-daftar" id="e-daftar"></ul>
+          </div>
+
+          <div id="e-rekap" hidden>
+            <div class="blok">
+              <label class="label" for="e-bulan">Bulan</label>
+              <input id="e-bulan" class="isian" type="month">
+              <div id="e-rekap-isi"></div>
+            </div>
+          </div>
+
+          <div id="e-anggota" hidden>
+            <div class="blok"><div id="e-tambah"></div></div>
+            <p class="keterangan" id="e-anggota-ket"></p>
+            <ul class="eks-anggota" id="e-anggota-daftar"></ul>
+          </div>
         </div>
       </section>
     </main>

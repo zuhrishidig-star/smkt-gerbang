@@ -1,7 +1,7 @@
 /* Service worker Gerbang SMKT: menyimpan tampilan aplikasi agar tetap
  * terbuka saat sinyal di gerbang hilang. Data scan tidak lewat sini —
  * antrean scan disimpan oleh app.js. */
-const CACHE = 'smkt-gerbang-v5';
+const CACHE = 'smkt-gerbang-v6';
 const ASET = [
   './', 'index.html', 'style.css', 'config.js', 'app.js', 'manifest.webmanifest',
   'tatib.html', 'tatib.css', 'tatib.js',

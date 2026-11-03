@@ -18,7 +18,7 @@
   const URUT_KATEGORI = ['Ringan I', 'Ringan II', 'Sedang I', 'Sedang II', 'Berat I', 'Berat II', 'Berat Sekali'];
   const BATAS_ULANG = 3;
   const HARI_IZIN_MUNDUR = 7;
-  const IKON = {"beranda": "<path d=\"M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8\" /> <path d=\"M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\" />", "lapor": "<path d=\"m3 11 18-5v12L3 14v-3z\" /> <path d=\"M11.6 16.8a3 3 0 1 1-5.8-1.6\" />", "kotak": "<polyline points=\"22 12 16 12 14 15 10 15 8 12 2 12\" /> <path d=\"M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z\" />", "siswa": "<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\" /> <circle cx=\"9\" cy=\"7\" r=\"4\" /> <path d=\"M22 21v-2a4 4 0 0 0-3-3.87\" /> <path d=\"M16 3.13a4 4 0 0 1 0 7.75\" />", "waspada": "<path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\" /> <path d=\"M12 8v4\" /> <path d=\"M12 16h.01\" />", "pulih": "<path d=\"M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z\" /> <path d=\"M12 5 9.04 7.96a2.17 2.17 0 0 0 0 3.08c.82.82 2.13.85 3 .07l2.07-1.9a2.82 2.82 0 0 1 3.79 0l2.96 2.66\" /> <path d=\"m18 15-2-2\" /> <path d=\"m15 18-2-2\" />", "absen": "<path d=\"M8 2v4\" /> <path d=\"M16 2v4\" /> <rect width=\"18\" height=\"18\" x=\"3\" y=\"4\" rx=\"2\" /> <path d=\"M3 10h18\" /> <path d=\"m9 16 2 2 4-4\" />", "wa": "<path d=\"M7.9 20A9 9 0 1 0 4 16.1L2 22Z\" />", "qr": "<rect width=\"5\" height=\"5\" x=\"3\" y=\"3\" rx=\"1\" /> <rect width=\"5\" height=\"5\" x=\"16\" y=\"3\" rx=\"1\" /> <rect width=\"5\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\" /> <path d=\"M21 16h-3a2 2 0 0 0-2 2v3\" /> <path d=\"M21 21v.01\" /> <path d=\"M12 7v3a2 2 0 0 1-2 2H7\" /> <path d=\"M3 12h.01\" /> <path d=\"M12 3h.01\" /> <path d=\"M12 16v.01\" /> <path d=\"M16 12h1\" /> <path d=\"M21 12v.01\" /> <path d=\"M12 21v-1\" />", "kanan": "<path d=\"m9 18 6-6-6-6\" />", "menu": "<circle cx=\"12\" cy=\"12\" r=\"1\" /> <circle cx=\"12\" cy=\"5\" r=\"1\" /> <circle cx=\"12\" cy=\"19\" r=\"1\" />", "keluar": "<path d=\"M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4\" /> <polyline points=\"16 17 21 12 16 7\" /> <line x1=\"21\" x2=\"9\" y1=\"12\" y2=\"12\" />", "muat": "<path d=\"M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8\" /> <path d=\"M21 3v5h-5\" /> <path d=\"M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16\" /> <path d=\"M8 16H3v5\" />", "cek": "<path d=\"M20 6 9 17l-5-5\" />", "gerbang": "<path d=\"M13 4h3a2 2 0 0 1 2 2v14\" /> <path d=\"M2 20h3\" /> <path d=\"M13 20h9\" /> <path d=\"M10 12v.01\" /> <path d=\"M13 4.562v16.157a1 1 0 0 1-1.242.97L5 20V5.562a2 2 0 0 1 1.515-1.94l4-1A2 2 0 0 1 13 4.561Z\" />", "cari": "<circle cx=\"11\" cy=\"11\" r=\"8\" /> <path d=\"m21 21-4.3-4.3\" />", "surat": "<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\" /> <path d=\"M14 2v4a2 2 0 0 0 2 2h4\" /> <path d=\"M10 9H8\" /> <path d=\"M16 13H8\" /> <path d=\"M16 17H8\" />", "jam": "<circle cx=\"12\" cy=\"12\" r=\"10\" /> <polyline points=\"12 6 12 12 16 14\" />", "awas": "<path d=\"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3\" /> <path d=\"M12 9v4\" /> <path d=\"M12 17h.01\" />", "orang": "<circle cx=\"12\" cy=\"8\" r=\"5\" /> <path d=\"M20 21a8 8 0 0 0-16 0\" />", "lainnya": "<rect width=\"7\" height=\"7\" x=\"3\" y=\"3\" rx=\"1\" /> <rect width=\"7\" height=\"7\" x=\"14\" y=\"3\" rx=\"1\" /> <rect width=\"7\" height=\"7\" x=\"14\" y=\"14\" rx=\"1\" /> <rect width=\"7\" height=\"7\" x=\"3\" y=\"14\" rx=\"1\" />"};
+  const IKON = {"beranda":"<path d=\"M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8\" /> <path d=\"M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\" />","lapor":"<path d=\"m3 11 18-5v12L3 14v-3z\" /> <path d=\"M11.6 16.8a3 3 0 1 1-5.8-1.6\" />","kotak":"<polyline points=\"22 12 16 12 14 15 10 15 8 12 2 12\" /> <path d=\"M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z\" />","siswa":"<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\" /> <circle cx=\"9\" cy=\"7\" r=\"4\" /> <path d=\"M22 21v-2a4 4 0 0 0-3-3.87\" /> <path d=\"M16 3.13a4 4 0 0 1 0 7.75\" />","waspada":"<path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\" /> <path d=\"M12 8v4\" /> <path d=\"M12 16h.01\" />","pulih":"<path d=\"M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z\" /> <path d=\"M12 5 9.04 7.96a2.17 2.17 0 0 0 0 3.08c.82.82 2.13.85 3 .07l2.07-1.9a2.82 2.82 0 0 1 3.79 0l2.96 2.66\" /> <path d=\"m18 15-2-2\" /> <path d=\"m15 18-2-2\" />","absen":"<path d=\"M8 2v4\" /> <path d=\"M16 2v4\" /> <rect width=\"18\" height=\"18\" x=\"3\" y=\"4\" rx=\"2\" /> <path d=\"M3 10h18\" /> <path d=\"m9 16 2 2 4-4\" />","wa":"<path d=\"M7.9 20A9 9 0 1 0 4 16.1L2 22Z\" />","qr":"<rect width=\"5\" height=\"5\" x=\"3\" y=\"3\" rx=\"1\" /> <rect width=\"5\" height=\"5\" x=\"16\" y=\"3\" rx=\"1\" /> <rect width=\"5\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\" /> <path d=\"M21 16h-3a2 2 0 0 0-2 2v3\" /> <path d=\"M21 21v.01\" /> <path d=\"M12 7v3a2 2 0 0 1-2 2H7\" /> <path d=\"M3 12h.01\" /> <path d=\"M12 3h.01\" /> <path d=\"M12 16v.01\" /> <path d=\"M16 12h1\" /> <path d=\"M21 12v.01\" /> <path d=\"M12 21v-1\" />","kanan":"<path d=\"m9 18 6-6-6-6\" />","menu":"<circle cx=\"12\" cy=\"12\" r=\"1\" /> <circle cx=\"12\" cy=\"5\" r=\"1\" /> <circle cx=\"12\" cy=\"19\" r=\"1\" />","keluar":"<path d=\"M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4\" /> <polyline points=\"16 17 21 12 16 7\" /> <line x1=\"21\" x2=\"9\" y1=\"12\" y2=\"12\" />","muat":"<path d=\"M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8\" /> <path d=\"M21 3v5h-5\" /> <path d=\"M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16\" /> <path d=\"M8 16H3v5\" />","cek":"<path d=\"M20 6 9 17l-5-5\" />","gerbang":"<path d=\"M13 4h3a2 2 0 0 1 2 2v14\" /> <path d=\"M2 20h3\" /> <path d=\"M13 20h9\" /> <path d=\"M10 12v.01\" /> <path d=\"M13 4.562v16.157a1 1 0 0 1-1.242.97L5 20V5.562a2 2 0 0 1 1.515-1.94l4-1A2 2 0 0 1 13 4.561Z\" />","cari":"<circle cx=\"11\" cy=\"11\" r=\"8\" /> <path d=\"m21 21-4.3-4.3\" />","surat":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\" /> <path d=\"M14 2v4a2 2 0 0 0 2 2h4\" /> <path d=\"M10 9H8\" /> <path d=\"M16 13H8\" /> <path d=\"M16 17H8\" />","jam":"<circle cx=\"12\" cy=\"12\" r=\"10\" /> <polyline points=\"12 6 12 12 16 14\" />","awas":"<path d=\"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3\" /> <path d=\"M12 9v4\" /> <path d=\"M12 17h.01\" />","orang":"<circle cx=\"12\" cy=\"8\" r=\"5\" /> <path d=\"M20 21a8 8 0 0 0-16 0\" />","lainnya":"<rect width=\"7\" height=\"7\" x=\"3\" y=\"3\" rx=\"1\" /> <rect width=\"7\" height=\"7\" x=\"14\" y=\"3\" rx=\"1\" /> <rect width=\"7\" height=\"7\" x=\"14\" y=\"14\" rx=\"1\" /> <rect width=\"7\" height=\"7\" x=\"3\" y=\"14\" rx=\"1\" />","ekskul":"<path d=\"M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15\" /> <path d=\"M11 12 5.12 2.2\" /> <path d=\"m13 12 5.88-9.8\" /> <path d=\"M8 7h8\" /> <circle cx=\"12\" cy=\"17\" r=\"5\" /> <path d=\"M12 18v-2h-.5\" />","kirim":"<path d=\"M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z\" /> <path d=\"m21.854 2.147-10.94 10.939\" />"};
 
   const MENU = [
     { id: 'beranda', label: 'Beranda', ikon: 'beranda', judul: 'Beranda', boleh: () => true },
@@ -28,14 +28,15 @@
     { id: 'waspada', label: 'Waspada', ikon: 'waspada', judul: 'Waspada', boleh: (a) => a.zona, ket: 'Siswa yang poinnya mencapai level tindakan' },
     { id: 'pulih', label: 'Pulih', ikon: 'pulih', judul: 'Pulih', boleh: (a) => a.pemulihan, ket: 'Program fisik dan pembinaan lain' },
     { id: 'absen', label: 'Absen', ikon: 'absen', judul: 'Absen', boleh: (a) => a.izin, ket: 'Catat izin atau sakit siswa' },
+    { id: 'ekskul', label: 'Ekskul', ikon: 'ekskul', judul: 'Absensi ekskul', boleh: (a) => a.ekskul, ket: 'Kehadiran anggota ekstrakurikuler yang Anda bina' },
   ];
 
   const $ = (id) => document.getElementById(id);
   const S = {
     sesi: null, guru: null, akses: {},
     siswa: new Map(), master: new Map(), panduan: {}, eskalasi: [], tangga: [], templat: {}, sekolah: '', batasMasuk: '',
-    tab: 'beranda', siap: {}, menu: [], menunggu: 0,
-    kamera: null, scanCb: null, foto: new Map(),
+    tab: 'beranda', siap: {}, menu: [], menunggu: 0, wa: { aktif: false },
+    kamera: null, scanCb: null, scanTerus: false, scanTerakhir: { teks: '', waktu: 0 }, foto: new Map(),
   };
 
   /* ---------------- Bantu ---------------- */
@@ -250,8 +251,10 @@
     S.master = new Map((d.master || []).map((m) => [m.id, m]));
     S.panduan = d.panduan || {}; S.eskalasi = d.eskalasi || []; S.tangga = d.tangga || [];
     S.templat = d.templatWA || {}; S.sekolah = d.sekolah || CFG.NAMA_SEKOLAH || ''; S.batasMasuk = d.batasMasuk || '';
+    S.wa = d.waOtomatis || { aktif: false };
     S.menu = MENU.filter((m) => m.boleh(S.akses));
     $('menu-gerbang').hidden = !S.guru.bolehGerbang;
+    $('menu-ujiwa').hidden = !(S.wa.aktif && punya(['Tim Tatib', 'Wakasek', 'Kepala Sekolah']));
     bangunNav();
     aturLencana(d.menunggu || 0);
     $('memuat').hidden = true;
@@ -290,7 +293,7 @@
       if (aktif) x.setAttribute('aria-current', 'page'); else x.removeAttribute('aria-current');
     });
     document.querySelectorAll('.panel').forEach((p) => { p.hidden = p.id !== 'p-' + nama; });
-    ({ beranda: muatBeranda, lapor: initLapor, kotak: muatTL, siswa: initRiwayat, waspada: muatZona, pulih: muatPulih, absen: initIzin })[nama]();
+    ({ beranda: muatBeranda, lapor: initLapor, kotak: muatTL, siswa: initRiwayat, waspada: muatZona, pulih: muatPulih, absen: initIzin, ekskul: muatEkskul })[nama]();
     window.scrollTo(0, 0);
   }
 
@@ -326,7 +329,7 @@
       document.addEventListener('wa-dibuka', (e) => {
         const d = e.detail;
         if (!B.data || !B.data.terlambat) return;
-        const info = { jam: d.jam, oleh: d.oleh };
+        const info = { jam: d.jam, oleh: d.oleh, otomatis: false, status: 'Dibuka' };
         if (d.jenis === 'terlambat-ortu') B.data.terlambat.siswa.forEach((s) => { if (s.nis === d.nis) s.terkirimOrtu = info; });
         if (d.jenis === 'terlambat-wali') B.data.terlambat.kelas.forEach((k) => { if (k.kelas === d.kelas) k.terkirimWali = info; });
         if (S.tab === 'beranda') renderBeranda();
@@ -365,24 +368,43 @@
     h += '</ul>';
 
     if (d.terlambat) {
-      const t = d.terlambat;
+      const t = d.terlambat, wa = t.wa || S.wa || {};
       h += '<h2 class="judul-bagian">Terlambat hari ini<small>batas masuk ' + esc(t.batas || S.batasMasuk) + '</small></h2>';
+      if (wa.aktif) {
+        h += '<p class="info-wa">' + ikon('wa') + '<span>Orang tua dikabari otomatis lewat WA begitu anaknya di-scan terlambat. Rekap ke wali kelas dan pimpinan dikirim pukul ' + esc(wa.jamRekap) + '.</span></p>';
+        if (wa.galat) h += '<p class="info-wa galat">' + ikon('awas') + '<span>WA otomatis tertunda sejak ' + esc(wa.galatJam) + ': ' + esc(wa.galat) +
+          '. Pesan dicoba lagi tiap 15 menit. Bila berlanjut, periksa perangkat di Fonnte atau pakai tombol WA.</span></p>';
+      }
       if (!t.siswa.length) h += '<p class="keterangan">Belum ada siswa terlambat hari ini.</p>';
       t.kelas.forEach((k) => {
         const anggota = t.siswa.filter((s) => s.kelas === k.kelas);
         const daftar = anggota.map((s, i) => (i + 1) + '. ' + s.nama + ' (' + s.jam + ')').join('\n');
-        const teksWali = isiTemplat(S.templat.WA_TERLAMBAT_WALI, { wali: k.wali || 'Bapak/Ibu wali kelas', kelas: k.kelas, tanggal: d.tanggal, daftar: daftar, sekolah: S.sekolah });
+        const teksWali = isiTemplat(S.templat.WA_TERLAMBAT_WALI, { wali: k.wali ? namaPendek(k.wali) : 'Bapak/Ibu wali kelas', kelas: k.kelas, tanggal: d.tanggal, daftar: daftar, sekolah: S.sekolah });
         const saya = punya(['Wali Kelas']) && S.guru.kelasWali === k.kelas;
+        const w = k.terkirimWali, wOto = w && w.otomatis && w.status === 'Terkirim';
+        let statusWali = '';
+        if (!saya && w && w.otomatis) statusWali = w.status === 'Terkirim' ? 'Rekap otomatis ke wali terkirim ' + w.jam : 'Rekap ke wali dalam antrean kirim otomatis';
+        else if (!saya && w) statusWali = 'WA ke wali dibuka ' + w.jam + ' oleh ' + namaPendek(w.oleh);
+        else if (!saya && k.gagalWali) statusWali = 'Rekap otomatis gagal: ' + k.gagalWali.status.replace(/^Gagal:\s*/, '');
+        else if (!saya && wa.aktif && k.waWali) statusWali = 'Rekap otomatis ke wali pukul ' + wa.jamRekap;
         h += '<div class="kelas-terlambat"><div class="kt-kepala"><div><strong>' + esc(k.kelas) + '</strong><span>' + anggota.length + ' siswa' +
           (k.wali ? ', wali ' + esc(namaPendek(k.wali)) : '') + '</span></div>' +
-          (saya ? '' : tombolWa(k.waWali, teksWali, k.terkirimWali ? 'Wali dikabari' : 'WA wali', { jenis: 'terlambat-wali', kelas: k.kelas }, !!k.terkirimWali)) + '</div>' +
-          (k.terkirimWali && !saya ? '<p class="status-wa">WA ke wali dibuka ' + esc(k.terkirimWali.jam) + ' oleh ' + esc(namaPendek(k.terkirimWali.oleh)) + '</p>' : '') +
+          (saya ? '' : wOto ? '<span class="wa-terkirim">' + ikon('cek') + 'Wali dikabari</span>' :
+            tombolWa(k.waWali, teksWali, w ? 'Wali dikabari' : 'WA wali', { jenis: 'terlambat-wali', kelas: k.kelas }, !!w && !w.otomatis)) + '</div>' +
+          (statusWali ? '<p class="status-wa' + (k.gagalWali && !w ? ' gagal' : '') + '">' + esc(statusWali) + '</p>' : '') +
           '<ul class="kt-siswa">' + anggota.map((s) => {
             const teks = isiTemplat(S.templat.WA_TERLAMBAT_ORTU, { nama: s.nama, kelas: s.kelas, tanggal: d.tanggal, jam: s.jam, batas: t.batas || S.batasMasuk, sekolah: S.sekolah });
+            const o = s.terkirimOrtu, oOto = o && o.otomatis && o.status === 'Terkirim';
+            let statusOrtu = '', gagal = false;
+            if (o && o.otomatis) statusOrtu = o.status === 'Terkirim' ? 'Terkirim otomatis ' + o.jam : 'Dalam antrean kirim otomatis';
+            else if (o) statusOrtu = 'WA dibuka ' + o.jam + ' oleh ' + namaPendek(o.oleh);
+            else if (s.gagalOrtu) { statusOrtu = 'Kirim otomatis gagal: ' + s.gagalOrtu.status.replace(/^Gagal:\s*/, ''); gagal = true; }
+            else if (wa.aktif && s.waOrtu) statusOrtu = 'Terkirim otomatis dalam ±1 menit';
             return '<li><div><span class="nm">' + esc(s.nama) + '</span><br><span class="mt">tiba ' + esc(s.jam) +
               (s.kali30 >= 3 ? ', <span class="ulang">' + s.kali30 + '× dalam 30 hari</span>' : s.kali30 > 1 ? ', ' + s.kali30 + '× dalam 30 hari' : '') + '</span></div>' +
-              tombolWa(s.waOrtu, teks, s.terkirimOrtu ? 'Ortu dikabari' : 'WA ortu', { jenis: 'terlambat-ortu', nis: s.nis }, !!s.terkirimOrtu) +
-              (s.terkirimOrtu ? '<span class="status-wa">WA dibuka ' + esc(s.terkirimOrtu.jam) + ' oleh ' + esc(namaPendek(s.terkirimOrtu.oleh)) + '</span>' : '') + '</li>';
+              (oOto ? '<span class="wa-terkirim">' + ikon('cek') + 'Ortu dikabari</span>' :
+                tombolWa(s.waOrtu, teks, o && !o.otomatis ? 'Ortu dikabari' : 'WA ortu', { jenis: 'terlambat-ortu', nis: s.nis }, !!o && !o.otomatis)) +
+              (statusOrtu ? '<span class="status-wa' + (gagal ? ' gagal' : '') + '">' + esc(statusOrtu) + '</span>' : '') + '</li>';
           }).join('') + '</ul></div>';
       });
     }
@@ -447,22 +469,41 @@
     if (s) muatFoto(s.nis);
   }
 
-  async function bukaScan(cb) {
+  /**
+   * Pemindai kartu. Biasanya menutup setelah satu kartu. Dengan opsi.terus, kamera tetap
+   * menyala untuk kartu berikutnya; cb mengembalikan {pesan, galat} untuk ditampilkan.
+   */
+  async function bukaScan(cb, opsi) {
+    opsi = opsi || {};
     if (!window.Html5Qrcode) { toast('Pemindai QR gagal dimuat. Ketik nama siswa.', 'galat'); return; }
-    S.scanCb = cb; $('modal-scan').hidden = false; $('scan-ket').textContent = 'Menyalakan kamera…';
+    S.scanCb = cb; S.scanTerus = !!opsi.terus; S.scanTerakhir = { teks: '', waktu: 0 };
+    const ket = $('scan-ket');
+    $('modal-scan').hidden = false; ket.className = 'popup-ket'; ket.textContent = 'Menyalakan kamera…';
+    $('scan-tutup').textContent = S.scanTerus ? 'Selesai' : 'Tutup';
     if (!S.kamera) S.kamera = new Html5Qrcode('scan-reader', { formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE], verbose: false });
     try {
       await S.kamera.start({ facingMode: 'environment' },
         { fps: 12, aspectRatio: 1, qrbox: (w, h) => { const s = Math.max(160, Math.floor(Math.min(w, h) * 0.7)); return { width: s, height: s }; } },
-        (teks) => { const f = S.scanCb; if (!f) return; tutupScan(); f(String(teks || '').trim()); }, () => {});
+        (teks) => {
+          const f = S.scanCb; if (!f) return;
+          teks = String(teks || '').trim();
+          if (!S.scanTerus) { tutupScan(); f(teks); return; }
+          const kini = Date.now();
+          if (teks === S.scanTerakhir.teks && kini - S.scanTerakhir.waktu < 3000) return;   // kartu yang sama masih di depan kamera
+          S.scanTerakhir = { teks: teks, waktu: kini };
+          const r = f(teks) || {};
+          ket.className = 'popup-ket ' + (r.galat ? 'galat' : 'ok');
+          ket.textContent = r.pesan || '';
+          try { if (navigator.vibrate) navigator.vibrate(r.galat ? [60, 60, 60] : 70); } catch (e) { /* tidak didukung */ }
+        }, () => {});
       if ($('modal-scan').hidden) { tutupScan(); return; }
-      $('scan-ket').textContent = 'Arahkan kamera ke QR kartu pelajar.';
+      ket.textContent = opsi.ket || 'Arahkan kamera ke QR kartu pelajar.';
     } catch (e) {
-      $('scan-ket').textContent = 'Kamera belum bisa dibuka. Izinkan akses kamera di browser, atau tutup lalu ketik nama siswa.';
+      ket.textContent = 'Kamera belum bisa dibuka. Izinkan akses kamera di browser, atau tutup lalu ketik nama siswa.';
     }
   }
   async function tutupScan() {
-    S.scanCb = null; $('modal-scan').hidden = true;
+    S.scanCb = null; S.scanTerus = false; $('modal-scan').hidden = true;
     try { const st = S.kamera ? S.kamera.getState() : 1; if (st === 2 || st === 3) await S.kamera.stop(); } catch (e) { /* sudah berhenti */ }
   }
 
@@ -691,7 +732,12 @@
       h += '<p>' + (alasan.length ? 'Alasan: ' + esc(alasan.join('; ')) + '. ' : '') + 'Kasus masuk Kotak Masuk ' + esc(SEBUT_TANGGA[d.tangga]) +
         (d.tembusan && d.tembusan.length ? ', dengan tembusan ke ' + esc(sebutDaftar(d.tembusan)) : '') + '. Anda tidak perlu melapor lagi.</p>';
       const kontak = d.kontak || [];
-      if (kontak.length) {
+      if (d.waOtomatis) {
+        const ada = kontak.filter((x) => x.wa).map((x) => namaPendek(x.nama)), tanpa = kontak.filter((x) => !x.wa).map((x) => namaPendek(x.nama));
+        const sebut = (a) => a.length > 1 ? a.slice(0, -1).join(', ') + ' dan ' + a[a.length - 1] : a.join('');
+        h += '<p class="info-wa">' + ikon('wa') + '<span>' + esc(sebut(ada)) + ' dikabari otomatis lewat WhatsApp.' +
+          (tanpa.length ? ' ' + esc(sebut(tanpa)) + ' belum punya nomor WA di tab Guru.' : '') + '</span></p>';
+      } else if (kontak.length) {
         const tautan = location.origin + location.pathname + '#kotak';
         h += '<p class="redup">Kabari penerima lewat WhatsApp bila perlu:</p><div class="kontak">' + kontak.map((x) => tombolWa(x.wa,
           isiTemplat(S.templat.WA_KASUS_PENERIMA, { penerima: namaPendek(x.nama), nama: d.siswa.nama, kelas: d.siswa.kelas, pelanggaran: plg.nama, alasan: alasan.join('; ') || 'perlu bantuan', tautan: tautan }),
@@ -802,7 +848,7 @@
       try {
         const d = await api('tatib.selesaikan', { idLog: li.dataset.id, tindakan: tindakan, teruskanKe: ke });
         T.item = T.item.filter((x) => x.idLog !== li.dataset.id); renderTL();
-        toast(d.status === 'Selesai' ? 'Tindak lanjut tersimpan. Kasus selesai.' : 'Tersimpan dan diteruskan ke ' + ke, 'hadir');
+        toast(d.status === 'Selesai' ? 'Tindak lanjut tersimpan. Kasus selesai.' : 'Tersimpan dan diteruskan ke ' + ke + (d.waOtomatis ? '. Penerima dikabari lewat WA.' : '.'), 'hadir', 4000);
       } catch (err) { a.disabled = false; a.textContent = 'Simpan tindak lanjut'; toast(err.message, 'galat', 5000); }
     }
   }
@@ -989,6 +1035,224 @@
     } catch (e) { toast(e.message, 'galat', 5000); } finally { b.disabled = false; b.textContent = 'Simpan'; }
   }
 
+  /* =================================================================
+   *  EKSKUL (absensi oleh pembina)
+   * ================================================================= */
+  const STATUS_E = [['Hadir', 'H'], ['Izin', 'I'], ['Sakit', 'S'], ['Alpa', 'A']];
+  const E = { data: null, aktif: '', tanggal: '', mode: 'absen', status: {}, antre: new Map(), timer: null, menyimpan: false, pasang: false, pemilih: null };
+  const eAktif = () => (E.data ? E.data.ekskul.filter((x) => x.nama === E.aktif)[0] : null);
+  const jamKini = () => new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date());
+  const tglPendek = (t) => { const p = String(t).split('-'); return Number(p[2]) + '/' + Number(p[1]); };
+  /** Status yang tampil: perubahan yang belum tersimpan lebih dulu, lalu data server. */
+  function statusE(nis) {
+    if (E.antre.has(nis)) { const x = E.antre.get(nis); return x.status ? x : null; }
+    return E.status[nis] || null;
+  }
+
+  function pasangEkskul() {
+    if (E.pasang) return;
+    E.pasang = true;
+    $('e-scan').innerHTML = ikon('qr') + 'Scan kartu anggota';
+    $('e-mode').addEventListener('click', (e) => { const b = e.target.closest('button[data-mode]'); if (b) gantiModeE(b.dataset.mode); });
+    $('e-pilih').addEventListener('change', (e) => { if (e.target.id === 'e-ekskul') gantiEkskul(e.target.value); });
+    $('e-tanggal').addEventListener('change', () => gantiTanggalE($('e-tanggal').value));
+    $('e-daftar').addEventListener('click', (e) => {
+      const b = e.target.closest('button[data-status]'); if (!b) return;
+      const nis = b.closest('li').dataset.nis, x = statusE(nis);
+      aturStatusE(nis, x && x.status === b.dataset.status ? '' : b.dataset.status, 'Centang');
+    });
+    $('e-scan').addEventListener('click', scanEkskul);
+    $('e-sisa').addEventListener('click', () => {
+      const e = eAktif(); if (!e) return;
+      e.anggota.forEach((a) => { if (!statusE(a.nis)) E.antre.set(a.nis, { nis: a.nis, status: 'Alpa', cara: 'Centang', waktu: jamKini() }); });
+      renderAbsenE(); jadwalSimpanE(300);
+    });
+    $('e-simpan').addEventListener('click', (e) => { if (e.target.closest('[data-aksi="simpan-lagi"]')) simpanE(); });
+    $('e-bulan').addEventListener('change', muatRekapE);
+    $('e-anggota-daftar').addEventListener('click', klikAnggotaE);
+    window.addEventListener('beforeunload', (e) => { if (E.antre.size) { e.preventDefault(); e.returnValue = ''; } });
+  }
+
+  async function muatEkskul() {
+    pasangEkskul();
+    if (E.antre.size) { renderEkskul(); return; }   // jangan menimpa absensi yang belum tersimpan
+    if (!E.data) { $('e-isi').hidden = true; $('e-ket').hidden = false; $('e-ket').textContent = 'Memuat ekskul…'; }
+    try {
+      E.data = await api('ekskul.awal');
+      if (!E.data.ekskul.length) { $('e-isi').hidden = true; $('e-ket').hidden = false; $('e-ket').textContent = 'Anda belum terdaftar sebagai pembina ekskul. Tim Tata Tertib mengisi email pembina di tab Ekskul.'; return; }
+      if (!eAktif()) E.aktif = (simpan.get('smkt_ekskul', '') && E.data.ekskul.some((x) => x.nama === simpan.get('smkt_ekskul', ''))) ? simpan.get('smkt_ekskul', '') : E.data.ekskul[0].nama;
+      E.tanggal = E.data.hariIni; E.status = eAktif().status || {};
+      const t = $('e-tanggal'); t.value = E.tanggal; t.max = E.data.hariIni; t.min = hariIni(-E.data.mundur);
+      if (!$('e-bulan').value) $('e-bulan').value = E.data.hariIni.slice(0, 7);
+      $('e-ket').hidden = true; $('e-isi').hidden = false;
+      renderEkskul();
+    } catch (e) {
+      if (!E.data) { $('e-ket').hidden = false; $('e-ket').textContent = e.message; }
+    }
+  }
+
+  function renderEkskul() {
+    const e = eAktif(); if (!e) return;
+    const banyak = E.data.ekskul.length > 1;
+    $('e-pilih').innerHTML = (banyak ? '<label class="label" for="e-ekskul">Ekskul</label><select id="e-ekskul" class="isian">' +
+      E.data.ekskul.map((x) => '<option' + (x.nama === E.aktif ? ' selected' : '') + '>' + esc(x.nama) + '</option>').join('') + '</select>' :
+      '<h2 class="eks-nama">' + esc(e.nama) + '</h2>') +
+      '<p class="eks-jadwal">' + ((e.hari || e.jam) ? 'Latihan ' + esc([e.hari, e.jam].filter(Boolean).join(', pukul ')) + '. ' : '') + e.anggota.length + ' anggota.</p>';
+    document.querySelectorAll('#e-mode button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === E.mode)));
+    $('e-absen').hidden = E.mode !== 'absen'; $('e-rekap').hidden = E.mode !== 'rekap'; $('e-anggota').hidden = E.mode !== 'anggota';
+    if (E.mode === 'absen') renderAbsenE();
+    else if (E.mode === 'rekap') muatRekapE();
+    else renderAnggotaE();
+  }
+  function gantiModeE(mode) { E.mode = mode; renderEkskul(); }
+
+  /** Simpan dulu perubahan yang tertunda sebelum pindah ekskul atau tanggal. */
+  async function tuntaskanE() {
+    if (!E.antre.size) return true;
+    clearTimeout(E.timer); E.timer = null;
+    await simpanE();
+    if (E.antre.size) { toast('Absensi belum tersimpan. Periksa sinyal, lalu tekan Coba simpan lagi.', 'galat', 5000); return false; }
+    return true;
+  }
+  async function gantiEkskul(nama) {
+    if (!(await tuntaskanE())) { $('e-ekskul').value = E.aktif; return; }
+    E.aktif = nama; simpan.set('smkt_ekskul', nama);
+    const e = eAktif();
+    E.tanggal = E.data.hariIni; $('e-tanggal').value = E.tanggal; E.status = e.status || {};
+    if (E.pemilih) { E.pemilih.render(); }
+    renderEkskul();
+  }
+  async function gantiTanggalE(tgl) {
+    if (!tgl) { $('e-tanggal').value = E.tanggal; return; }
+    if (!(await tuntaskanE())) { $('e-tanggal').value = E.tanggal; return; }
+    E.tanggal = tgl; E.status = {};
+    $('e-daftar').innerHTML = '<li class="memuat">Memuat absensi ' + esc(tglPendek(tgl)) + '…</li>';
+    try {
+      const d = await api('ekskul.hari', { ekskul: E.aktif, tanggal: tgl });
+      if (d.tanggal === E.tanggal && d.ekskul === E.aktif) { E.status = d.status; if (tgl === E.data.hariIni) eAktif().status = d.status; }
+    } catch (e) { toast(e.message, 'galat', 5000); }
+    renderAbsenE();
+  }
+
+  function renderAbsenE() {
+    const e = eAktif(); if (!e) return;
+    const hit = { Hadir: 0, Izin: 0, Sakit: 0, Alpa: 0 }; let belum = 0;
+    e.anggota.forEach((a) => { const x = statusE(a.nis); if (x) hit[x.status]++; else belum++; });
+    $('e-ringkas').innerHTML = STATUS_E.map((s) => '<span class="er-' + s[1] + '"><b>' + hit[s[0]] + '</b>' + s[0] + '</span>').join('') + '<span class="er-belum"><b>' + belum + '</b>Belum</span>';
+    $('e-sisa').hidden = !belum || !e.anggota.length;
+    $('e-sisa').textContent = 'Tandai sisanya Alpa (' + belum + ' siswa)';
+    $('e-scan').disabled = !e.anggota.length;
+    $('e-kosong').hidden = !!e.anggota.length;
+    $('e-daftar').innerHTML = e.anggota.map((a) => {
+      const x = statusE(a.nis), tunda = E.antre.has(a.nis);
+      return '<li data-nis="' + esc(a.nis) + '" class="' + (x ? 'st-' + x.status.toLowerCase() : '') + '"><div><span class="nm">' + esc(a.nama) + '</span>' +
+        '<span class="kl">' + esc(a.kelas) + (x && x.cara === 'Scan' && x.waktu ? ', scan ' + esc(x.waktu) : '') + (tunda ? ', <span class="belum-simpan">belum tersimpan</span>' : '') + '</span></div>' +
+        '<div class="hisa" role="group" aria-label="Kehadiran ' + esc(a.nama) + '">' + STATUS_E.map((s) =>
+          '<button type="button" data-status="' + s[0] + '" aria-pressed="' + String(!!x && x.status === s[0]) + '" aria-label="' + s[0] + '" title="' + s[0] + '">' + s[1] + '</button>').join('') + '</div></li>';
+    }).join('');
+  }
+
+  function aturStatusE(nis, status, cara) {
+    E.antre.set(nis, { nis: nis, status: status, cara: cara, waktu: jamKini() });
+    renderAbsenE();
+    jadwalSimpanE(cara === 'Scan' ? 600 : 1200);
+  }
+  function tampilSimpanE(teks, jenis, ulang) {
+    const el = $('e-simpan');
+    el.className = 'status-simpan' + (jenis ? ' ' + jenis : '');
+    el.innerHTML = esc(teks) + (ulang ? ' <button type="button" class="tautan" data-aksi="simpan-lagi">Coba simpan lagi</button>' : '');
+  }
+  function jadwalSimpanE(ms) {
+    clearTimeout(E.timer);
+    E.timer = setTimeout(() => { E.timer = null; simpanE(); }, ms);
+    tampilSimpanE('Menyimpan…');
+  }
+  async function simpanE() {
+    if (E.menyimpan) { jadwalSimpanE(800); return; }
+    if (!E.antre.size) return;
+    const kirim = Array.from(E.antre.values()), ekskul = E.aktif, tanggal = E.tanggal;
+    E.menyimpan = true; tampilSimpanE('Menyimpan…');
+    try {
+      const d = await api('ekskul.simpan', { ekskul: ekskul, tanggal: tanggal, data: kirim.map((k) => ({ nis: k.nis, status: k.status, cara: k.cara })) });
+      kirim.forEach((k) => { if (E.antre.get(k.nis) === k) E.antre.delete(k.nis); });
+      if (ekskul === E.aktif && tanggal === E.tanggal) { E.status = d.status; if (tanggal === E.data.hariIni) eAktif().status = d.status; }
+      tampilSimpanE('Tersimpan pukul ' + d.jam + '.' + (d.ditolak.length ? ' ' + d.ditolak.length + ' siswa bukan anggota, tidak disimpan.' : ''), 'ok');
+    } catch (e) {
+      tampilSimpanE('Belum tersimpan: ' + e.message, 'galat', true);
+      if ((e.jaringan || e.kode === 'SIBUK') && !E.timer) E.timer = setTimeout(() => { E.timer = null; simpanE(); }, 15000);
+    } finally {
+      E.menyimpan = false;
+      if (S.tab === 'ekskul' && E.mode === 'absen') renderAbsenE();
+    }
+  }
+
+  function scanEkskul() {
+    const e = eAktif(); if (!e || !e.anggota.length) return;
+    bukaScan((nis) => {
+      const a = e.anggota.filter((x) => x.nis === nis)[0];
+      if (!a) {
+        const s = S.siswa.get(nis);
+        return { pesan: s ? s.nama + ' (' + s.kelas + ') bukan anggota ' + e.nama + '. Tambahkan di tab Anggota.' : 'Kartu ' + nis + ' tidak ada di daftar siswa aktif.', galat: true };
+      }
+      const x = statusE(nis);
+      if (!(x && x.status === 'Hadir')) aturStatusE(nis, 'Hadir', 'Scan');
+      const hadir = e.anggota.filter((y) => { const z = statusE(y.nis); return z && z.status === 'Hadir'; }).length;
+      return { pesan: (x && x.status === 'Hadir' ? a.nama + ' sudah tercatat hadir. ' : 'Hadir: ' + a.nama + '. ') + hadir + ' dari ' + e.anggota.length + ' anggota hadir.' };
+    }, { terus: true, ket: 'Scan kartu anggota satu per satu. Tekan Selesai bila sudah.' });
+  }
+
+  async function muatRekapE() {
+    const e = eAktif(); if (!e) return;
+    const bulan = $('e-bulan').value || E.data.hariIni.slice(0, 7);
+    $('e-rekap-isi').innerHTML = '<p class="memuat">Memuat rekap…</p>';
+    try {
+      const d = await api('ekskul.rekap', { ekskul: E.aktif, bulan: bulan });
+      if (d.ekskul !== E.aktif || $('e-bulan').value && d.bulan !== $('e-bulan').value) return;
+      const n = d.pertemuan.length;
+      let h = '<p class="keterangan">' + (n ? n + ' pertemuan: ' + esc(d.pertemuan.map(tglPendek).join(', ')) + '.' : 'Belum ada absensi pada bulan ini.') + '</p>';
+      if (n && d.anggota.length) {
+        h += '<div class="tabel-gulir"><table class="tabel-rekap"><thead><tr><th scope="col">Anggota</th><th scope="col"><abbr title="Hadir">H</abbr></th><th scope="col"><abbr title="Izin">I</abbr></th>' +
+          '<th scope="col"><abbr title="Sakit">S</abbr></th><th scope="col"><abbr title="Alpa">A</abbr></th><th scope="col">Hadir</th></tr></thead><tbody>' +
+          d.anggota.map((a) => '<tr' + (a.keluar ? ' class="keluar"' : '') + '><th scope="row"><span class="nm">' + esc(a.nama) + '</span><span class="kl">' + esc(a.kelas) + (a.keluar ? ', sudah keluar' : '') + '</span></th>' +
+            '<td>' + a.hadir + '</td><td>' + a.izin + '</td><td>' + a.sakit + '</td><td' + (a.alpa ? ' class="alpa"' : '') + '>' + a.alpa + '</td>' +
+            '<td class="persen">' + (a.persen === null ? '–' : a.persen + '%') + '</td></tr>').join('') + '</tbody></table></div>';
+      }
+      $('e-rekap-isi').innerHTML = h;
+    } catch (er) { $('e-rekap-isi').innerHTML = '<p class="memuat">' + esc(er.message) + '</p>'; }
+  }
+
+  function renderAnggotaE() {
+    const e = eAktif(); if (!e) return;
+    if (!E.pemilih) {
+      E.pemilih = pemilihSiswa($('e-tambah'), { id: 'ea', label: 'Tambah anggota', catatan: 'Cari nama siswa atau scan kartunya.',
+        saring: (s) => { const x = eAktif(); return !!x && !x.anggota.some((a) => a.nis === s.nis); }, pilih: tambahAnggotaE });
+    } else E.pemilih.render();
+    $('e-anggota-ket').textContent = e.anggota.length ? e.anggota.length + ' anggota ' + e.nama + '.' : 'Belum ada anggota ' + e.nama + '.';
+    $('e-anggota-daftar').innerHTML = e.anggota.map((a) => '<li data-nis="' + esc(a.nis) + '"><span><span class="nm">' + esc(a.nama) + '</span><span class="kl">' + esc(a.kelas) + ', NIS ' + esc(a.nis) + '</span></span>' +
+      '<button type="button" class="tautan" data-aksi="keluar">Keluarkan</button></li>').join('');
+  }
+  async function tambahAnggotaE(s) {
+    const nama = E.aktif;
+    try {
+      const d = await api('ekskul.anggota', { ekskul: nama, tambah: [s.nis] });
+      const e = E.data.ekskul.filter((x) => x.nama === nama)[0]; if (e) e.anggota = d.anggota;
+      if (E.aktif === nama) renderEkskul();
+      toast(d.tambah ? s.nama + ' masuk anggota ' + nama + '.' : s.nama + ' sudah anggota ' + nama + '.', 'hadir');
+    } catch (er) { toast(er.message, 'galat', 5000); }
+  }
+  async function klikAnggotaE(ev) {
+    const b = ev.target.closest('button[data-aksi]'); if (!b) return;
+    const li = b.closest('li'), nis = li.dataset.nis, nama = E.aktif;
+    if (b.dataset.aksi === 'keluar') { b.dataset.aksi = 'keluar-ya'; b.textContent = 'Yakin keluarkan?'; b.classList.add('merah'); return; }
+    b.disabled = true; b.textContent = 'Mengeluarkan…';
+    try {
+      const d = await api('ekskul.anggota', { ekskul: nama, hapus: [nis] });
+      const e = E.data.ekskul.filter((x) => x.nama === nama)[0]; if (e) e.anggota = d.anggota;
+      if (E.aktif === nama) renderEkskul();
+      toast('Anggota dikeluarkan. Absensinya yang lalu tetap ada di rekap.', 'hadir', 4000);
+    } catch (er) { b.disabled = false; b.textContent = 'Keluarkan'; b.dataset.aksi = 'keluar'; toast(er.message, 'galat', 5000); }
+  }
+
   /* ---------------- Mulai ---------------- */
   function pasangKejadian() {
     $('tombol-menu').innerHTML = ikon('menu');
@@ -998,7 +1262,13 @@
       tutupMenu();
       const sb = S.siap.beranda;
       S.siap = { beranda: sb }; B.data = null; S.foto.clear(); sesiTab.hapus('smkt_tatib_awal');
+      if (!E.antre.size) E.data = null;
       await muatAwal(false); toast('Data diperbarui.', 'hadir');
+    });
+    $('menu-ujiwa').addEventListener('click', async () => {
+      tutupMenu(); toast('Mengirim WA uji…', '', 8000);
+      try { const d = await api('tatib.ujiWA'); toast('WA uji terkirim ke ' + d.nomor + ' pukul ' + d.jam + '. Cek WhatsApp Anda.', 'hadir', 6000); }
+      catch (e) { toast(e.message, 'galat', 7000); }
     });
     $('menu-keluar').addEventListener('click', keluar);
     $('scan-tutup').addEventListener('click', tutupScan);

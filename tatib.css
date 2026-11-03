@@ -94,6 +94,21 @@ select { font: inherit; color: inherit; }
 .tombol-wa.sudah { background: var(--wa-latar); border-color: transparent; }
 .wa-kosong { flex: none; max-width: 96px; font-size: 13px; line-height: 1.2; color: var(--teks-redup); text-align: right; }
 .kasus .aksi .wa-kosong, .kontak .wa-kosong { max-width: none; text-align: left; }
+.status-wa.gagal { color: var(--galat); }
+/* WA otomatis: tanda terkirim (bukan tombol) dan keterangan di atas daftar */
+.wa-terkirim {
+  display: inline-flex; align-items: center; gap: 5px; flex: none;
+  min-height: 34px; padding: 4px 10px; border-radius: 999px;
+  background: var(--wa-latar); color: var(--wa); font-weight: 700; font-size: 14px; white-space: nowrap;
+}
+.wa-terkirim .ik svg { width: 16px; height: 16px; }
+.info-wa {
+  display: flex; gap: 10px; align-items: flex-start; margin: 0 0 10px; padding: 10px 12px;
+  border-radius: 14px; background: var(--wa-latar); color: #0B5730; font-size: 14px; line-height: 1.4;
+}
+.info-wa .ik svg { width: 18px; height: 18px; margin-top: 1px; }
+.info-wa.galat { background: var(--galat-latar); color: var(--galat); }
+.hasil .info-wa { margin-top: 10px; }
 
 /* Tangga pembinaan: lima anak tangga, yang aktif berwarna emas */
 .tangga { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; align-items: end; margin: 4px 0 0; padding: 0; list-style: none; }
@@ -380,7 +395,78 @@ textarea.isian { min-height: 0; resize: vertical; }
 .modal-scan .bingkai-kamera { max-width: 420px; }
 .modal-scan .tombol { max-width: 360px; }
 .toast { bottom: calc(var(--tinggi-nav) + 14px + env(safe-area-inset-bottom)); }
+.modal-scan .popup-ket { max-width: 360px; font-weight: 700; }
+.popup-ket.ok { color: #A8E6C1; }
+.popup-ket.galat { color: #FFC2BC; }
 
+/* ---------- Ekskul ---------- */
+.eks-kepala { margin-top: 14px; }
+.eks-nama { margin: 0 4px; font-size: 22px; font-weight: 800; letter-spacing: -0.01em; }
+.eks-jadwal { margin: 2px 4px 0; color: var(--teks-redup); font-size: 15px; }
+.eks-kepala .isian + .eks-jadwal { margin-top: 8px; }
+.eks-ringkas { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 14px 0; }
+.eks-ringkas span {
+  display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 2px;
+  border-radius: 12px; background: var(--latar); color: var(--teks-redup); font-size: 13px; font-weight: 700;
+}
+.eks-ringkas b { font-size: 22px; line-height: 1.1; color: var(--teks); font-variant-numeric: tabular-nums; }
+.eks-ringkas .er-H b { color: var(--hadir); }
+.eks-ringkas .er-S b { color: var(--sedang); }
+.eks-ringkas .er-A b { color: var(--berat); }
+#e-absen .blok .tombol + .tombol { margin-top: 8px; }
+#e-scan .ik svg { width: 20px; height: 20px; }
+#e-scan { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.status-simpan { margin: 10px 2px 0; min-height: 1.4em; font-size: 14px; color: var(--teks-redup); }
+.status-simpan.ok { color: var(--hadir); }
+.status-simpan.galat { color: var(--galat); }
+.status-simpan .tautan { min-height: 32px; }
+
+.eks-daftar, .eks-anggota { list-style: none; margin: 12px 0 0; padding: 0; background: var(--putih); border-radius: 18px; overflow: hidden; }
+.eks-daftar li {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center;
+  padding: 10px 12px 10px 14px; border-left: 5px solid transparent;
+}
+.eks-daftar li + li, .eks-anggota li + li { border-top: 1px solid var(--latar); }
+.eks-daftar li.st-hadir { border-left-color: var(--hadir); }
+.eks-daftar li.st-izin { border-left-color: var(--antre); }
+.eks-daftar li.st-sakit { border-left-color: var(--sedang); }
+.eks-daftar li.st-alpa { border-left-color: var(--berat); }
+.eks-daftar li.memuat { display: block; margin: 0; padding: 18px; }
+.eks-daftar .nm, .eks-anggota .nm, .tabel-rekap .nm { display: block; font-weight: 700; line-height: 1.25; overflow-wrap: break-word; }
+.eks-daftar .kl, .eks-anggota .kl, .tabel-rekap .kl { display: block; font-size: 14px; color: var(--teks-redup); }
+.belum-simpan { color: var(--telat); font-weight: 700; }
+.hisa { display: grid; grid-template-columns: repeat(4, 40px); gap: 4px; }
+.hisa button {
+  height: 40px; border-radius: 10px; border: 2px solid var(--garis); background: var(--putih);
+  color: var(--teks-redup); font-weight: 800; font-size: 15px; padding: 0;
+}
+.hisa button[aria-pressed="true"] { color: var(--putih); }
+.hisa button[aria-pressed="true"][data-status="Hadir"] { background: var(--hadir); border-color: var(--hadir); }
+.hisa button[aria-pressed="true"][data-status="Izin"] { background: var(--antre); border-color: var(--antre); }
+.hisa button[aria-pressed="true"][data-status="Sakit"] { background: var(--sedang); border-color: var(--sedang); }
+.hisa button[aria-pressed="true"][data-status="Alpa"] { background: var(--berat); border-color: var(--berat); }
+.hisa button:focus-visible, .eks-anggota .tautan:focus-visible { outline: 3px solid var(--emas); outline-offset: 2px; }
+
+.eks-anggota li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 8px 8px 16px; }
+.eks-anggota .tautan.merah { color: var(--berat); }
+
+#e-rekap-isi .keterangan { margin: 12px 0 0; }
+.tabel-gulir { overflow-x: auto; margin: 10px -4px 0; }
+.tabel-rekap { width: 100%; border-collapse: collapse; font-size: 15px; font-variant-numeric: tabular-nums; }
+.tabel-rekap th, .tabel-rekap td { padding: 9px 4px; text-align: center; border-top: 1px solid var(--latar); }
+.tabel-rekap thead th { border-top: 0; color: var(--teks-redup); font-size: 13px; font-weight: 700; }
+.tabel-rekap thead th:first-child { text-align: left; padding-left: 0; }
+.tabel-rekap abbr { text-decoration: none; }
+.tabel-rekap tbody th { text-align: left; font-weight: 500; padding-left: 0; }
+.tabel-rekap td.alpa { color: var(--berat); font-weight: 800; }
+.tabel-rekap td.persen { font-weight: 800; }
+.tabel-rekap tr.keluar { color: var(--teks-redup); }
+
+@media (max-width: 360px) {
+  .eks-daftar li { grid-template-columns: 1fr; gap: 8px; }
+  .hisa { grid-template-columns: repeat(4, 1fr); }
+  .eks-ringkas span { font-size: 12px; }
+}
 @media (max-width: 380px) {
   .statistik { grid-template-columns: repeat(3, 1fr); }
   .tombol-scan span { display: none; }
