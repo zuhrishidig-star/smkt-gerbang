@@ -29,6 +29,16 @@
 
   <!-- Aplikasi -->
   <section id="layar-utama" class="layar tt-layar" hidden>
+    <aside class="tt-sisi" id="sisi" aria-label="Menu utama">
+      <div class="sisi-merek">
+        <img src="icons/icon-192.png" alt="" width="40" height="40">
+        <div><strong>Tata Tertib</strong><span id="sisi-sekolah"></span></div>
+      </div>
+      <nav class="sisi-nav" id="sisi-nav" aria-label="Halaman"></nav>
+      <div class="sisi-akun" id="sisi-akun"></div>
+    </aside>
+
+    <div class="tt-kolom">
     <header class="tt-kepala">
       <div class="tt-kepala-judul">
         <span class="tt-merek">Tata Tertib</span>
@@ -40,6 +50,7 @@
     <div id="menu" class="menu tt-menu" hidden>
       <p class="menu-info" id="menu-info"></p>
       <a href="./" id="menu-gerbang" class="menu-tautan" hidden>Buka Gerbang (scan masuk)</a>
+      <button type="button" id="menu-kios" hidden>Kios gerbang</button>
       <button type="button" id="menu-ujiwa" hidden>Kirim WA uji ke nomor saya</button>
       <button type="button" id="menu-perbarui">Perbarui data</button>
       <button type="button" id="menu-keluar">Keluar</button>
@@ -58,6 +69,21 @@
         </div>
         <a href="#lapor" class="tombol-lapor" id="tombol-lapor-besar"><span class="ik" data-ikon="lapor"></span>Lapor pelanggaran</a>
         <div id="b-isi"></div>
+      </section>
+
+      <!-- VERIFIKASI FOTO SCAN -->
+      <section id="p-verifikasi" class="panel" hidden>
+        <div class="v-saring">
+          <div><label class="label" for="v-tanggal">Tanggal</label><input id="v-tanggal" class="isian" type="date"></div>
+          <div id="v-kelas-wadah" hidden><label class="label" for="v-kelas">Kelas</label><select id="v-kelas" class="isian"></select></div>
+        </div>
+        <div class="v-ringkas">
+          <p class="keterangan" id="v-ket"></p>
+          <button id="v-semua" class="tombol tombol-garis" type="button" hidden>Tandai semua sesuai</button>
+        </div>
+        <ul class="v-grid" id="v-daftar"></ul>
+        <h2 class="judul-bagian" id="v-tanpa-judul" hidden>Tanpa foto scan</h2>
+        <ul class="v-tanpa" id="v-tanpa"></ul>
       </section>
 
       <!-- LAPOR -->
@@ -205,6 +231,7 @@
         </div>
       </section>
     </main>
+    </div>
 
     <nav class="nav-bawah" id="nav-bawah" aria-label="Menu utama"></nav>
 
@@ -215,6 +242,46 @@
       </div>
     </div>
   </section>
+
+  <!-- Titip absen -->
+  <div id="modal-titip" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="titip-judul">
+    <div class="modal-isi">
+      <h2 id="titip-judul" class="judul-blok">Catat titip absen</h2>
+      <div class="titip-banding" id="titip-banding"></div>
+      <p class="keterangan" id="titip-ket"></p>
+      <div id="titip-pilih"></div>
+      <div id="titip-terpilih" class="titip-terpilih" hidden></div>
+      <label class="label" for="titip-plg">Jenis pelanggaran</label>
+      <select id="titip-plg" class="isian"></select>
+      <p class="keterangan" id="titip-naik" hidden></p>
+      <label class="label" for="titip-tindakan">Tindakan yang sudah dilakukan <span class="redup">(opsional)</span></label>
+      <textarea id="titip-tindakan" class="isian" rows="2" maxlength="300" placeholder="Contoh: keduanya dipanggil dan dinasihati"></textarea>
+      <p class="pesan-galat" id="titip-pesan" role="alert"></p>
+      <div class="modal-aksi">
+        <button id="titip-batal" class="tombol tombol-garis" type="button">Batal</button>
+        <button id="titip-simpan" class="tombol tombol-utama" type="button">Catat titip absen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Foto besar -->
+  <div id="modal-foto" class="modal modal-gelap" hidden role="dialog" aria-modal="true" aria-label="Foto scan">
+    <div class="foto-besar" id="foto-besar"></div>
+    <button id="foto-tutup" class="tombol tombol-batal" type="button">Tutup</button>
+  </div>
+
+  <!-- Kios gerbang -->
+  <div class="lembar" id="lembar-kios" hidden>
+    <div class="lembar-isi" role="dialog" aria-modal="true" aria-labelledby="kios-judul">
+      <div class="lembar-pegangan" aria-hidden="true"></div>
+      <h2 id="kios-judul" class="judul-blok">Kios gerbang</h2>
+      <p class="keterangan">Tablet di gerbang untuk scan mandiri siswa. QR baru diterima bila wajah siswa tampak di atas kartu, dan fotonya masuk ke Verifikasi.</p>
+      <a class="tombol tombol-utama" href="kios.html">Jadikan perangkat ini kios</a>
+      <h3 class="judul-kecil">Kios aktif</h3>
+      <ul class="kios-daftar" id="kios-daftar"><li class="kosong">Memuat…</li></ul>
+      <button id="kios-tutup" class="tombol tombol-garis" type="button">Tutup</button>
+    </div>
+  </div>
 
   <!-- Pemindai QR -->
   <div id="modal-scan" class="modal-scan" hidden role="dialog" aria-modal="true" aria-label="Scan kartu pelajar">

@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0E1F3D">
+  <title>Kios Gerbang SMKT</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="preload" href="fonts/plus-jakarta-sans-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="kios.css">
+</head>
+<body class="kios">
+
+  <!-- Aktivasi: sekali oleh Piket / Tim Tatib / pimpinan -->
+  <section id="layar-aktif" class="k-layar k-tengah" hidden>
+    <div class="k-kotak">
+      <img src="icons/icon-192.png" alt="" width="56" height="56">
+      <h1>Aktifkan kios gerbang</h1>
+      <p class="k-ket">Tablet ini akan dipakai siswa untuk scan kartu sendiri. Masuk sebagai Piket, Tim Tatib, atau pimpinan untuk mengaktifkannya. Setelah aktif, tablet tetap siap dipakai setiap pagi tanpa login lagi.</p>
+      <div id="aktif-login">
+        <div id="tombol-google" class="tombol-google"></div>
+      </div>
+      <div id="aktif-form" hidden>
+        <p class="k-ket" id="aktif-siapa"></p>
+        <label class="k-label" for="aktif-nama">Nama kios</label>
+        <input id="aktif-nama" class="k-isian" maxlength="30" value="Gerbang Utama" autocomplete="off">
+        <button id="aktif-tombol" class="k-tombol" type="button">Aktifkan tablet ini</button>
+      </div>
+      <p id="aktif-pesan" class="k-pesan" role="alert"></p>
+    </div>
+  </section>
+
+  <!-- Mulai: satu ketukan agar layar penuh, suara, dan kamera bisa dinyalakan -->
+  <section id="layar-mulai" class="k-layar k-tengah" hidden>
+    <div class="k-kotak">
+      <img src="icons/icon-192.png" alt="" width="56" height="56">
+      <h1 id="mulai-judul">Kios gerbang</h1>
+      <p class="k-ket" id="mulai-ket">Ketuk Mulai untuk menyalakan kamera. Layar akan tetap menyala selama kios dipakai.</p>
+      <button id="mulai-tombol" class="k-tombol" type="button" disabled>Menyiapkan…</button>
+      <p id="mulai-pesan" class="k-pesan" role="alert"></p>
+    </div>
+  </section>
+
+  <!-- Kios -->
+  <section id="layar-kios" class="k-layar" hidden>
+    <header class="k-atas">
+      <div class="k-sekolah">
+        <strong id="k-sekolah"></strong>
+        <span id="k-nama-kios"></span>
+      </div>
+      <div class="k-jam">
+        <strong id="k-jam">--.--</strong>
+        <span id="k-tanggal"></span>
+      </div>
+    </header>
+
+    <main class="k-utama">
+      <div class="k-kamera" id="k-kamera">
+        <video id="k-video" playsinline muted autoplay></video>
+        <canvas id="k-lapis" class="k-lapis" aria-hidden="true"></canvas>
+        <div class="k-panduan" aria-hidden="true">
+          <div class="k-oval"></div>
+          <div class="k-kartu"><span>Kartu di sini</span></div>
+        </div>
+      </div>
+
+      <div class="k-sisi">
+        <p class="k-perintah" id="k-perintah" aria-live="polite">Pegang kartu tegak di bawah dagu, lalu tatap kamera.</p>
+        <ul class="k-cek" aria-label="Pemeriksaan">
+          <li id="cek-wajah"><span class="k-titik"></span>Wajah terlihat</li>
+          <li id="cek-hadap"><span class="k-titik"></span>Menghadap kamera</li>
+          <li id="cek-kartu"><span class="k-titik"></span>Kartu tegak di bawah wajah</li>
+        </ul>
+        <p class="k-batas" id="k-batas"></p>
+        <div class="k-hitung" aria-live="polite">
+          <span><b id="k-n-hadir">0</b>hadir</span>
+          <span><b id="k-n-telat">0</b>terlambat</span>
+        </div>
+        <p class="k-antre" id="k-antre" hidden></p>
+      </div>
+    </main>
+
+    <button id="k-gir" class="k-gir" type="button" aria-label="Pengaturan kios (tekan lama)">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+    </button>
+
+    <!-- Hasil scan -->
+    <div id="k-hasil" class="k-hasil" hidden role="status" aria-live="assertive">
+      <div class="k-hasil-kartu">
+        <img id="h-foto" alt="">
+        <div class="k-hasil-teks">
+          <p class="k-hasil-status" id="h-status"></p>
+          <h2 id="h-nama"></h2>
+          <p id="h-kelas"></p>
+          <p class="k-hasil-ket" id="h-ket"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pengaturan -->
+    <div id="k-atur" class="k-atur" hidden role="dialog" aria-modal="true" aria-labelledby="atur-judul">
+      <div class="k-kotak">
+        <h2 id="atur-judul">Pengaturan kios</h2>
+        <dl class="k-info" id="atur-info"></dl>
+        <button id="atur-muat" class="k-tombol k-garis" type="button">Muat ulang daftar siswa</button>
+        <button id="atur-kirim" class="k-tombol k-garis" type="button">Kirim ulang scan tertunda</button>
+        <button id="atur-keluar" class="k-tombol k-merah" type="button">Keluar dari mode kios</button>
+        <button id="atur-tutup" class="k-tombol" type="button">Tutup</button>
+        <p id="atur-pesan" class="k-pesan" role="alert"></p>
+      </div>
+    </div>
+  </section>
+
+  <canvas id="k-tangkap" hidden></canvas>
+  <script src="config.js"></script>
+  <script src="vendor/jsQR.js"></script>
+  <script src="kios.js"></script>
+</body>
+</html>

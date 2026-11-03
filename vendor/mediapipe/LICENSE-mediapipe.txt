@@ -1,0 +1,6 @@
+MediaPipe Tasks Vision (@mediapipe/tasks-vision 1.1.1) dan model BlazeFace
+(blaze_face_short_range.tflite) dari Google, dirilis dengan Apache License 2.0.
+https://github.com/google-ai-edge/mediapipe · https://ai.google.dev/edge/mediapipe
+
+Teks lengkap Apache License 2.0 ada di vendor/LICENSE-jsqr.txt (lisensi yang sama)
+dan di https://www.apache.org/licenses/LICENSE-2.0

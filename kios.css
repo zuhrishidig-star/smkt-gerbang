@@ -1,0 +1,145 @@
+/* Kios Gerbang SMKT · tablet di gerbang, dipakai siswa sendiri.
+   Gelap agar layar tidak silau dan wajah siswa terang di kamera. */
+
+:root {
+  --malam: #0E1F3D;
+  --malam-2: #17305C;
+  --malam-garis: #2C4673;
+  --kabut: #B9C6E0;
+  --emas: #F2B544;
+  --hijau: #2FA86A;   --hijau-latar: #DDF3E6;  --hijau-tua: #145C38;
+  --jingga: #F2B544;  --jingga-latar: #FFF1D1; --jingga-tua: #7A4600;
+  --biru: #6FA3F2;    --biru-latar: #E1ECFC;   --biru-tua: #1B3F7A;
+  --merah: #F07167;   --merah-latar: #FDE6E3;  --merah-tua: #8E1F17;
+}
+
+body.kios { background: var(--malam); color: #fff; overscroll-behavior: none; }
+.k-layar { min-height: 100dvh; }
+.k-tengah { display: grid; place-items: center; padding: 24px 16px; }
+.k-kotak {
+  width: min(460px, 100%); background: var(--malam-2); border: 1px solid var(--malam-garis);
+  border-radius: 24px; padding: 28px 24px; text-align: center;
+}
+.k-kotak img { border-radius: 14px; }
+.k-kotak h1, .k-kotak h2 { margin: 14px 0 6px; font-size: 26px; font-weight: 800; line-height: 1.2; }
+.k-ket { margin: 0 0 18px; color: var(--kabut); font-size: 16px; }
+.k-label { display: block; text-align: left; font-weight: 700; margin: 6px 0 6px; }
+.k-isian {
+  width: 100%; min-height: 52px; padding: 10px 14px; border-radius: 14px; border: 1px solid var(--malam-garis);
+  background: var(--malam); color: #fff; font-size: 18px; margin-bottom: 14px;
+}
+.k-tombol {
+  display: block; width: 100%; min-height: 56px; margin-top: 10px; border: 0; border-radius: 16px;
+  background: var(--emas); color: var(--malam); font-weight: 800; font-size: 18px;
+}
+.k-tombol:disabled { opacity: 0.55; cursor: progress; }
+.k-garis { background: transparent; color: #fff; border: 1px solid var(--malam-garis); }
+.k-merah { background: transparent; color: var(--merah); border: 1px solid var(--merah); }
+.k-pesan { min-height: 1.4em; margin: 12px 0 0; color: var(--emas); font-size: 15px; }
+.tombol-google { display: flex; justify-content: center; min-height: 44px; }
+
+/* ---------- Layar kios ---------- */
+#layar-kios { display: flex; flex-direction: column; height: 100dvh; overflow: hidden; }
+.k-atas {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: calc(10px + env(safe-area-inset-top)) 20px 10px;
+}
+.k-sekolah { display: flex; flex-direction: column; line-height: 1.2; min-width: 0; }
+.k-sekolah strong { font-size: 18px; font-weight: 800; }
+.k-sekolah span { color: var(--kabut); font-size: 14px; }
+.k-jam { text-align: right; line-height: 1.05; }
+.k-jam strong { display: block; font-size: 40px; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.k-jam span { color: var(--kabut); font-size: 14px; }
+
+.k-utama { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 14px; padding: 0 16px 16px; }
+.k-kamera {
+  position: relative; flex: 1; min-height: 0; border-radius: 28px; overflow: hidden;
+  background: #000; border: 3px solid var(--malam-garis); transition: border-color 160ms ease;
+}
+.k-kamera.siap { border-color: var(--hijau); }
+.k-kamera.kurang { border-color: var(--emas); }
+.k-kamera video, .k-lapis {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+  transform: scaleX(-1);   /* seperti cermin: siswa melihat dirinya seperti biasa */
+}
+.k-kamera { container-type: size; }
+.k-panduan { position: absolute; inset: 0; pointer-events: none; display: flex; flex-direction: column; align-items: center; }
+/* Ukuran panduan mengikuti tinggi kamera, agar posisinya sama di tablet tegak maupun mendatar:
+   wajah di oval, kartu tegak dipegang tepat di bawah dagu. */
+.k-oval {
+  margin-top: 3%; margin-top: 4cqh; height: 44%; max-width: 80%; aspect-ratio: 3 / 4; border-radius: 50%;
+  border: 3px dashed rgba(255, 255, 255, 0.55);
+}
+.k-kartu {
+  margin-top: -1%; margin-top: -1.5cqh; height: 38%; max-width: 86%; aspect-ratio: 54 / 85.6; border-radius: 12px;   /* kartu tegak (ID card) */
+  border: 3px dashed rgba(242, 181, 68, 0.8); display: grid; place-items: end center;
+}
+.k-kartu span {
+  margin-bottom: -2.2em; color: var(--emas); font-weight: 700; font-size: 15px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.k-sisi { display: flex; flex-direction: column; gap: 10px; }
+.k-perintah { margin: 0; font-size: clamp(22px, 3.4vh, 32px); font-weight: 800; line-height: 1.2; min-height: 2.4em; }
+.k-cek { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.k-cek li {
+  display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px;
+  background: var(--malam-2); color: var(--kabut); font-weight: 700; font-size: 15px;
+}
+.k-titik { width: 12px; height: 12px; border-radius: 50%; background: var(--malam-garis); flex: none; }
+.k-cek li.ya { color: #fff; }
+.k-cek li.ya .k-titik { background: var(--hijau); }
+.k-cek li.tidak .k-titik { background: var(--emas); }
+.k-batas { margin: 0; color: var(--kabut); font-size: 15px; }
+.k-hitung { display: flex; gap: 18px; color: var(--kabut); font-size: 15px; }
+.k-hitung b { display: block; color: #fff; font-size: 26px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.k-antre { margin: 0; padding: 8px 12px; border-radius: 12px; background: rgba(242, 181, 68, 0.14); color: var(--emas); font-weight: 700; font-size: 15px; }
+
+/* Tablet mendatar: kamera di kiri, petunjuk di kanan */
+@media (min-aspect-ratio: 5/4) {
+  .k-utama { flex-direction: row; }
+  .k-kamera { flex: 1.35; }
+  .k-sisi { flex: 1; justify-content: center; padding: 0 8px; }
+}
+
+.k-gir {
+  position: fixed; right: 10px; bottom: calc(10px + env(safe-area-inset-bottom));
+  width: 44px; height: 44px; border-radius: 50%; border: 0; background: transparent; color: rgba(255, 255, 255, 0.35);
+  display: grid; place-items: center;
+}
+.k-gir svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; }
+.k-gir.tahan { color: var(--emas); }
+
+/* ---------- Hasil ---------- */
+.k-hasil {
+  position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 20px;
+  background: rgba(14, 31, 61, 0.72);
+}
+.k-hasil-kartu {
+  width: min(560px, 100%); border-radius: 28px; overflow: hidden; background: #fff; color: var(--malam);
+  display: grid; grid-template-columns: 42% 1fr; align-items: stretch;
+  animation: masuk 220ms ease-out;
+}
+.k-hasil-kartu img { width: 100%; height: 100%; min-height: 220px; object-fit: cover; background: var(--malam-2); }
+.k-hasil-teks { padding: 22px 20px; display: flex; flex-direction: column; justify-content: center; }
+.k-hasil-status {
+  align-self: flex-start; margin: 0 0 10px; padding: 6px 14px; border-radius: 999px; font-weight: 800; font-size: 17px;
+}
+.k-hasil h2 { margin: 0; font-size: 28px; font-weight: 800; line-height: 1.15; }
+.k-hasil-teks p { margin: 6px 0 0; font-size: 18px; color: #4E5D78; }
+.k-hasil-ket { font-weight: 700; }
+.k-hasil.hadir .k-hasil-status { background: var(--hijau-latar); color: var(--hijau-tua); }
+.k-hasil.telat .k-hasil-status { background: var(--jingga-latar); color: var(--jingga-tua); }
+.k-hasil.info .k-hasil-status { background: var(--biru-latar); color: var(--biru-tua); }
+.k-hasil.galat .k-hasil-status { background: var(--merah-latar); color: var(--merah-tua); }
+.k-hasil.hadir .k-hasil-kartu { box-shadow: 0 0 0 6px var(--hijau); }
+.k-hasil.telat .k-hasil-kartu { box-shadow: 0 0 0 6px var(--jingga); }
+.k-hasil.galat .k-hasil-kartu { box-shadow: 0 0 0 6px var(--merah); }
+@keyframes masuk { from { transform: scale(0.94); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .k-hasil-kartu { animation: none; } .k-kamera { transition: none; } }
+
+/* ---------- Pengaturan ---------- */
+.k-atur { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 16px; background: rgba(0, 0, 0, 0.6); }
+.k-info { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; text-align: left; margin: 0 0 8px; font-size: 15px; }
+.k-info dt { color: var(--kabut); }
+.k-info dd { margin: 0; font-weight: 700; }

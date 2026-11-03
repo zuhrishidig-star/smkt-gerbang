@@ -1,6 +1,7 @@
 /*
- * Tata Tertib SMKT · aplikasi web guru · v1.1 (3 November 2026)
- * Menu: Beranda · Lapor · Kotak Masuk · Siswa · Waspada · Pulih · Absen.
+ * Tata Tertib SMKT · aplikasi web guru · v1.3 (3 November 2026)
+ * Menu: Beranda (dasbor) · Lapor · Kotak Masuk · Verifikasi · Siswa · Waspada · Pulih · Absen · Ekskul.
+ * Laptop (≥1024 px): menu di samping. HP: menu di bawah.
  * Tangga pembinaan: guru yang menemukan → wali kelas → BK → Tim Tatib →
  * Wakasek/Kepala Sekolah. WhatsApp gratis lewat tautan wa.me.
  * Memakai login dan sesi yang sama dengan Gerbang (localStorage smkt_sesi).
@@ -20,10 +21,14 @@
   const HARI_IZIN_MUNDUR = 7;
   const IKON = {"beranda":"<path d=\"M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8\" /> <path d=\"M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\" />","lapor":"<path d=\"m3 11 18-5v12L3 14v-3z\" /> <path d=\"M11.6 16.8a3 3 0 1 1-5.8-1.6\" />","kotak":"<polyline points=\"22 12 16 12 14 15 10 15 8 12 2 12\" /> <path d=\"M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z\" />","siswa":"<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\" /> <circle cx=\"9\" cy=\"7\" r=\"4\" /> <path d=\"M22 21v-2a4 4 0 0 0-3-3.87\" /> <path d=\"M16 3.13a4 4 0 0 1 0 7.75\" />","waspada":"<path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\" /> <path d=\"M12 8v4\" /> <path d=\"M12 16h.01\" />","pulih":"<path d=\"M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z\" /> <path d=\"M12 5 9.04 7.96a2.17 2.17 0 0 0 0 3.08c.82.82 2.13.85 3 .07l2.07-1.9a2.82 2.82 0 0 1 3.79 0l2.96 2.66\" /> <path d=\"m18 15-2-2\" /> <path d=\"m15 18-2-2\" />","absen":"<path d=\"M8 2v4\" /> <path d=\"M16 2v4\" /> <rect width=\"18\" height=\"18\" x=\"3\" y=\"4\" rx=\"2\" /> <path d=\"M3 10h18\" /> <path d=\"m9 16 2 2 4-4\" />","wa":"<path d=\"M7.9 20A9 9 0 1 0 4 16.1L2 22Z\" />","qr":"<rect width=\"5\" height=\"5\" x=\"3\" y=\"3\" rx=\"1\" /> <rect width=\"5\" height=\"5\" x=\"16\" y=\"3\" rx=\"1\" /> <rect width=\"5\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\" /> <path d=\"M21 16h-3a2 2 0 0 0-2 2v3\" /> <path d=\"M21 21v.01\" /> <path d=\"M12 7v3a2 2 0 0 1-2 2H7\" /> <path d=\"M3 12h.01\" /> <path d=\"M12 3h.01\" /> <path d=\"M12 16v.01\" /> <path d=\"M16 12h1\" /> <path d=\"M21 12v.01\" /> <path d=\"M12 21v-1\" />","kanan":"<path d=\"m9 18 6-6-6-6\" />","menu":"<circle cx=\"12\" cy=\"12\" r=\"1\" /> <circle cx=\"12\" cy=\"5\" r=\"1\" /> <circle cx=\"12\" cy=\"19\" r=\"1\" />","keluar":"<path d=\"M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4\" /> <polyline points=\"16 17 21 12 16 7\" /> <line x1=\"21\" x2=\"9\" y1=\"12\" y2=\"12\" />","muat":"<path d=\"M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8\" /> <path d=\"M21 3v5h-5\" /> <path d=\"M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16\" /> <path d=\"M8 16H3v5\" />","cek":"<path d=\"M20 6 9 17l-5-5\" />","gerbang":"<path d=\"M13 4h3a2 2 0 0 1 2 2v14\" /> <path d=\"M2 20h3\" /> <path d=\"M13 20h9\" /> <path d=\"M10 12v.01\" /> <path d=\"M13 4.562v16.157a1 1 0 0 1-1.242.97L5 20V5.562a2 2 0 0 1 1.515-1.94l4-1A2 2 0 0 1 13 4.561Z\" />","cari":"<circle cx=\"11\" cy=\"11\" r=\"8\" /> <path d=\"m21 21-4.3-4.3\" />","surat":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\" /> <path d=\"M14 2v4a2 2 0 0 0 2 2h4\" /> <path d=\"M10 9H8\" /> <path d=\"M16 13H8\" /> <path d=\"M16 17H8\" />","jam":"<circle cx=\"12\" cy=\"12\" r=\"10\" /> <polyline points=\"12 6 12 12 16 14\" />","awas":"<path d=\"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3\" /> <path d=\"M12 9v4\" /> <path d=\"M12 17h.01\" />","orang":"<circle cx=\"12\" cy=\"8\" r=\"5\" /> <path d=\"M20 21a8 8 0 0 0-16 0\" />","lainnya":"<rect width=\"7\" height=\"7\" x=\"3\" y=\"3\" rx=\"1\" /> <rect width=\"7\" height=\"7\" x=\"14\" y=\"3\" rx=\"1\" /> <rect width=\"7\" height=\"7\" x=\"14\" y=\"14\" rx=\"1\" /> <rect width=\"7\" height=\"7\" x=\"3\" y=\"14\" rx=\"1\" />","ekskul":"<path d=\"M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15\" /> <path d=\"M11 12 5.12 2.2\" /> <path d=\"m13 12 5.88-9.8\" /> <path d=\"M8 7h8\" /> <circle cx=\"12\" cy=\"17\" r=\"5\" /> <path d=\"M12 18v-2h-.5\" />","kirim":"<path d=\"M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z\" /> <path d=\"m21.854 2.147-10.94 10.939\" />"};
 
+  IKON.foto = '<path d="M3 7V5a2 2 0 0 1 2-2h2" /> <path d="M17 3h2a2 2 0 0 1 2 2v2" /> <path d="M21 17v2a2 2 0 0 1-2 2h-2" /> <path d="M7 21H5a2 2 0 0 1-2-2v-2" /> <path d="M8 14s1.5 2 4 2 4-2 4-2" /> <path d="M9 9h.01" /> <path d="M15 9h.01" />';
+  IKON.tablet = '<rect width="16" height="20" x="4" y="2" rx="2" ry="2" /> <line x1="12" x2="12.01" y1="18" y2="18" />';
+
   const MENU = [
     { id: 'beranda', label: 'Beranda', ikon: 'beranda', judul: 'Beranda', boleh: () => true },
     { id: 'lapor', label: 'Lapor', ikon: 'lapor', judul: 'Lapor pelanggaran', boleh: () => true },
     { id: 'kotak', label: 'Kotak Masuk', ikon: 'kotak', judul: 'Kotak Masuk', boleh: (a) => a.tindakLanjut, ket: 'Kasus yang diteruskan kepada Anda' },
+    { id: 'verifikasi', label: 'Verifikasi', ikon: 'foto', judul: 'Verifikasi foto scan', boleh: (a) => a.verifikasi, ket: 'Cocokkan foto scan gerbang dengan foto siswa' },
     { id: 'siswa', label: 'Siswa', ikon: 'siswa', judul: 'Riwayat siswa', boleh: (a) => a.riwayat, ket: 'Poin, kehadiran, dan pembinaan per siswa' },
     { id: 'waspada', label: 'Waspada', ikon: 'waspada', judul: 'Waspada', boleh: (a) => a.zona, ket: 'Siswa yang poinnya mencapai level tindakan' },
     { id: 'pulih', label: 'Pulih', ikon: 'pulih', judul: 'Pulih', boleh: (a) => a.pemulihan, ket: 'Program fisik dan pembinaan lain' },
@@ -255,6 +260,8 @@
     S.menu = MENU.filter((m) => m.boleh(S.akses));
     $('menu-gerbang').hidden = !S.guru.bolehGerbang;
     $('menu-ujiwa').hidden = !(S.wa.aktif && punya(['Tim Tatib', 'Wakasek', 'Kepala Sekolah']));
+    $('menu-kios').hidden = !S.akses.kios;
+    $('sisi-sekolah').textContent = S.sekolah;
     bangunNav();
     aturLencana(d.menunggu || 0);
     $('memuat').hidden = true;
@@ -268,6 +275,17 @@
       (sisa.length ? '<button type="button" id="nav-lainnya" data-tab="lainnya" aria-haspopup="dialog">' + ikon('lainnya') + '<span class="lbl">Lainnya</span></button>' : '');
     nav.hidden = S.menu.length < 2;
     $('lembar-daftar').innerHTML = sisa.map((m) => '<a href="#' + m.id + '">' + ikon(m.ikon) + '<span>' + m.label + '<small>' + esc(m.ket || '') + '</small></span></a>').join('');
+    // Laptop: semua menu di samping, beserta tombol akun.
+    $('sisi-nav').innerHTML = S.menu.map((m) => '<a href="#' + m.id + '" data-tab="' + m.id + '">' + ikon(m.ikon) + '<span>' + m.label + '</span>' +
+      (m.id === 'kotak' ? '<span class="badge" data-lencana hidden></span>' : '') + '</a>').join('');
+    const g = S.guru || {};
+    $('sisi-akun').innerHTML = '<div class="nama">' + esc(namaPendek(g.nama)) + '</div><div class="peran">' +
+      esc((g.peran || []).map((p) => (p === 'Wali Kelas' && g.kelasWali ? 'Wali ' + g.kelasWali : p)).join(', ')) + '</div>' +
+      (g.bolehGerbang ? '<a href="./">' + ikon('gerbang') + 'Buka Gerbang</a>' : '') +
+      (S.akses.kios ? '<button type="button" data-aksi="kios">' + ikon('tablet') + 'Kios gerbang</button>' : '') +
+      (S.wa.aktif && punya(['Tim Tatib', 'Wakasek', 'Kepala Sekolah']) ? '<button type="button" data-aksi="ujiwa">' + ikon('wa') + 'Kirim WA uji</button>' : '') +
+      '<button type="button" data-aksi="perbarui">' + ikon('muat') + 'Perbarui data</button>' +
+      '<button type="button" data-aksi="keluar">' + ikon('keluar') + 'Keluar</button>';
   }
   function aturLencana(n) {
     S.menunggu = n;
@@ -283,17 +301,18 @@
     if (!m) return;
     nama = m.id;
     S.tab = nama;
+    document.body.dataset.tab = nama;
     sesiTab.set('smkt_tatib_tab', nama);
     if (location.hash !== '#' + nama) history.replaceState(null, '', '#' + nama);
     $('judul-halaman').textContent = m.judul;
     $('lembar-lainnya').hidden = true;
     const diNav = !!document.querySelector('#nav-bawah a[data-tab="' + nama + '"]');
-    document.querySelectorAll('#nav-bawah [data-tab]').forEach((x) => {
-      const aktif = x.dataset.tab === nama || (x.dataset.tab === 'lainnya' && !diNav);
+    document.querySelectorAll('#nav-bawah [data-tab], #sisi-nav [data-tab]').forEach((x) => {
+      const aktif = x.dataset.tab === nama || (x.dataset.tab === 'lainnya' && !diNav && !x.closest('#sisi-nav'));
       if (aktif) x.setAttribute('aria-current', 'page'); else x.removeAttribute('aria-current');
     });
     document.querySelectorAll('.panel').forEach((p) => { p.hidden = p.id !== 'p-' + nama; });
-    ({ beranda: muatBeranda, lapor: initLapor, kotak: muatTL, siswa: initRiwayat, waspada: muatZona, pulih: muatPulih, absen: initIzin, ekskul: muatEkskul })[nama]();
+    ({ beranda: muatBeranda, lapor: initLapor, kotak: muatTL, verifikasi: muatVerifikasi, siswa: initRiwayat, waspada: muatZona, pulih: muatPulih, absen: initIzin, ekskul: muatEkskul })[nama]();
     window.scrollTo(0, 0);
   }
 
@@ -339,15 +358,23 @@
     $('sambut-nama').textContent = namaPendek(S.guru.nama);
     $('sambut-tanggal').textContent = new Intl.DateTimeFormat('id-ID', { timeZone: 'Asia/Jakarta', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date());
     $('sambut-peran').innerHTML = (S.guru.peran || []).map((p) => '<li>' + esc(p === 'Wali Kelas' && S.guru.kelasWali ? 'Wali ' + S.guru.kelasWali : p) + '</li>').join('');
-    if (!B.data) $('b-isi').innerHTML = '<p class="memuat">Memuat ringkasan hari ini…</p>';
+    wadahBeranda();
+    if (!B.data) $('b-lain').innerHTML = '<p class="memuat">Memuat ringkasan hari ini…</p>';
     else renderBeranda();
+    if (DS.data) renderDasbor();
+    muatDasbor();
+    jadwalDasbor();
     try {
       B.data = await api('tatib.beranda');
       aturLencana(B.data.menunggu);
       if (S.tab === 'beranda') renderBeranda();
     } catch (e) {
-      if (!B.data) $('b-isi').innerHTML = '<p class="memuat">' + esc(e.message) + '</p>';
+      if (!B.data) $('b-lain').innerHTML = '<p class="memuat">' + esc(e.message) + '</p>';
     }
+  }
+  function wadahBeranda() {
+    if (!$('b-dasbor')) $('b-isi').innerHTML = '<div id="b-dasbor"></div><div id="b-lain" class="b-lain"></div>';
+    return $('b-lain');
   }
   function barisAksi(href, kelasLingkar, ik, judul, ket, angka) {
     return '<li><a href="' + href + '"><span class="lingkar ' + kelasLingkar + '">' + ikon(ik) + '</span>' +
@@ -356,7 +383,7 @@
   }
   function renderBeranda() {
     const d = B.data;
-    let h = '<ul class="baris-aksi">';
+    let h = '<section class="b-aksi"><h2 class="judul-bagian">Perlu perhatian</h2><ul class="baris-aksi">';
     if (S.akses.tindakLanjut) {
       h += barisAksi('#kotak', 'emas', 'kotak', 'Kotak Masuk', d.menunggu ? 'Kasus menunggu tindakan Anda' :
         'Tidak ada kasus yang menunggu' + (d.tembusan ? ', ' + d.tembusan + ' tembusan minggu ini' : ''), d.menunggu);
@@ -365,9 +392,10 @@
       h += barisAksi('#waspada', 'merah', 'waspada', 'Waspada', d.waspada.perluSurat ? d.waspada.perluSurat + ' siswa perlu surat pernyataan' : 'Siswa yang mencapai level tindakan', d.waspada.jumlah);
     }
     h += barisAksi('#lapor', '', 'lapor', 'Laporan saya, 7 hari', d.laporanSaya ? d.sendiriSaya + ' selesai Anda tangani sendiri' : 'Belum ada laporan minggu ini', d.laporanSaya);
-    h += '</ul>';
+    h += '</ul></section>';
 
     if (d.terlambat) {
+      h += '<section class="b-telat">';
       const t = d.terlambat, wa = t.wa || S.wa || {};
       h += '<h2 class="judul-bagian">Terlambat hari ini<small>batas masuk ' + esc(t.batas || S.batasMasuk) + '</small></h2>';
       if (wa.aktif) {
@@ -376,6 +404,7 @@
           '. Pesan dicoba lagi tiap 15 menit. Bila berlanjut, periksa perangkat di Fonnte atau pakai tombol WA.</span></p>';
       }
       if (!t.siswa.length) h += '<p class="keterangan">Belum ada siswa terlambat hari ini.</p>';
+      h += '<div class="b-terlambat">';
       t.kelas.forEach((k) => {
         const anggota = t.siswa.filter((s) => s.kelas === k.kelas);
         const daftar = anggota.map((s, i) => (i + 1) + '. ' + s.nama + ' (' + s.jam + ')').join('\n');
@@ -407,13 +436,298 @@
               (statusOrtu ? '<span class="status-wa' + (gagal ? ' gagal' : '') + '">' + esc(statusOrtu) + '</span>' : '') + '</li>';
           }).join('') + '</ul></div>';
       });
+      h += '</div></section>';
     }
 
-    h += '<h2 class="judul-bagian">Tangga pembinaan</h2><div class="kartu-tangga">' + tanggaHtml(0).replace('class="tangga"', 'class="tangga ringkas"') +
+    h += '<section class="b-tangga"><h2 class="judul-bagian">Tangga pembinaan</h2><div class="kartu-tangga">' + tanggaHtml(0).replace('class="tangga"', 'class="tangga ringkas"') +
       '<p>Pelanggaran ringan cukup ditangani guru yang menemukan. Laporan naik ke tangga berikutnya bila berulang, siswa membangkang, kategorinya berat, atau poinnya naik level.</p>' +
       '<details><summary>Siapa melakukan apa</summary><dl>' + S.tangga.map((x) => '<div><dt>' + x.tangga + '. ' + esc(x.peran) + '</dt><dd>' + esc(x.tugas) +
-        (x.kapan ? ' Masuk bila ' + esc(x.kapan.charAt(0).toLowerCase() + x.kapan.slice(1)) + '.' : '') + '</dd></div>').join('') + '</dl></details></div>';
-    $('b-isi').innerHTML = h;
+        (x.kapan ? ' Masuk bila ' + esc(x.kapan.charAt(0).toLowerCase() + x.kapan.slice(1)) + '.' : '') + '</dd></div>').join('') + '</dl></details></div></section>';
+    wadahBeranda().innerHTML = h;
+  }
+
+  /* =================================================================
+   *  DASBOR (bagian atas Beranda): kehadiran hari ini, tren, scan terbaru
+   * ================================================================= */
+  const DS = { data: null, timer: null, memuat: false };
+  const persen = (a, b) => (b ? Math.round(a / b * 100) : 0);
+  const angka = (n) => new Intl.NumberFormat('id-ID').format(n || 0);
+  const titikJam = (j) => String(j || '').replace(':', '.');
+  async function muatDasbor() {
+    if (!S.akses.terlambat || DS.memuat) return;
+    DS.memuat = true;
+    try { DS.data = await api('tatib.dasbor'); if (S.tab === 'beranda') renderDasbor(); }
+    catch (e) { /* data sebelumnya tetap tampil */ }
+    finally { DS.memuat = false; }
+  }
+  function jadwalDasbor() {
+    clearInterval(DS.timer);
+    DS.timer = setInterval(() => { if (S.tab === 'beranda' && document.visibilityState === 'visible') muatDasbor(); }, 30000);
+  }
+  function statTile(kelas, label, nilai, ket, href) {
+    const tag = href ? 'a' : 'div';
+    return '<' + tag + ' class="stat"' + (href ? ' href="' + href + '"' : '') + '><span class="stat-label">' + (kelas ? '<i class="tanda s-' + kelas + '"></i>' : '') + esc(label) + '</span>' +
+      '<span class="stat-nilai">' + angka(nilai) + '</span><span class="stat-ket">' + esc(ket) + '</span></' + tag + '>';
+  }
+  function segHtml(bagian, label) {
+    return '<span class="seg" role="img" aria-label="' + esc(label + ': ' + bagian.map((b) => b[1] + ' ' + b[2].toLowerCase()).join(', ')) + '">' +
+      bagian.filter((b) => b[1] > 0).map((b) => '<i class="s-' + b[0] + '" style="flex-grow:' + b[1] + '" title="' + esc(b[2] + ': ' + b[1]) + '"></i>').join('') + '</span>';
+  }
+  function pathKolom(x, y, w, h, r) {
+    r = Math.min(r, h, w / 2);
+    return 'M' + x + ',' + (y + h) + 'V' + (y + r) + 'Q' + x + ',' + y + ' ' + (x + r) + ',' + y + 'H' + (x + w - r) + 'Q' + (x + w) + ',' + y + ' ' + (x + w) + ',' + (y + r) + 'V' + (y + h) + 'Z';
+  }
+  function trenSvg(tren, lebarWadah) {
+    const W = Math.max(280, Math.round(lebarWadah || 340)), H = 168, tepi = 8, bawah = 30, atas = 24;
+    const maks = Math.max(1, ...tren.map((t) => t.terlambat));
+    const slot = (W - tepi * 2) / tren.length, lebar = Math.min(24, slot * 0.45);
+    let g = '<svg class="tren" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc('Siswa terlambat per hari: ' + tren.map((t) => t.label + ' ' + t.terlambat).join(', ')) + '">' +
+      '<line class="garis" x1="' + tepi + '" x2="' + (W - tepi) + '" y1="' + (H - bawah) + '" y2="' + (H - bawah) + '"/>';
+    tren.forEach((t, i) => {
+      const tinggi = Math.round((H - bawah - atas) * t.terlambat / maks);
+      const x = tepi + slot * i + (slot - lebar) / 2, y = H - bawah - tinggi, cx = x + lebar / 2;
+      g += '<g tabindex="0"><title>' + esc(t.label + ': ' + t.terlambat + ' terlambat dari ' + t.masuk + ' siswa yang masuk') + '</title>' +
+        (tinggi > 0 ? '<path class="batang" d="' + pathKolom(x, y, lebar, tinggi, 4) + '"/>' : '') +
+        '<rect x="' + (tepi + slot * i) + '" y="' + atas + '" width="' + slot + '" height="' + (H - atas - bawah) + '" fill="transparent"/>' +
+        '<text class="nilai" x="' + cx + '" y="' + (y - 7) + '" text-anchor="middle">' + t.terlambat + '</text>' +
+        '<text class="label' + (t.hariIni ? ' ini' : '') + '" x="' + cx + '" y="' + (H - 9) + '" text-anchor="middle">' + esc(t.hariIni ? 'Hari ini' : t.label) + '</text></g>';
+    });
+    return g + '</svg>';
+  }
+  function renderDasbor() {
+    const d = DS.data, w = $('b-dasbor');
+    if (!w) return;
+    if (!d || d.cakupan === 'pribadi') { w.innerHTML = ''; return; }
+    const r = d.ringkas, masuk = r.hadir + r.terlambat;
+    const cakup = d.cakupan === 'kelas' ? 'kelas ' + d.kelas : 'semua kelas';
+    const bagian = [['hadir', r.hadir, 'Hadir tepat waktu'], ['telat', r.terlambat, 'Terlambat'], ['izin', r.izinSakit, 'Izin atau sakit'], ['alfa', r.alfa, 'Alfa'], ['belum', r.belum, 'Belum tercatat']];
+    let h = '<div class="dasbor-stat">' +
+      '<div class="stat utama"><span class="stat-label">Sudah masuk, ' + esc(cakup) + '</span><span class="stat-nilai">' + angka(masuk) + '</span>' +
+      '<span class="stat-ket">dari ' + angka(r.aktif) + ' siswa aktif (' + persen(masuk, r.aktif) + '%), data pukul ' + esc(titikJam(d.jam)) + '</span>' +
+      '<span class="stat-batang">' + bagian.slice(0, 4).filter((b) => b[1] > 0).map((b) => '<i class="s-' + b[0] + '" style="width:' + (b[1] / Math.max(1, r.aktif) * 100).toFixed(2) + '%"></i>').join('') + '</span></div>' +
+      statTile('telat', 'Terlambat', r.terlambat, 'masuk setelah pukul ' + titikJam(d.batas)) +
+      statTile('belum', 'Belum tercatat', r.belum, 'belum scan dan tanpa keterangan') +
+      statTile('izin', 'Izin atau sakit', r.izinSakit, r.alfa ? r.alfa + ' siswa alfa' : 'dicatat wali kelas') +
+      (S.akses.tindakLanjut ? statTile('', 'Kasus menunggu', d.menunggu, d.pelanggaran.hariIni + ' pelanggaran dilaporkan hari ini', '#kotak')
+        : statTile('', 'Pelanggaran hari ini', d.pelanggaran.hariIni, d.pelanggaran.minggu + ' dalam 7 hari terakhir')) +
+      '</div><div class="dasbor-grid">';
+
+    h += '<article class="kartu-d d-kelas"><header><h2>Kehadiran per kelas</h2><p>pukul ' + esc(titikJam(d.jam)) + '</p></header>' +
+      '<ul class="legenda">' + bagian.map((b) => '<li><i class="s-' + b[0] + '"></i>' + esc(b[2]) + '</li>').join('') + '</ul>' +
+      '<ul class="per-kelas">' + d.perKelas.map((k) => '<li><span class="kls">' + esc(k.kelas) + '</span>' +
+        segHtml([['hadir', k.hadir, 'Hadir'], ['telat', k.terlambat, 'Terlambat'], ['izin', k.izinSakit, 'Izin atau sakit'], ['alfa', k.alfa, 'Alfa'], ['belum', k.belum, 'Belum']], k.kelas) +
+        '<span class="jml">' + (k.hadir + k.terlambat) + '/' + k.aktif + '</span></li>').join('') + '</ul>' +
+      '<details class="tabel-rincian"><summary>Lihat sebagai tabel</summary><table><thead><tr><th scope="col">Kelas</th><th scope="col">Hadir</th><th scope="col">Terlambat</th>' +
+      '<th scope="col">Izin/sakit</th><th scope="col">Alfa</th><th scope="col">Belum</th></tr></thead><tbody>' +
+      d.perKelas.map((k) => '<tr><td>' + esc(k.kelas) + '</td><td>' + k.hadir + '</td><td>' + k.terlambat + '</td><td>' + k.izinSakit + '</td><td>' + k.alfa + '</td><td>' + k.belum + '</td></tr>').join('') +
+      '</tbody></table></details></article>';
+
+    h += '<article class="kartu-d d-log"><header><h2>Scan terbaru</h2>' + (S.akses.verifikasi ? '<a href="#verifikasi">Verifikasi foto</a>' : '') + '</header>' +
+      (d.log.length ? '<ul class="log-scan">' + d.log.slice(0, 8).map((x) => '<li><span class="thumb"' + (x.adaFoto ? ' data-fs="' + esc(x.idScan) + '"' : '') + '>' + esc(inisial(x.nama)) + '</span>' +
+        '<span><span class="nm">' + esc(x.nama) + '</span><span class="kl">' + esc(x.kelas) + (x.kios ? ', kios ' + esc(x.kios) : '') + '</span></span>' +
+        '<span><span class="chip ' + (x.status === 'Terlambat' ? 'telat' : 'hadir') + '">' + esc(x.status) + '</span><span class="log-jam">' + esc(titikJam(x.jam)) + '</span></span></li>').join('') + '</ul>'
+        : '<p class="kosong-d">Belum ada scan hari ini.</p>') + '</article>';
+
+    h += '<article class="kartu-d d-tren"><header><h2>Terlambat per hari</h2><p>' + d.tren.length + ' hari sekolah terakhir</p></header>' +
+      '<div class="tren-wadah">' + (d.tren.length ? '' : '<p class="kosong-d">Belum ada data kehadiran.</p>') + '</div></article></div>';
+    w.innerHTML = h;
+    gambarTren();
+    muatFotoScan(w);
+  }
+  /** Grafik tren digambar selebar kartunya, agar teks dan batang tidak ikut membesar. */
+  function gambarTren() {
+    const el = document.querySelector('#b-dasbor .tren-wadah');
+    if (!el || !DS.data || !DS.data.tren.length) return;
+    el.innerHTML = trenSvg(DS.data.tren, el.clientWidth);
+  }
+  let timerUkuran = null;
+  window.addEventListener('resize', () => { clearTimeout(timerUkuran); timerUkuran = setTimeout(gambarTren, 150); });
+
+  /* ---------------- Foto scan (dimuat per 10, disimpan di memori) ---------------- */
+  const FS = new Map();
+  function muatFotoScan(akar) {
+    const el = Array.from((akar || document).querySelectorAll('[data-fs]'));
+    const perlu = Array.from(new Set(el.map((e) => e.dataset.fs))).filter((id) => id && !FS.has(id));
+    for (let i = 0; i < perlu.length; i += 10) {
+      const batch = perlu.slice(i, i + 10);
+      const janji = api('tatib.fotoScan', { ids: batch }).then((d) => d.foto || {}).catch(() => ({}));
+      batch.forEach((id) => FS.set(id, janji.then((f) => (f[id] && f[id].data) || '')));
+    }
+    el.forEach((e) => {
+      const j = FS.get(e.dataset.fs);
+      if (j) j.then((data) => {
+        if (!data || e.querySelector('img')) return;
+        Array.from(e.childNodes).forEach((n) => { if (n.nodeType === 3) n.remove(); });
+        const im = new Image(); im.alt = ''; im.src = data; e.prepend(im);
+      });
+    });
+  }
+
+  /* =================================================================
+   *  VERIFIKASI FOTO SCAN (wali kelas, BK, Tim Tatib, pimpinan)
+   * ================================================================= */
+  const V = { data: null, kelas: '', pasang: false, titip: null };
+  async function muatVerifikasi() {
+    if (!V.pasang) {
+      V.pasang = true;
+      const t = $('v-tanggal'); t.max = hariIni(0); t.min = hariIni(-7); t.value = hariIni(0);
+      t.addEventListener('change', () => { if (t.value) muatVerifikasi(); });
+      $('v-kelas').addEventListener('change', () => { V.kelas = $('v-kelas').value; muatVerifikasi(); });
+      $('v-semua').addEventListener('click', tandaiSemuaSesuai);
+      $('v-daftar').addEventListener('click', klikVerifikasi);
+    }
+    $('v-ket').textContent = 'Memuat foto scan…';
+    try {
+      const d = await api('tatib.verifikasi', { tanggal: $('v-tanggal').value, kelas: V.kelas });
+      V.data = d; V.kelas = d.kelas;
+      $('v-kelas-wadah').hidden = d.daftarKelas.length < 2;
+      $('v-kelas').innerHTML = d.daftarKelas.map((k) => '<option' + (k === d.kelas ? ' selected' : '') + '>' + esc(k) + '</option>').join('');
+      if (S.tab === 'verifikasi') renderVerifikasi();
+    } catch (e) {
+      $('v-ket').textContent = e.message; $('v-daftar').innerHTML = ''; $('v-tanpa').innerHTML = ''; $('v-tanpa-judul').hidden = true;
+    }
+  }
+  function kartuScan() {
+    const out = [];
+    V.data.siswa.forEach((s) => s.scan.filter((x) => x.status !== 'Ditolak').forEach((x) => out.push({ s: s, x: x })));
+    return out.sort((a, b) => a.x.jam.localeCompare(b.x.jam));
+  }
+  function renderVerifikasi() {
+    const d = V.data, kartu = kartuScan();
+    const belum = kartu.filter((k) => !k.x.verifikasi);
+    const tgl = new Intl.DateTimeFormat('id-ID', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date(d.tanggal + 'T00:00:00'));
+    $('v-ket').textContent = kartu.length
+      ? 'Kelas ' + d.kelas + ', ' + tgl + ': ' + kartu.length + ' foto scan, ' + d.ringkas.sesuai + ' sesuai' + (d.ringkas.titip ? ', ' + d.ringkas.titip + ' titip absen' : '') +
+        '. Bandingkan wajah di foto scan dengan foto siswa.'
+      : 'Kelas ' + d.kelas + ', ' + tgl + ': belum ada scan dari kios gerbang.';
+    $('v-semua').hidden = !belum.length;
+    $('v-semua').textContent = 'Tandai ' + belum.length + ' foto sesuai';
+    $('v-daftar').innerHTML = kartu.map((k) => {
+      const s = k.s, x = k.x, titip = x.verifikasi === 'Titip absen';
+      return '<li class="v-kartu' + (x.verifikasi === 'Sesuai' ? ' sesuai' : titip ? ' titip' : '') + '" data-id="' + esc(x.idScan) + '" data-nis="' + esc(s.nis) + '">' +
+        '<div class="v-foto"><button type="button" data-aksi="lihat" aria-label="Perbesar foto scan ' + esc(s.nama) + '"><span class="fs"' + (x.adaFoto ? ' data-fs="' + esc(x.idScan) + '"' : '') + '>' + (x.adaFoto ? 'Memuat' : 'Tanpa foto') + '</span><span class="tag">Scan ' + esc(titikJam(x.jam)) + '</span></button>' +
+        '<button type="button" data-aksi="lihat" aria-label="Perbesar foto ' + esc(s.nama) + '"><span class="foto-siswa" data-foto="' + esc(s.nis) + '">' + esc(inisial(s.nama)) + '</span><span class="tag">Foto siswa</span></button></div>' +
+        '<div class="v-info"><strong>' + esc(s.nama) + '</strong><span>' + esc((x.status === 'Duplikat' ? 'Scan ulang' : x.status) + ' pukul ' + titikJam(x.jam) + (x.kios ? ', kios ' + x.kios : '')) + '</span></div>' +
+        (titip ? '<p class="v-catatan">Titip absen. ' + esc(x.catatan) + '</p>' :
+          '<div class="v-tombol"><button type="button" data-aksi="sesuai" aria-pressed="' + (x.verifikasi === 'Sesuai') + '">' + ikon('cek') + ' Sesuai</button>' +
+          '<button type="button" data-aksi="titip" class="merah">Titip absen</button></div>') + '</li>';
+    }).join('');
+    const tanpa = d.siswa.filter((s) => !s.scan.some((x) => x.status !== 'Ditolak'));
+    $('v-tanpa-judul').hidden = !tanpa.length;
+    $('v-tanpa').innerHTML = tanpa.map((s) => '<li><span>' + esc(s.nama) + '</span><span class="kl">' +
+      esc(s.status === 'Hadir' || s.status === 'Terlambat' ? s.status + ' ' + titikJam(s.jam) + ', dicatat tanpa foto' : s.status || 'Belum tercatat') + '</span></li>').join('');
+    muatFotoScan($('v-daftar'));
+    kartu.forEach((k) => muatFoto(k.s.nis));
+  }
+  function cariKartu(id) { return kartuScan().filter((k) => k.x.idScan === id)[0]; }
+  async function klikVerifikasi(e) {
+    const b = e.target.closest('button[data-aksi]'); if (!b) return;
+    const li = b.closest('li'), k = cariKartu(li.dataset.id); if (!k) return;
+    if (b.dataset.aksi === 'lihat') { lihatFoto(k); return; }
+    if (b.dataset.aksi === 'titip') { bukaTitip(k); return; }
+    const jadi = k.x.verifikasi === 'Sesuai' ? '' : 'Sesuai';
+    b.disabled = true;
+    try {
+      await api('tatib.tandaiVerifikasi', { ids: [k.x.idScan], status: jadi });
+      k.x.verifikasi = jadi;
+      V.data.ringkas.sesuai += jadi ? 1 : -1;
+      renderVerifikasi();
+    } catch (er) { toast(er.message, 'galat', 5000); b.disabled = false; }
+  }
+  async function tandaiSemuaSesuai() {
+    const belum = kartuScan().filter((k) => !k.x.verifikasi);
+    if (!belum.length) return;
+    $('v-semua').disabled = true;
+    try {
+      await api('tatib.tandaiVerifikasi', { ids: belum.map((k) => k.x.idScan), status: 'Sesuai' });
+      belum.forEach((k) => { k.x.verifikasi = 'Sesuai'; });
+      V.data.ringkas.sesuai += belum.length;
+      renderVerifikasi();
+      toast(belum.length + ' foto ditandai sesuai.', 'hadir');
+    } catch (er) { toast(er.message, 'galat', 5000); }
+    finally { $('v-semua').disabled = false; }
+  }
+  function figur(isi, keterangan) { return '<figure>' + isi + '<figcaption>' + esc(keterangan) + '</figcaption></figure>'; }
+  function lihatFoto(k) {
+    const fs = FS.get(k.x.idScan);
+    $('foto-besar').innerHTML = figur('<div class="ganti" data-besar="scan">Tanpa foto</div>', 'Scan pukul ' + titikJam(k.x.jam)) +
+      figur('<div class="ganti" data-besar="resmi">' + esc(inisial(k.s.nama)) + '</div>', k.s.nama);
+    $('modal-foto').hidden = false;
+    const ganti = (sel, data) => { const el = $('foto-besar').querySelector(sel); if (data && el) { const im = new Image(); im.alt = ''; im.src = data; el.replaceWith(im); } };
+    if (fs) fs.then((d) => ganti('[data-besar="scan"]', d));
+    if (S.foto.has(k.s.nis)) S.foto.get(k.s.nis).then((d) => ganti('[data-besar="resmi"]', d));
+  }
+
+  /* ---------------- Titip absen ---------------- */
+  function bukaTitip(k) {
+    V.titip = { k: k, pelaku: null };
+    $('titip-pesan').textContent = '';
+    $('titip-tindakan').value = '';
+    $('titip-banding').innerHTML = figur('<div class="ganti fs" data-fs="' + esc(k.x.idScan) + '">Tanpa foto</div>', 'Foto scan ' + titikJam(k.x.jam)) +
+      figur('<div class="ganti"><span class="foto-siswa" data-foto="' + esc(k.s.nis) + '">' + esc(inisial(k.s.nama)) + '</span></div>', 'Pemilik kartu: ' + k.s.nama);
+    $('titip-ket').textContent = 'Kartu milik ' + k.s.nama + ' dipindai pukul ' + titikJam(k.x.jam) + '. Pilih siswa yang tampak di foto scan. Keduanya dicatat melanggar, dan ' +
+      k.s.nama + ' dicatat Alfa hari itu.';
+    $('titip-terpilih').hidden = true; $('titip-pilih').hidden = false;
+    pemilihSiswa($('titip-pilih'), { id: 'tp', label: 'Siswa yang tampak di foto', saring: (y) => y.nis !== k.s.nis, pilih: (y) => {
+      V.titip.pelaku = y;
+      $('titip-pilih').hidden = true; $('titip-terpilih').hidden = false;
+      $('titip-terpilih').innerHTML = '<span><strong>' + esc(y.nama) + '</strong><br><span class="redup">' + esc(y.kelas) + ', NIS ' + esc(y.nis) + '</span></span><button type="button" class="tautan" id="titip-ganti">Ganti</button>';
+      $('titip-ganti').onclick = () => { V.titip.pelaku = null; $('titip-terpilih').hidden = true; $('titip-pilih').hidden = false; };
+    } });
+    const daftar = Array.from(S.master.values()).sort((a, b) => URUT_KATEGORI.indexOf(a.kategori) - URUT_KATEGORI.indexOf(b.kategori) || a.nama.localeCompare(b.nama));
+    let pilih = V.data.idPlgTitip && S.master.has(V.data.idPlgTitip) ? V.data.idPlgTitip : '';
+    if (!pilih) { const m = daftar.filter((x) => /titip|absen|kehadiran|palsu|memalsu/i.test(x.nama))[0]; if (m) pilih = m.id; }
+    $('titip-plg').innerHTML = '<option value="">Pilih jenis pelanggaran</option>' + daftar.map((m) => '<option value="' + esc(m.id) + '"' + (m.id === pilih ? ' selected' : '') + '>' +
+      esc(m.nama + ' (' + m.kategori + ', ' + m.bobot + ' poin)') + '</option>').join('');
+    infoNaikTitip();
+    $('modal-titip').hidden = false;
+    muatFotoScan($('titip-banding'));
+    muatFoto(k.s.nis);
+  }
+  /** Keterangan aturan temuan berulang di bawah pilihan jenis pelanggaran. */
+  function infoNaikTitip() {
+    const el = $('titip-naik'), b = V.data && S.master.get(V.data.idPlgTitipBerulang);
+    const aktif = !!b && $('titip-plg').value === V.data.idPlgTitip;
+    el.hidden = !aktif;
+    el.textContent = aktif ? 'Siswa yang sudah pernah tercatat titip absen dalam periode ini otomatis dicatat sebagai "' + b.nama + '" (' + b.kategori + ', ' + b.bobot + ' poin).' : '';
+  }
+  function tutupTitip() { $('modal-titip').hidden = true; V.titip = null; }
+  async function simpanTitip() {
+    const t = V.titip; if (!t) return;
+    if (!t.pelaku) { $('titip-pesan').textContent = 'Pilih siswa yang tampak di foto scan.'; return; }
+    if (!$('titip-plg').value) { $('titip-pesan').textContent = 'Pilih jenis pelanggaran untuk titip absen.'; return; }
+    const b = $('titip-simpan'); b.disabled = true; $('titip-pesan').textContent = '';
+    try {
+      const d = await api('tatib.titipAbsen', { idScan: t.k.x.idScan, nisPelaku: t.pelaku.nis, idPlg: $('titip-plg').value, tindakan: $('titip-tindakan').value.trim() });
+      tutupTitip();
+      const naik = [d.pemilik, d.pelaku].filter((x) => x.berulang).map((x) => x.nama);
+      toast('Titip absen dicatat: ' + d.pemilik.nama + ' dan ' + d.pelaku.nama + ' (' + d.pelanggaran + ').' +
+        (naik.length ? ' Temuan berulang: ' + naik.join(' dan ') + '.' : ''), 'hadir', 8000);
+      muatVerifikasi();
+    } catch (er) { $('titip-pesan').textContent = er.message; }
+    finally { b.disabled = false; }
+  }
+
+  /* ---------------- Kios gerbang (daftar & cabut) ---------------- */
+  async function bukaKios() {
+    tutupMenu();
+    $('lembar-kios').hidden = false;
+    const ul = $('kios-daftar');
+    ul.innerHTML = '<li class="kosong">Memuat…</li>';
+    try {
+      const d = await api('kios.daftar');
+      ul.innerHTML = d.kios.length ? d.kios.map((k) => '<li><span>' + esc(k.nama) + '<small>' + esc('Diaktifkan ' + namaPendek(k.oleh) + ' pada ' + k.dibuat +
+        (k.terakhir ? ', terakhir dipakai ' + k.terakhir : '') + (k.kedaluwarsa ? '. Sudah kedaluwarsa.' : '. Berlaku sampai ' + k.berlakuSampai + '.')) + '</small></span>' +
+        '<button type="button" class="tautan merah" data-cabut="' + esc(k.id) + '">Cabut</button></li>').join('') : '<li class="kosong">Belum ada kios aktif.</li>';
+    } catch (e) { ul.innerHTML = '<li class="kosong">' + esc(e.message) + '</li>'; }
+  }
+  async function klikKios(e) {
+    if (e.target === $('lembar-kios')) { $('lembar-kios').hidden = true; return; }
+    const b = e.target.closest('[data-cabut]'); if (!b) return;
+    if (b.dataset.yakin !== '1') { b.dataset.yakin = '1'; b.textContent = 'Yakin cabut?'; return; }
+    b.disabled = true;
+    try { await api('kios.cabut', { id: b.dataset.cabut }); toast('Kios dicabut. Tablet itu perlu diaktifkan ulang.', 'hadir', 4000); bukaKios(); }
+    catch (er) { toast(er.message, 'galat', 5000); b.disabled = false; }
   }
 
   /* =================================================================
@@ -1261,7 +1575,7 @@
     $('menu-perbarui').addEventListener('click', async () => {
       tutupMenu();
       const sb = S.siap.beranda;
-      S.siap = { beranda: sb }; B.data = null; S.foto.clear(); sesiTab.hapus('smkt_tatib_awal');
+      S.siap = { beranda: sb }; B.data = null; DS.data = null; S.foto.clear(); FS.clear(); sesiTab.hapus('smkt_tatib_awal');
       if (!E.antre.size) E.data = null;
       await muatAwal(false); toast('Data diperbarui.', 'hadir');
     });
@@ -1271,13 +1585,26 @@
       catch (e) { toast(e.message, 'galat', 7000); }
     });
     $('menu-keluar').addEventListener('click', keluar);
+    $('menu-kios').addEventListener('click', bukaKios);
+    $('kios-tutup').addEventListener('click', () => { $('lembar-kios').hidden = true; });
+    $('lembar-kios').addEventListener('click', klikKios);
+    $('sisi-akun').addEventListener('click', (e) => {
+      const b = e.target.closest('button[data-aksi]'); if (!b) return;
+      ({ kios: bukaKios, ujiwa: () => $('menu-ujiwa').click(), perbarui: () => $('menu-perbarui').click(), keluar: keluar })[b.dataset.aksi]();
+    });
+    $('titip-batal').addEventListener('click', tutupTitip);
+    $('titip-simpan').addEventListener('click', simpanTitip);
+    $('titip-plg').addEventListener('change', infoNaikTitip);
+    $('foto-tutup').addEventListener('click', () => { $('modal-foto').hidden = true; });
+    $('modal-foto').addEventListener('click', (e) => { if (e.target === $('modal-foto')) $('modal-foto').hidden = true; });
     $('scan-tutup').addEventListener('click', tutupScan);
     $('nav-bawah').addEventListener('click', (e) => { if (e.target.closest('#nav-lainnya')) $('lembar-lainnya').hidden = false; });
     $('lembar-lainnya').addEventListener('click', (e) => { if (e.target === $('lembar-lainnya')) $('lembar-lainnya').hidden = true; });
     window.addEventListener('hashchange', () => { if (!$('layar-utama').hidden && S.menu.length) buka(halamanDariHash()); });
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
-      if (!$('modal-scan').hidden) tutupScan(); else if (!$('lembar-lainnya').hidden) $('lembar-lainnya').hidden = true; else if (!$('menu').hidden) tutupMenu();
+      if (!$('modal-scan').hidden) tutupScan(); else if (!$('modal-foto').hidden) $('modal-foto').hidden = true; else if (!$('modal-titip').hidden) tutupTitip();
+      else if (!$('lembar-kios').hidden) $('lembar-kios').hidden = true; else if (!$('lembar-lainnya').hidden) $('lembar-lainnya').hidden = true; else if (!$('menu').hidden) tutupMenu();
     });
     document.addEventListener('click', (e) => { if (!$('menu').hidden && !e.target.closest('#menu') && !e.target.closest('#tombol-menu')) tutupMenu(); });
     document.addEventListener('visibilitychange', () => { if (document.hidden) tutupScan(); });
