@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#17305C">
+  <title>Gerbang SMKT</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="preload" href="fonts/plus-jakarta-sans-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Layar login -->
+  <section id="layar-login" class="layar layar-login" hidden>
+    <div class="login-isi">
+      <img src="icons/icon-192.png" alt="" class="login-logo" width="64" height="64">
+      <h1>Gerbang SMKT</h1>
+      <p class="login-sekolah" id="nama-sekolah"></p>
+      <p class="login-ket" id="login-ket">Masuk dengan akun Google yang terdaftar di tab Guru.</p>
+      <div id="tombol-google" class="tombol-google"></div>
+      <button id="tombol-demo" class="tombol tombol-utama" type="button" hidden>Masuk mode demo</button>
+      <p id="login-pesan" class="login-pesan" role="alert"></p>
+      <a class="login-privasi" href="privasi.html">Kebijakan privasi</a>
+    </div>
+  </section>
+
+  <!-- Layar utama -->
+  <section id="layar-utama" class="layar" hidden>
+    <header class="kepala">
+      <div class="kepala-judul">
+        <strong>Gerbang</strong>
+        <span id="nama-piket"></span>
+      </div>
+      <button id="tombol-antre" class="lencana-antre" type="button" hidden></button>
+      <button id="tombol-menu" class="tombol-ikon" type="button" aria-label="Menu" aria-expanded="false" aria-controls="menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+      </button>
+    </header>
+
+    <div id="menu" class="menu" hidden>
+      <p class="menu-info" id="menu-info"></p>
+      <button type="button" id="menu-perbarui">Perbarui data siswa dan foto</button>
+      <button type="button" id="menu-kirim">Kirim ulang scan yang tertunda</button>
+      <button type="button" id="menu-keluar">Keluar</button>
+    </div>
+
+    <div id="pita" class="pita" hidden>
+      <span id="pita-teks"></span>
+      <div class="pita-batang"><div id="pita-isi"></div></div>
+    </div>
+
+    <div id="banner-demo" class="banner-demo" hidden>Mode demo: data contoh, tidak tersimpan ke spreadsheet sekolah.</div>
+
+    <nav class="mode" role="tablist" aria-label="Mode scan">
+      <button type="button" role="tab" data-mode="Masuk">Masuk</button>
+      <button type="button" role="tab" data-mode="Manual Lupa ID">Lupa kartu</button>
+      <button type="button" role="tab" data-mode="Pulang">Pulang</button>
+      <button type="button" role="tab" data-mode="Dispensasi">Dispensasi</button>
+    </nav>
+
+    <main class="utama">
+      <div id="panel-kamera" class="panel-kamera">
+        <div class="bingkai-kamera">
+          <div id="reader" class="kamera"></div>
+          <div class="sudut" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+        </div>
+        <p class="petunjuk" id="petunjuk"></p>
+        <button id="tombol-ketik" class="tombol tombol-garis" type="button"></button>
+      </div>
+
+      <div id="panel-cari" class="panel-cari" hidden>
+        <label for="input-cari" id="label-cari" class="label-cari"></label>
+        <input id="input-cari" type="search" autocomplete="off" enterkeyhint="search">
+        <ul id="hasil-cari" class="hasil-cari"></ul>
+        <button id="tombol-kembali-kamera" class="tombol tombol-teks" type="button" hidden>Kembali ke kamera</button>
+      </div>
+
+      <section class="riwayat" aria-labelledby="judul-riwayat">
+        <div class="riwayat-kepala">
+          <h2 id="judul-riwayat">Scan hari ini</h2>
+          <span id="ringkasan"></span>
+        </div>
+        <ol id="daftar-riwayat" class="daftar-riwayat"></ol>
+        <p id="riwayat-kosong" class="kosong">Belum ada scan dari HP ini hari ini.</p>
+      </section>
+    </main>
+  </section>
+
+  <!-- Pop-up kartu siswa -->
+  <div id="popup" class="popup" hidden role="dialog" aria-modal="true" aria-labelledby="kartu-nama">
+    <div class="kartu" id="kartu">
+      <div class="kartu-pita">
+        <span id="kartu-mode"></span>
+        <span id="kartu-sekolah"></span>
+      </div>
+      <div class="kartu-badan">
+        <div class="kartu-foto" id="kartu-foto">
+          <img id="kartu-img" alt="">
+          <span id="kartu-inisial" aria-hidden="true"></span>
+        </div>
+        <h2 id="kartu-nama"></h2>
+        <p id="kartu-kelas" class="kartu-kelas"></p>
+        <p id="kartu-catatan" class="kartu-catatan" hidden></p>
+        <div id="kartu-dispensasi" class="kartu-dispensasi" hidden>
+          <label for="input-ket">Alasan pulang lebih awal</label>
+          <textarea id="input-ket" rows="2" maxlength="300"></textarea>
+        </div>
+      </div>
+      <div class="hitung" id="hitung" hidden><div class="hitung-isi" id="hitung-isi"></div></div>
+    </div>
+    <p id="kartu-ket" class="popup-ket" aria-live="polite"></p>
+    <div class="popup-aksi">
+      <button id="tombol-simpan" class="tombol tombol-simpan" type="button" hidden>Simpan</button>
+      <button id="tombol-batal" class="tombol tombol-batal" type="button">Batalkan, wajah tidak cocok</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="config.js"></script>
+  <script src="vendor/html5-qrcode.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

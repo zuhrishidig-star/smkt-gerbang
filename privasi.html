@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#17305C">
+  <title>Kebijakan Privasi – Gerbang SMKT</title>
+  <link rel="icon" href="icons/icon-192.png">
+  <style>
+    @font-face { font-family: 'Plus Jakarta Sans'; font-weight: 500; font-display: swap;
+      src: url('fonts/plus-jakarta-sans-latin-500-normal.woff2') format('woff2'); }
+    @font-face { font-family: 'Plus Jakarta Sans'; font-weight: 800; font-display: swap;
+      src: url('fonts/plus-jakarta-sans-latin-800-normal.woff2') format('woff2'); }
+    :root { --dongker: #17305C; --teks: #1C2433; --redup: #5A6478; --garis: #DDE2EC; --latar: #F6F7FA; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--latar); color: var(--teks);
+      font: 500 16px/1.6 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+    header { background: var(--dongker); color: #fff; padding-block: 28px;
+      padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+    header div, main { max-width: 680px; margin: 0 auto; }
+    header p { margin: 0; opacity: .8; font-size: 14px; }
+    h1 { margin: 4px 0 0; font-weight: 800; font-size: 26px; line-height: 1.25; }
+    main { padding-block: 24px 48px;
+      padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+    h2 { font-weight: 800; font-size: 18px; margin: 28px 0 6px; color: var(--dongker); }
+    p, li { margin: 0 0 10px; }
+    ul { padding-left: 20px; margin: 0 0 10px; }
+    .catatan { color: var(--redup); font-size: 14px; border-top: 1px solid var(--garis); padding-top: 16px; margin-top: 32px; }
+    a { color: var(--dongker); font-weight: 800; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <p>Gerbang SMKT · SMP Negeri 1 Wonosari</p>
+      <h1>Kebijakan Privasi</h1>
+    </div>
+  </header>
+  <main>
+    <p>Gerbang SMKT adalah aplikasi presensi internal SMP Negeri 1 Wonosari. Aplikasi ini dipakai guru piket dan Tim Tata Tertib untuk mencatat kedatangan dan kepulangan siswa di gerbang sekolah dengan memindai QR kartu pelajar.</p>
+
+    <h2>Data login guru</h2>
+    <p>Saat login dengan akun Google, aplikasi hanya menerima nama dan alamat email. Email dicocokkan dengan daftar guru sekolah untuk menentukan siapa yang boleh memakai aplikasi. Token login dari Google diperiksa lalu dibuang; server hanya menyimpan sidik (hash) sesi yang berlaku 16 jam. Aplikasi tidak meminta akses ke Gmail, Drive, kontak, atau data Google lain milik guru.</p>
+
+    <h2>Data siswa</h2>
+    <ul>
+      <li>Data yang diolah: NIS, nama, kelas, foto wajah untuk pencocokan di gerbang, waktu datang dan pulang, serta catatan pelanggaran tata tertib.</li>
+      <li>Semua data disimpan di Google Spreadsheet dan folder Google Drive milik sekolah, bukan di server pihak lain.</li>
+      <li>Data hanya dipakai untuk pembinaan kedisiplinan siswa di SMP Negeri 1 Wonosari. Data tidak dijual, tidak dibagikan ke pihak luar, dan tidak dipakai untuk iklan.</li>
+      <li>Folder foto tidak dibagikan secara publik. Foto hanya dikirim ke HP guru yang sudah login.</li>
+    </ul>
+
+    <h2>Penyimpanan di HP piket</h2>
+    <p>Agar foto langsung tampil saat kartu dipindai, nama dan foto siswa disimpan sementara di browser HP piket. Menu <strong>Keluar</strong> di aplikasi menghapus data dan foto itu dari HP. Scan yang belum terkirim karena sinyal hilang tetap disimpan sampai berhasil dikirim.</p>
+
+    <h2>Dasar hukum dan hak pemilik data</h2>
+    <p>Pengolahan data mengikuti Undang-Undang Nomor 27 Tahun 2022 tentang Pelindungan Data Pribadi. Siswa dan orang tua atau wali dapat meminta melihat, memperbaiki, atau menanyakan data yang tercatat dengan menghubungi Tim Tata Tertib SMP Negeri 1 Wonosari melalui sekolah.</p>
+
+    <p class="catatan">Berlaku sejak 3 November 2026. Perubahan kebijakan ini akan diumumkan di halaman ini. <a href="./">Kembali ke Gerbang SMKT</a></p>
+  </main>
+</body>
+</html>
