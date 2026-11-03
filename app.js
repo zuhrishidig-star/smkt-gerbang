@@ -1,5 +1,5 @@
 /*
- * Gerbang SMKT · aplikasi web guru piket · v1.0 (2 November 2026)
+ * Gerbang SMKT · aplikasi web guru piket · v1.1 (3 November 2026)
  * Scan QR kartu pelajar → foto tampil 2 detik → tersimpan otomatis
  * ke Google Sheets lewat API Apps Script. Scan yang gagal terkirim
  * disimpan di HP dan dikirim ulang otomatis saat sinyal kembali.
@@ -144,8 +144,11 @@
     $('login-pesan').textContent = 'Memeriksa akun…';
     try {
       const d = await api('masuk', { idToken: idToken });
-      if (!d.guru.bolehGerbang) {
-        $('login-pesan').textContent = d.guru.nama + ' belum diberi peran Piket. Minta admin menambahkan peran di tab Guru.';
+      if (!d.guru.bolehGerbang && !DEMO) {
+        // Guru tanpa peran Piket langsung dibawa ke modul Tata Tertib dengan sesi yang sama.
+        simpan.set('smkt_sesi', { sesi: d.sesi, kedaluwarsa: d.kedaluwarsa, guru: d.guru });
+        $('login-pesan').textContent = 'Membuka Tata Tertib…';
+        location.replace('tatib.html');
         return;
       }
       S.sesi = d.sesi; S.guru = d.guru;
@@ -766,6 +769,7 @@
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && S.popup) batalPopup(); });
     $('tombol-menu').addEventListener('click', () => ($('menu').hidden ? bukaMenu() : tutupMenu()));
     $('menu-perbarui').addEventListener('click', perbaruiData);
+    $('menu-tatib').hidden = DEMO;
     $('menu-kirim').addEventListener('click', () => { tutupMenu(); kirimAntrean(); });
     $('menu-keluar').addEventListener('click', keluar);
     $('tombol-antre').addEventListener('click', kirimAntrean);
@@ -785,6 +789,7 @@
     }
     const sesi = simpan.get('smkt_sesi', null);
     if (sesi && sesi.kedaluwarsa > Date.now() && (!DEMO || sesi.sesi === 'demo')) {
+      if (!DEMO && sesi.guru && !sesi.guru.bolehGerbang) { location.replace('tatib.html'); return; }
       S.sesi = sesi.sesi; S.guru = sesi.guru;
       bukaUtama();
     } else {

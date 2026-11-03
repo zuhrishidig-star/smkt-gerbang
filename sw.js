@@ -1,9 +1,10 @@
 /* Service worker Gerbang SMKT: menyimpan tampilan aplikasi agar tetap
  * terbuka saat sinyal di gerbang hilang. Data scan tidak lewat sini —
  * antrean scan disimpan oleh app.js. */
-const CACHE = 'smkt-gerbang-v2';
+const CACHE = 'smkt-gerbang-v3';
 const ASET = [
   './', 'index.html', 'style.css', 'config.js', 'app.js', 'manifest.webmanifest',
+  'tatib.html', 'tatib.css', 'tatib.js',
   'vendor/html5-qrcode.min.js',
   'fonts/plus-jakarta-sans-latin-500-normal.woff2',
   'fonts/plus-jakarta-sans-latin-700-normal.woff2',
@@ -33,6 +34,6 @@ self.addEventListener('fetch', (e) => {
         if (r.ok) { const salin = r.clone(); caches.open(CACHE).then((c) => c.put(e.request, salin)); }
         return r;
       })
-      .catch(() => caches.match(e.request).then((r) => r || caches.match('index.html')))
+      .catch(() => caches.match(e.request, { ignoreSearch: true }).then((r) => r || caches.match('index.html')))
   );
 });

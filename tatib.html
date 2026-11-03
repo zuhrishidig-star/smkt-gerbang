@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#17305C">
+  <title>Tata Tertib SMKT</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="preload" href="fonts/plus-jakarta-sans-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="tatib.css">
+</head>
+<body>
+
+  <!-- Layar login -->
+  <section id="layar-login" class="layar layar-login" hidden>
+    <div class="login-isi">
+      <img src="icons/icon-192.png" alt="" class="login-logo" width="64" height="64">
+      <h1>Tata Tertib SMKT</h1>
+      <p class="login-sekolah" id="nama-sekolah"></p>
+      <p class="login-ket">Masuk dengan akun Google yang terdaftar di tab Guru.</p>
+      <div id="tombol-google" class="tombol-google"></div>
+      <p id="login-pesan" class="login-pesan" role="alert"></p>
+      <a class="login-privasi" href="privasi.html">Kebijakan privasi</a>
+    </div>
+  </section>
+
+  <!-- Layar utama -->
+  <section id="layar-utama" class="layar" hidden>
+    <header class="kepala">
+      <div class="kepala-judul">
+        <strong>Tata Tertib</strong>
+        <span id="nama-guru"></span>
+      </div>
+      <button id="tombol-menu" class="tombol-ikon" type="button" aria-label="Menu" aria-expanded="false" aria-controls="menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+      </button>
+    </header>
+
+    <div id="menu" class="menu" hidden>
+      <p class="menu-info" id="menu-info"></p>
+      <a href="./" id="menu-gerbang" hidden>Buka Gerbang (scan masuk)</a>
+      <button type="button" id="menu-perbarui">Perbarui data</button>
+      <button type="button" id="menu-keluar">Keluar</button>
+    </div>
+
+    <nav class="tab-tatib" role="tablist" aria-label="Menu tata tertib" id="tab-tatib">
+      <button type="button" role="tab" data-tab="catat" aria-controls="p-catat">Catat</button>
+      <button type="button" role="tab" data-tab="tindak" aria-controls="p-tindak" hidden>Tindak lanjut <span class="badge" id="badge-tindak" hidden></span></button>
+      <button type="button" role="tab" data-tab="siswa" aria-controls="p-siswa" hidden>Siswa</button>
+      <button type="button" role="tab" data-tab="zona" aria-controls="p-zona" hidden>Zona merah</button>
+      <button type="button" role="tab" data-tab="pulih" aria-controls="p-pulih" hidden>Pemulihan</button>
+      <button type="button" role="tab" data-tab="izin" aria-controls="p-izin" hidden>Izin/sakit</button>
+    </nav>
+
+    <main class="utama">
+      <p id="memuat" class="memuat">Memuat data…</p>
+
+      <!-- CATAT PELANGGARAN -->
+      <section id="p-catat" class="panel" role="tabpanel" hidden>
+        <div class="blok" id="c-siswa">
+          <h2 class="judul-blok"><span class="no">1</span>Siswa</h2>
+          <div id="c-siswa-pilih"></div>
+          <div id="c-siswa-kartu" hidden></div>
+        </div>
+
+        <div class="blok" id="c-plg" hidden>
+          <h2 class="judul-blok"><span class="no">2</span>Pelanggaran</h2>
+          <div id="c-plg-cari">
+            <label class="label" for="c-cari-plg">Cari jenis pelanggaran</label>
+            <input id="c-cari-plg" class="isian" type="search" autocomplete="off" placeholder="Contoh: rambut, HP, sampah">
+            <div class="saring" id="c-kategori" role="group" aria-label="Saring kategori"></div>
+            <ul class="daftar-plg" id="c-daftar-plg"></ul>
+          </div>
+          <div id="c-plg-terpilih" hidden></div>
+        </div>
+
+        <div class="blok" id="c-tindak" hidden>
+          <h2 class="judul-blok"><span class="no">3</span>Panduan dan tindakan</h2>
+          <div id="c-panduan" class="panduan"></div>
+          <label class="centang"><input type="checkbox" id="c-melawan"> <span>Siswa membangkang atau melawan saat ditegur <strong>(poin ×2)</strong></span></label>
+          <div id="c-penanganan"></div>
+          <label class="label" for="c-ket">Keterangan kejadian <span class="redup">(opsional)</span></label>
+          <textarea id="c-ket" class="isian" rows="2" maxlength="500" placeholder="Waktu, tempat, saksi"></textarea>
+          <label class="label" for="c-tindakan">Tindakan yang sudah Anda lakukan</label>
+          <textarea id="c-tindakan" class="isian" rows="2" maxlength="500"></textarea>
+          <p id="c-pratinjau" class="pratinjau"></p>
+          <button id="c-simpan" class="tombol tombol-utama" type="button">Simpan catatan</button>
+        </div>
+
+        <div class="blok hasil" id="c-hasil" hidden></div>
+      </section>
+
+      <!-- TINDAK LANJUT -->
+      <section id="p-tindak" class="panel" role="tabpanel" hidden>
+        <div class="segmen" role="group" aria-label="Status">
+          <button type="button" data-status="Menunggu" aria-pressed="true">Menunggu</button>
+          <button type="button" data-status="Selesai" aria-pressed="false">Selesai 60 hari</button>
+        </div>
+        <p class="keterangan" id="tl-ket"></p>
+        <ol class="daftar-kartu" id="tl-daftar"></ol>
+      </section>
+
+      <!-- RIWAYAT SISWA -->
+      <section id="p-siswa" class="panel" role="tabpanel" hidden>
+        <div class="blok" id="r-cari">
+          <h2 class="judul-blok">Riwayat siswa</h2>
+          <div id="r-siswa-pilih"></div>
+        </div>
+        <div id="r-detail" hidden></div>
+      </section>
+
+      <!-- ZONA MERAH -->
+      <section id="p-zona" class="panel" role="tabpanel" hidden>
+        <p class="keterangan" id="z-ket"></p>
+        <ol class="daftar-kartu" id="z-daftar"></ol>
+      </section>
+
+      <!-- PEMULIHAN -->
+      <section id="p-pulih" class="panel" role="tabpanel" hidden>
+        <p class="keterangan" id="pm-ket"></p>
+        <ol class="daftar-kartu" id="pm-daftar"></ol>
+        <div class="blok" id="pm-lain" hidden>
+          <h2 class="judul-blok">Catat pembinaan lain</h2>
+          <p class="keterangan">Konseling, tugas kebersihan, atau skorsing di perpustakaan. Tidak mengurangi poin.</p>
+          <div id="pm-siswa-pilih"></div>
+          <label class="label" for="pm-kategori">Jenis pembinaan</label>
+          <select id="pm-kategori" class="isian">
+            <option>Konseling</option><option>Tugas Kebersihan</option><option>Skorsing Perpus</option>
+          </select>
+          <label class="label" for="pm-status">Status</label>
+          <select id="pm-status" class="isian">
+            <option>Dijadwalkan</option><option>Berjalan</option><option selected>Selesai</option>
+          </select>
+          <label class="label" for="pm-catatan">Catatan</label>
+          <textarea id="pm-catatan" class="isian" rows="2" maxlength="500"></textarea>
+          <button id="pm-simpan" class="tombol tombol-utama" type="button">Simpan pembinaan</button>
+        </div>
+      </section>
+
+      <!-- IZIN / SAKIT -->
+      <section id="p-izin" class="panel" role="tabpanel" hidden>
+        <div class="blok">
+          <h2 class="judul-blok">Catat izin atau sakit</h2>
+          <p class="keterangan" id="iz-ket"></p>
+          <div id="iz-siswa-pilih"></div>
+          <label class="label" for="iz-tanggal">Tanggal</label>
+          <input id="iz-tanggal" class="isian" type="date">
+          <div class="pilihan-dua" role="radiogroup" aria-label="Status">
+            <label><input type="radio" name="iz-status" value="Sakit" checked> Sakit</label>
+            <label><input type="radio" name="iz-status" value="Izin"> Izin</label>
+          </div>
+          <label class="label" for="iz-ket-isi">Keterangan</label>
+          <textarea id="iz-ket-isi" class="isian" rows="2" maxlength="300" placeholder="Contoh: demam, surat dokter menyusul"></textarea>
+          <button id="iz-simpan" class="tombol tombol-utama" type="button">Simpan</button>
+        </div>
+      </section>
+    </main>
+  </section>
+
+  <!-- Pemindai QR -->
+  <div id="modal-scan" class="modal-scan" hidden role="dialog" aria-modal="true" aria-label="Scan kartu pelajar">
+    <div class="bingkai-kamera">
+      <div id="scan-reader" class="kamera"></div>
+      <div class="sudut" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+    </div>
+    <p id="scan-ket" class="popup-ket">Arahkan kamera ke QR kartu pelajar.</p>
+    <button id="scan-tutup" class="tombol tombol-batal" type="button">Tutup</button>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="config.js"></script>
+  <script src="vendor/html5-qrcode.min.js"></script>
+  <script src="tatib.js"></script>
+</body>
+</html>
