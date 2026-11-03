@@ -646,7 +646,7 @@ textarea.isian { min-height: 0; resize: vertical; }
 .pbn-plg .redup { font-size: 14px; }
 .pbn-teks { white-space: pre-wrap; background: var(--putih); border: 1px solid var(--garis); border-left: 4px solid var(--dongker); border-radius: 12px;
   padding: 12px 14px; font-size: 16px; line-height: 1.55; margin-top: 6px; }
-.ttd-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 12px; }
+.ttd-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 12px; align-items: end; }
 .ttd { display: flex; flex-direction: column; }
 .ttd canvas { width: 100%; height: 150px; touch-action: none; background: var(--putih); border: 2px dashed var(--garis); border-radius: 14px; margin-top: 6px; cursor: crosshair; }
 .ttd canvas.terisi { border-style: solid; border-color: var(--dongker); }
