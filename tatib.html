@@ -117,6 +117,15 @@
           <textarea id="c-ket" class="isian" rows="2" maxlength="500" placeholder="Waktu, tempat, saksi"></textarea>
           <label class="label" for="c-tindakan">Tindakan yang sudah Anda lakukan</label>
           <textarea id="c-tindakan" class="isian" rows="2" maxlength="500"></textarea>
+          <div class="foto-bukti" id="c-foto">
+            <span class="label">Foto bukti <span class="redup">(opsional)</span></span>
+            <div class="foto-bukti-isi">
+              <label class="tombol tombol-garis tombol-foto" for="c-foto-input"><span class="ik ik-kamera"></span><span id="c-foto-label">Ambil foto</span></label>
+              <input type="file" id="c-foto-input" class="input-foto" accept="image/*" capture="environment">
+              <figure id="c-foto-pratinjau" class="foto-pratinjau" hidden><img alt="Foto bukti yang akan dilampirkan"><button type="button" class="tautan merah" id="c-foto-hapus">Hapus foto</button></figure>
+            </div>
+            <p class="keterangan">Disimpan privat di Drive sekolah dan masuk ke berkas bukti SP.</p>
+          </div>
           <p id="c-pratinjau" class="pratinjau"></p>
           <button id="c-simpan" class="tombol tombol-utama" type="button">Simpan laporan</button>
         </div>
@@ -260,6 +269,46 @@
       <div class="modal-aksi">
         <button id="titip-batal" class="tombol tombol-garis" type="button">Batal</button>
         <button id="titip-simpan" class="tombol tombol-utama" type="button">Catat titip absen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pernyataan pembinaan siswa -->
+  <div id="modal-pbn" class="modal modal-lebar" hidden role="dialog" aria-modal="true" aria-labelledby="pbn-judul">
+    <div class="modal-isi">
+      <h2 id="pbn-judul" class="judul-blok">Pernyataan pembinaan siswa</h2>
+      <div id="pbn-form">
+        <div class="pbn-siswa" id="pbn-siswa"></div>
+        <div id="pbn-jenis-wadah">
+          <span class="label">Jenis pembinaan</span>
+          <div class="segmen" id="pbn-jenis" role="group" aria-label="Jenis pembinaan"></div>
+        </div>
+        <span class="label">Pelanggaran yang dibina</span>
+        <ul class="pbn-plg" id="pbn-plg"></ul>
+        <label class="label" for="pbn-ringkasan">Catatan pembina <span class="redup">(untuk berkas, tidak dibacakan ke siswa)</span></label>
+        <textarea id="pbn-ringkasan" class="isian" rows="2" maxlength="1000" placeholder="Apa yang dibahas, penyebabnya, rencana tindak lanjut"></textarea>
+        <label class="label" for="pbn-komitmen">Janji siswa</label>
+        <textarea id="pbn-komitmen" class="isian" rows="2" maxlength="600" placeholder="Contoh: datang ke sekolah sebelum pukul 06.50 setiap hari"></textarea>
+        <span class="label">Pernyataan yang dibaca dan ditandatangani siswa</span>
+        <div class="pbn-teks" id="pbn-teks"></div>
+        <div class="ttd-grid">
+          <div class="ttd"><span class="label" id="ttd-siswa-label">Tanda tangan siswa</span><canvas id="ttd-siswa" aria-labelledby="ttd-siswa-label"></canvas><button type="button" class="tautan" data-ulang="ttd-siswa">Ulangi</button></div>
+          <div class="ttd"><span class="label" id="ttd-pembina-label">Tanda tangan pembina</span><canvas id="ttd-pembina" aria-labelledby="ttd-pembina-label"></canvas><button type="button" class="tautan" data-ulang="ttd-pembina">Ulangi</button></div>
+        </div>
+        <div class="foto-bukti">
+          <span class="label">Foto saat pembinaan <span class="redup">(opsional)</span></span>
+          <div class="foto-bukti-isi">
+            <label class="tombol tombol-garis tombol-foto" for="pbn-foto-input"><span class="ik ik-kamera"></span><span id="pbn-foto-label">Ambil foto</span></label>
+            <input type="file" id="pbn-foto-input" class="input-foto" accept="image/*" capture="environment">
+            <figure id="pbn-foto-pratinjau" class="foto-pratinjau" hidden><img alt="Foto saat pembinaan"><button type="button" class="tautan merah" id="pbn-foto-hapus">Hapus foto</button></figure>
+          </div>
+        </div>
+        <p class="pesan-galat" id="pbn-pesan" role="alert"></p>
+      </div>
+      <div id="pbn-hasil" class="pbn-hasil" hidden></div>
+      <div class="modal-aksi" id="pbn-aksi">
+        <button id="pbn-batal" class="tombol tombol-garis" type="button">Batal</button>
+        <button id="pbn-simpan" class="tombol tombol-utama" type="button">Simpan pernyataan</button>
       </div>
     </div>
   </div>

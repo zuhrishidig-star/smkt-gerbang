@@ -22,6 +22,7 @@
   const IKON = {"beranda":"<path d=\"M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8\" /> <path d=\"M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\" />","lapor":"<path d=\"m3 11 18-5v12L3 14v-3z\" /> <path d=\"M11.6 16.8a3 3 0 1 1-5.8-1.6\" />","kotak":"<polyline points=\"22 12 16 12 14 15 10 15 8 12 2 12\" /> <path d=\"M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z\" />","siswa":"<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\" /> <circle cx=\"9\" cy=\"7\" r=\"4\" /> <path d=\"M22 21v-2a4 4 0 0 0-3-3.87\" /> <path d=\"M16 3.13a4 4 0 0 1 0 7.75\" />","waspada":"<path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\" /> <path d=\"M12 8v4\" /> <path d=\"M12 16h.01\" />","pulih":"<path d=\"M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z\" /> <path d=\"M12 5 9.04 7.96a2.17 2.17 0 0 0 0 3.08c.82.82 2.13.85 3 .07l2.07-1.9a2.82 2.82 0 0 1 3.79 0l2.96 2.66\" /> <path d=\"m18 15-2-2\" /> <path d=\"m15 18-2-2\" />","absen":"<path d=\"M8 2v4\" /> <path d=\"M16 2v4\" /> <rect width=\"18\" height=\"18\" x=\"3\" y=\"4\" rx=\"2\" /> <path d=\"M3 10h18\" /> <path d=\"m9 16 2 2 4-4\" />","wa":"<path d=\"M7.9 20A9 9 0 1 0 4 16.1L2 22Z\" />","qr":"<rect width=\"5\" height=\"5\" x=\"3\" y=\"3\" rx=\"1\" /> <rect width=\"5\" height=\"5\" x=\"16\" y=\"3\" rx=\"1\" /> <rect width=\"5\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\" /> <path d=\"M21 16h-3a2 2 0 0 0-2 2v3\" /> <path d=\"M21 21v.01\" /> <path d=\"M12 7v3a2 2 0 0 1-2 2H7\" /> <path d=\"M3 12h.01\" /> <path d=\"M12 3h.01\" /> <path d=\"M12 16v.01\" /> <path d=\"M16 12h1\" /> <path d=\"M21 12v.01\" /> <path d=\"M12 21v-1\" />","kanan":"<path d=\"m9 18 6-6-6-6\" />","menu":"<circle cx=\"12\" cy=\"12\" r=\"1\" /> <circle cx=\"12\" cy=\"5\" r=\"1\" /> <circle cx=\"12\" cy=\"19\" r=\"1\" />","keluar":"<path d=\"M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4\" /> <polyline points=\"16 17 21 12 16 7\" /> <line x1=\"21\" x2=\"9\" y1=\"12\" y2=\"12\" />","muat":"<path d=\"M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8\" /> <path d=\"M21 3v5h-5\" /> <path d=\"M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16\" /> <path d=\"M8 16H3v5\" />","cek":"<path d=\"M20 6 9 17l-5-5\" />","gerbang":"<path d=\"M13 4h3a2 2 0 0 1 2 2v14\" /> <path d=\"M2 20h3\" /> <path d=\"M13 20h9\" /> <path d=\"M10 12v.01\" /> <path d=\"M13 4.562v16.157a1 1 0 0 1-1.242.97L5 20V5.562a2 2 0 0 1 1.515-1.94l4-1A2 2 0 0 1 13 4.561Z\" />","cari":"<circle cx=\"11\" cy=\"11\" r=\"8\" /> <path d=\"m21 21-4.3-4.3\" />","surat":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\" /> <path d=\"M14 2v4a2 2 0 0 0 2 2h4\" /> <path d=\"M10 9H8\" /> <path d=\"M16 13H8\" /> <path d=\"M16 17H8\" />","jam":"<circle cx=\"12\" cy=\"12\" r=\"10\" /> <polyline points=\"12 6 12 12 16 14\" />","awas":"<path d=\"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3\" /> <path d=\"M12 9v4\" /> <path d=\"M12 17h.01\" />","orang":"<circle cx=\"12\" cy=\"8\" r=\"5\" /> <path d=\"M20 21a8 8 0 0 0-16 0\" />","lainnya":"<rect width=\"7\" height=\"7\" x=\"3\" y=\"3\" rx=\"1\" /> <rect width=\"7\" height=\"7\" x=\"14\" y=\"3\" rx=\"1\" /> <rect width=\"7\" height=\"7\" x=\"14\" y=\"14\" rx=\"1\" /> <rect width=\"7\" height=\"7\" x=\"3\" y=\"14\" rx=\"1\" />","ekskul":"<path d=\"M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15\" /> <path d=\"M11 12 5.12 2.2\" /> <path d=\"m13 12 5.88-9.8\" /> <path d=\"M8 7h8\" /> <circle cx=\"12\" cy=\"17\" r=\"5\" /> <path d=\"M12 18v-2h-.5\" />","kirim":"<path d=\"M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z\" /> <path d=\"m21.854 2.147-10.94 10.939\" />"};
 
   IKON.foto = '<path d="M3 7V5a2 2 0 0 1 2-2h2" /> <path d="M17 3h2a2 2 0 0 1 2 2v2" /> <path d="M21 17v2a2 2 0 0 1-2 2h-2" /> <path d="M7 21H5a2 2 0 0 1-2-2v-2" /> <path d="M8 14s1.5 2 4 2 4-2 4-2" /> <path d="M9 9h.01" /> <path d="M15 9h.01" />';
+  IKON.kamera = '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" /> <circle cx="12" cy="13" r="3" />';
   IKON.tablet = '<rect width="16" height="20" x="4" y="2" rx="2" ry="2" /> <line x1="12" x2="12.01" y1="18" y2="18" />';
 
   const MENU = [
@@ -842,6 +843,7 @@
     });
     $('c-tindakan').addEventListener('input', aturTombolSimpan);
     $('c-simpan').addEventListener('click', simpanLapor);
+    C.foto = pasangInputFoto('c-foto-input', 'c-foto-pratinjau', 'c-foto-hapus', 'c-foto-label');
     $('p-lapor').addEventListener('click', (e) => {
       const a = e.target.closest('[data-aksi]');
       if (!a) return;
@@ -856,6 +858,7 @@
     $('c-siswa-pilih').hidden = false; $('c-siswa-kartu').hidden = true;
     $('c-plg').hidden = true; $('c-tindak').hidden = true; $('c-hasil').hidden = true;
     $('c-melawan').checked = false; $('c-ket').value = ''; $('c-tindakan').value = ''; $('c-cari-plg').value = '';
+    if (C.foto) C.foto.atur('');
     langkahLapor(1);
     if (C.pemilih) C.pemilih.render();
     if (fokus && C.pemilih) C.pemilih.fokus();
@@ -1024,7 +1027,7 @@
     C.menyimpan = true; aturTombolSimpan();
     try {
       const d = await api('tatib.catat', { nis: C.siswa.nis, idPlg: C.plg.id, melawan: k.melawan, keterangan: $('c-ket').value.trim(), tindakan: tindakan,
-        penanganan: C.penanganan, teruskanKe: C.ke || k.ke, idCatat: C.idCatat });
+        penanganan: C.penanganan, teruskanKe: C.ke || k.ke, idCatat: C.idCatat, foto: C.foto ? C.foto.data : '' });
       C.menyimpan = false;
       tampilHasilLapor(d);
     } catch (e) {
@@ -1040,7 +1043,8 @@
     let h = tanggaHtml(d.tangga || 1, d.diteruskan ? d.tembusan : []) +
       '<h2 style="margin-top:12px">' + (d.sudahTercatat ? 'Sudah tercatat sebelumnya' : d.diteruskan ? 'Tersimpan, diteruskan ke ' + esc(d.diteruskan.ke) : 'Tersimpan, selesai ditangani') + '</h2>' +
       '<p>' + esc(d.siswa.nama) + ' (' + esc(d.siswa.kelas) + '): ' + esc(plg.nama) + ', <strong>+' + d.poin + ' poin</strong>' + (d.melawan ? ' (×2 membangkang)' : '') + '.</p>' +
-      '<p>Total poin sekarang <strong>' + d.total + '</strong> ' + lencanaLevel(d.level) + '</p>';
+      '<p>Total poin sekarang <strong>' + d.total + '</strong> ' + lencanaLevel(d.level) + '</p>' +
+      (d.foto ? '<p class="redup">Foto bukti tersimpan dan masuk ke berkas bukti SP.</p>' : '');
     const alasan = (d.alasan || []).filter((x) => x !== 'dipilih guru pelapor');
     if (d.diteruskan) {
       h += '<p>' + (alasan.length ? 'Alasan: ' + esc(alasan.join('; ')) + '. ' : '') + 'Kasus masuk Kotak Masuk ' + esc(SEBUT_TANGGA[d.tangga]) +
@@ -1131,6 +1135,7 @@
     if (it.tindakan) h += '<div class="catatan">' + esc(it.tindakan) + '</div>';
     h += '<div class="aksi">';
     if (tunggu) h += '<button type="button" class="tombol tombol-utama" data-aksi="buka-tl">Tindak lanjuti</button>';
+    if (tunggu && jenisPbnKasus(it)) h += '<button type="button" class="tombol tombol-garis" data-aksi="pbn">' + ikon('surat') + 'Pernyataan siswa</button>';
     if (T.status !== 'Tembusan' && it.waOrtu !== undefined) {
       h += tombolWa(it.waOrtu, isiTemplat(S.templat.WA_KASUS_ORTU, { nama: it.nama, kelas: it.kelas, tanggal: it.tanggal, pelanggaran: it.pelanggaran, pengirim: namaPendek(S.guru.nama), sekolah: S.sekolah }),
         it.waOrtuDibuka ? 'Ortu dikabari' : 'WA orang tua', { jenis: 'kasus-ortu', ref: it.idLog, nis: it.nis }, !!it.waOrtuDibuka);
@@ -1148,11 +1153,29 @@
     }
     return h + '</li>';
   }
+  /** Kasus di tangga wali kelas/BK yang bisa dibuatkan pernyataan pembinaan oleh guru ini. */
+  function jenisPbnKasus(it) {
+    if ((it.tangga === 2 || it.ke === 'Wali Kelas') && punya(['Wali Kelas']) && S.guru.kelasWali && S.guru.kelasWali === it.kelas) return 'wali';
+    if ((it.tangga === 3 || it.ke === 'BK') && punya(['BK'])) return 'bk';
+    return '';
+  }
   async function klikTL(e) {
     const a = e.target.closest('[data-aksi]');
     if (!a) return;
     const li = a.closest('.kasus');
     if (a.dataset.aksi === 'riwayat') { bukaRiwayatDari(a.dataset.nis); return; }
+    if (a.dataset.aksi === 'pbn') {
+      const it = T.item.filter((x) => x.idLog === li.dataset.id)[0];
+      if (!it) return;
+      const kode = jenisPbnKasus(it);
+      bukaPernyataan(it.nis, { jenis: kode, pilih: [it.idLog], refKasus: it.idLog, sesudah: (d) => {
+        const f = li.querySelector('.form-tl'); if (!f) return;
+        f.hidden = false;
+        const ta = f.querySelector('textarea');
+        if (!ta.value.trim()) ta.value = (kode === 'bk' ? 'Bimbingan konseling diberikan' : 'Nasihat dan bimbingan khusus diberikan') + '; siswa menandatangani pernyataan (' + d.id + ').';
+      } });
+      return;
+    }
     if (a.dataset.aksi === 'buka-tl') { const f = li.querySelector('.form-tl'); f.hidden = !f.hidden; if (!f.hidden) f.querySelector('textarea').focus(); return; }
     if (a.dataset.aksi === 'simpan-tl') {
       const f = li.querySelector('.form-tl'), tindakan = f.querySelector('textarea').value.trim();
@@ -1176,21 +1199,34 @@
     S.siap.siswa = true;
     pemilihSiswa($('r-siswa-pilih'), { id: 'r', label: 'Pilih siswa', saring: bolehLihat, tampilSemua: true,
       catatan: luas() ? '' : 'Siswa kelas ' + S.guru.kelasWali + '.', pilih: (s) => bukaRiwayat(s.nis) });
-    $('r-detail').addEventListener('click', (e) => {
-      const a = e.target.closest('[data-aksi="lapor-siswa"]');
+    $('r-detail').addEventListener('click', async (e) => {
+      const a = e.target.closest('[data-aksi]');
       if (!a) return;
-      const s = S.siswa.get(a.dataset.nis);
-      buka('lapor'); resetLapor(false); pilihSiswaLapor(s);
+      const aksi = a.dataset.aksi;
+      if (aksi === 'lapor-siswa') { const s = S.siswa.get(a.dataset.nis); buka('lapor'); resetLapor(false); pilihSiswaLapor(s); return; }
+      if (aksi === 'foto-bukti') { lihatFotoBukti(a.dataset.id, a.dataset.judul); return; }
+      if (aksi === 'pdf-pbn') { pdfPernyataan(a, a.dataset.id); return; }
+      if (aksi === 'pernyataan') { const nis = a.dataset.nis; bukaPernyataan(nis, { sesudah: () => bukaRiwayat(nis, true) }); return; }
+      if (aksi === 'berkas') {
+        a.disabled = true; a.textContent = 'Menyusun berkas…';
+        $('r-berkas').innerHTML = '<p class="keterangan">Menyusun PDF berisi rekap pelanggaran, foto bukti, dan pernyataan. Bisa sampai setengah menit.</p>';
+        try {
+          const p = await buatBerkas(a.dataset.nis, 0, '');
+          $('r-berkas').innerHTML = tautanPdf('Berkas bukti siap (' + p.jumlah.pelanggaran + ' pelanggaran, ' + p.jumlah.foto + ' foto, ' + p.jumlah.pembinaan + ' pernyataan)', p);
+        } catch (er) { $('r-berkas').innerHTML = '<p class="pesan-galat">' + esc(er.message) + '</p>'; }
+        a.disabled = false; a.textContent = 'Buat berkas bukti (PDF)';
+      }
     });
   }
   function bukaRiwayatDari(nis) { buka('siswa'); bukaRiwayat(nis); }
-  async function bukaRiwayat(nis) {
+  async function bukaRiwayat(nis, diam) {
     const el = $('r-detail');
-    el.hidden = false; el.innerHTML = '<div class="blok"><p class="memuat">Memuat riwayat…</p></div>';
+    el.hidden = false;
+    if (!diam) el.innerHTML = '<div class="blok"><p class="memuat">Memuat riwayat…</p></div>';
     try {
       const d = await api('tatib.riwayat', { nis: nis });
       el.innerHTML = renderRiwayat(d); muatFoto(nis);
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (!diam) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch (e) { el.innerHTML = '<div class="blok"><p class="kosong">' + esc(e.message) + '</p></div>'; }
   }
   function renderRiwayat(d) {
@@ -1204,10 +1240,17 @@
     h += '<h3 class="sub-judul">Pelanggaran (' + d.pelanggaran.length + ')</h3>';
     h += d.pelanggaran.length ? '<ol class="linimasa">' + d.pelanggaran.map((p) =>
       '<li class="' + kelasKat(p.kategori) + '"><strong>+' + p.poin + '</strong> ' + esc(p.pelanggaran) + (p.melawan ? ' <span class="tag merah">membangkang</span>' : '') +
+      (p.bukti ? ' <button type="button" class="chip-bukti" data-aksi="foto-bukti" data-id="' + esc(p.idLog) + '" data-judul="' + esc(p.pelanggaran + ', ' + p.tanggal) + '">' + ikon('kamera') + 'Foto bukti</button>' : '') +
       '<span class="meta">' + esc(p.tanggal) + ', ' + esc(p.kategori || '-') + ', dilaporkan ' + esc(namaPendek(p.pelapor) || '-') + '. ' +
       (p.tangga >= 2 ? 'Tangga ' + p.tangga + ' (' + esc(LABEL_TANGGA[p.tangga]) + '), ' + (p.status === 'Menunggu' ? 'menunggu' : 'selesai') : 'Ditangani guru yang menemukan') + '.</span>' +
       (p.tindakan ? '<span class="meta" style="white-space:pre-wrap">' + esc(p.tindakan) + '</span>' : '') + '</li>').join('') + '</ol>'
       : '<p class="kosong">Belum ada pelanggaran pada periode ini.</p>';
+    const pb = d.pembinaan || [];
+    h += '<h3 class="sub-judul">Pembinaan dan pernyataan siswa (' + pb.length + ')</h3>';
+    h += pb.length ? '<ul class="baris-ringkas">' + pb.map((b) => '<li><strong>' + esc(b.jenis) + '</strong>, ' + esc(b.tanggal) +
+      '<span class="meta">Oleh ' + esc(namaPendek(b.pembina)) + '. ' + esc(b.pelanggaran) + '</span>' + (b.komitmen ? '<span class="meta">Janji siswa: ' + esc(b.komitmen) + '</span>' : '') +
+      '<span class="meta"><button type="button" class="tautan" data-aksi="pdf-pbn" data-id="' + esc(b.id) + '">Buat PDF untuk dicetak</button></span></li>').join('') + '</ul>'
+      : '<p class="kosong">Belum ada pernyataan pembinaan yang ditandatangani siswa.</p>';
     if (d.pemulihan.length) h += '<h3 class="sub-judul">Pemulihan dan pembinaan</h3><ul class="baris-ringkas">' + d.pemulihan.map((r) =>
       '<li>' + esc(r.kategori) + ': <strong>' + esc(r.status) + '</strong>' + (r.potongan ? ' <span class="tag hijau">−' + r.potongan + ' poin</span>' : '') +
       '<span class="meta">' + esc(r.tanggal) + (r.catatan ? ', ' + esc(r.catatan) : '') + '</span></li>').join('') + '</ul>';
@@ -1215,13 +1258,17 @@
       '<li>Lapis ' + x.lapis + ', ' + esc(x.tanggal) + '<span class="meta">' + esc(x.id) + ', ' + x.poin + ' poin saat dicetak, tanda tangan: ' + esc(x.ttd || '-') + '</span></li>').join('') + '</ul>';
     if (d.catatanHadir.length) h += '<h3 class="sub-judul">Catatan kehadiran</h3><ul class="baris-ringkas">' + d.catatanHadir.map((x) =>
       '<li><strong>' + esc(x.status) + '</strong>, ' + esc(x.tanggal) + (x.jam ? ', ' + esc(String(x.jam).slice(0, 5)) : '') + (x.ket ? '<span class="meta">' + esc(x.ket) + '</span>' : '') + '</li>').join('') + '</ul>';
-    return h + '<button type="button" class="tombol tombol-garis" style="margin-top:16px" data-aksi="lapor-siswa" data-nis="' + esc(s.nis) + '">Lapor pelanggaran siswa ini</button></div>';
+    h += '<div class="aksi-riwayat">';
+    if ((d.bolehPembinaan || []).length) h += '<button type="button" class="tombol tombol-utama" data-aksi="pernyataan" data-nis="' + esc(s.nis) + '">' + ikon('surat') + 'Catat pernyataan pembinaan</button>';
+    if (d.bolehBerkas) h += '<button type="button" class="tombol tombol-garis" data-aksi="berkas" data-nis="' + esc(s.nis) + '">Buat berkas bukti (PDF)</button>';
+    h += '<button type="button" class="tombol tombol-garis" data-aksi="lapor-siswa" data-nis="' + esc(s.nis) + '">Lapor pelanggaran siswa ini</button></div><div id="r-berkas"></div>';
+    return h + '</div>';
   }
 
   /* =================================================================
    *  WASPADA & SURAT
    * ================================================================= */
-  const Z = { siswa: [], bolehSurat: false, pdf: {} };
+  const Z = { siswa: [], bolehSurat: false, pdf: {}, berkas: {} };
   async function muatZona() {
     if (!S.siap.waspada) { S.siap.waspada = true; $('z-daftar').addEventListener('click', klikZona); }
     $('z-ket').textContent = 'Memuat…';
@@ -1241,9 +1288,13 @@
       const pdf = Z.pdf[s.nis];
       if (pdf) h += '<div class="surat-siap">Surat Lapis ' + pdf.lapis + ' siap: <a href="' + pdf.url + '" target="_blank" rel="noopener">Buka PDF</a><a href="' + pdf.url + '" download="' + esc(pdf.nama) + '">Unduh</a>' +
         (pdf.drive ? '<a href="' + esc(pdf.drive) + '" target="_blank" rel="noopener">Lihat di Drive</a>' : '') + '</div>';
+      const bk = Z.berkas[s.nis];
+      if (bk) h += bk.memuat ? '<p class="meta">Menyusun berkas bukti (rekap, foto, pernyataan)…</p>' : bk.galat ? '<p class="pesan-galat">Berkas bukti gagal: ' + esc(bk.galat) + '</p>'
+        : tautanPdf('Berkas bukti' + (bk.lapis ? ' SP Lapis ' + bk.lapis : '') + ' siap', bk);
       h += '<div class="aksi">';
       if (Z.bolehSurat && berikut) h += '<button type="button" class="tombol tombol-utama" data-aksi="surat" data-lapis="' + berikut + '">Buat Surat Lapis ' + berikut + '</button>';
       else if (Z.bolehSurat && s.lapisPerlu) h += '<button type="button" class="tombol tombol-garis" data-aksi="surat" data-lapis="' + s.lapisPerlu + '">Cetak ulang Lapis ' + s.lapisPerlu + '</button>';
+      if (S.akses.berkas) h += '<button type="button" class="tombol tombol-garis" data-aksi="berkas">Berkas bukti</button>';
       return h + '<button type="button" class="tautan" data-aksi="riwayat">Riwayat siswa</button></div></li>';
     }).join('');
   }
@@ -1262,9 +1313,232 @@
         if (Z.pdf[nis]) URL.revokeObjectURL(Z.pdf[nis].url);
         Z.pdf[nis] = { lapis: lapis, url: URL.createObjectURL(new Blob([isi], { type: 'application/pdf' })), nama: d.namaFile, drive: d.url };
         const s = Z.siswa.filter((x) => x.nis === nis)[0]; if (s) s.lapisTerakhir = Math.max(s.lapisTerakhir, lapis);
-        renderZona(); toast('Surat Lapis ' + lapis + ' dibuat dan disimpan di folder Surat_SMKT.', 'hadir');
+        toast('Surat Lapis ' + lapis + ' dibuat. Berkas buktinya sedang disusun.', 'hadir', 5000);
+        Z.berkas[nis] = { memuat: true }; renderZona();
+        try { Z.berkas[nis] = await buatBerkas(nis, lapis, d.idSurat); } catch (er) { Z.berkas[nis] = { galat: er.message }; }
+        renderZona();
       } catch (err) { renderZona(); toast(err.message, 'galat', 6000); }
     }
+    if (a.dataset.aksi === 'berkas') {
+      const s = Z.siswa.filter((x) => x.nis === nis)[0] || {};
+      Z.berkas[nis] = { memuat: true }; renderZona();
+      try { Z.berkas[nis] = await buatBerkas(nis, s.lapisTerakhir || 0, ''); } catch (er) { Z.berkas[nis] = { galat: er.message }; }
+      renderZona();
+    }
+  }
+
+  /* =================================================================
+   *  FOTO BUKTI, PERNYATAAN PEMBINAAN, BERKAS BUKTI SP
+   * ================================================================= */
+  /** Foto dari kamera/galeri → JPEG kecil (data URL) agar ringan dikirim lewat sinyal sekolah. */
+  async function kompresFoto(file, maks, batas) {
+    maks = maks || 1280; batas = batas || 380000;
+    const url = URL.createObjectURL(file);
+    try {
+      const img = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => no(new Error('Foto tidak bisa dibuka.')); i.src = url; });
+      const sk = Math.min(1, maks / Math.max(img.naturalWidth, img.naturalHeight));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.naturalWidth * sk); c.height = Math.round(img.naturalHeight * sk);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      let q = 0.78, d = c.toDataURL('image/jpeg', q);
+      while (d.length * 0.75 > batas && q > 0.4) { q -= 0.1; d = c.toDataURL('image/jpeg', q); }
+      return d;
+    } finally { URL.revokeObjectURL(url); }
+  }
+  /** Input foto + pratinjau + tombol hapus. Mengembalikan pengambil data URL. */
+  function pasangInputFoto(idInput, idPratinjau, idHapus, idLabel) {
+    const o = { data: '' };
+    const atur = (d) => {
+      o.data = d || '';
+      $(idPratinjau).hidden = !o.data;
+      if (o.data) $(idPratinjau).querySelector('img').src = o.data;
+      $(idLabel).textContent = o.data ? 'Ganti foto' : 'Ambil foto';
+    };
+    $(idInput).addEventListener('change', async (e) => {
+      const f = e.target.files && e.target.files[0];
+      e.target.value = '';
+      if (!f) return;
+      try { atur(await kompresFoto(f)); } catch (er) { toast(er.message, 'galat'); }
+    });
+    $(idHapus).addEventListener('click', () => atur(''));
+    o.atur = atur;
+    return o;
+  }
+  function pdfDariBase64(d) {
+    const bin = atob(d.pdf), isi = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) isi[i] = bin.charCodeAt(i);
+    return { url: URL.createObjectURL(new Blob([isi], { type: 'application/pdf' })), nama: d.namaFile, drive: d.url };
+  }
+  function tautanPdf(judul, p) {
+    return '<div class="surat-siap">' + esc(judul) + ': <a href="' + p.url + '" target="_blank" rel="noopener">Buka PDF</a><a href="' + p.url + '" download="' + esc(p.nama) + '">Unduh</a>' +
+      (p.drive ? '<a href="' + esc(p.drive) + '" target="_blank" rel="noopener">Lihat di Drive</a>' : '') + '</div>';
+  }
+  async function buatBerkas(nis, lapis, idSurat) {
+    const d = await api('tatib.berkasBukti', { nis: nis, lapis: lapis || '', idSurat: idSurat || '' });
+    return Object.assign(pdfDariBase64(d), { jumlah: d.jumlah, lapis: lapis || 0 });
+  }
+  async function lihatFotoBukti(idLog, judul) {
+    $('foto-besar').innerHTML = figur('<div class="ganti">Memuat foto…</div>', judul);
+    $('modal-foto').hidden = false;
+    try {
+      const d = await api('tatib.fotoBukti', { ids: [idLog] });
+      const f = d.foto[idLog] || {};
+      if (!f.data) { $('foto-besar').querySelector('.ganti').textContent = f.error === 'TERHAPUS' ? 'Foto sudah dihapus dari Drive.' : 'Foto tidak tersedia.'; return; }
+      $('foto-besar').innerHTML = figur('<img alt="" src="' + f.data + '">', judul + '. ' + f.sumber + (f.ket ? ', ' + f.ket : ''));
+    } catch (e) { $('foto-besar').querySelector('.ganti').textContent = e.message; }
+  }
+
+  /** Bantalan tanda tangan di kanvas (jari di HP/tablet, mouse di laptop). */
+  function padTtd(cv) {
+    const ctx = cv.getContext('2d');
+    let goresan = 0, aktif = false, akhir = null;
+    const bersih = () => { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cv.width, cv.height); ctx.restore(); goresan = 0; };
+    const ukur = () => {
+      const r = cv.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
+      cv.width = Math.max(1, Math.round(r.width * dpr)); cv.height = Math.max(1, Math.round(r.height * dpr));
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.lineWidth = 2.6; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#0E1F3D';
+      bersih();
+    };
+    const titik = (e) => { const r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+    cv.addEventListener('pointerdown', (e) => {
+      aktif = true; try { cv.setPointerCapture(e.pointerId); } catch (er) { /* abaikan */ }
+      akhir = titik(e); ctx.beginPath(); ctx.moveTo(akhir[0], akhir[1]); ctx.lineTo(akhir[0] + 0.1, akhir[1] + 0.1); ctx.stroke(); goresan++;
+      cv.classList.add('terisi'); e.preventDefault();
+    });
+    cv.addEventListener('pointermove', (e) => {
+      if (!aktif) return;
+      const p = titik(e); ctx.beginPath(); ctx.moveTo(akhir[0], akhir[1]); ctx.lineTo(p[0], p[1]); ctx.stroke(); akhir = p; goresan++;
+    });
+    ['pointerup', 'pointercancel'].forEach((n) => cv.addEventListener(n, () => { aktif = false; }));
+    return {
+      ukur: ukur, bersih: () => { bersih(); cv.classList.remove('terisi'); }, kosong: () => goresan < 6,
+      png: () => { const o = document.createElement('canvas'); o.width = 600; o.height = 220; const x = o.getContext('2d');
+        x.fillStyle = '#fff'; x.fillRect(0, 0, 600, 220); x.drawImage(cv, 0, 0, 600, 220); return o.toDataURL('image/png'); }
+    };
+  }
+
+  const PB = { data: null, jenis: '', pilih: new Set(), refKasus: '', idCatat: '', waktu: null, ttd: {}, foto: null, sesudah: null, menyimpan: false };
+  const NAMA_HARI_ID = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+  function waktuJakarta(d) {
+    const p = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Jakarta', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false, weekday: 'short' }).formatToParts(d);
+    const g = (t) => (p.find((x) => x.type === t) || {}).value;
+    const hari = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 }[g('weekday')];
+    return { hari: NAMA_HARI_ID[hari], tanggal: g('day') + '/' + g('month') + '/' + g('year'), jam: g('hour').replace('24', '00') + '.' + g('minute') };
+  }
+  /**
+   * Buka formulir pernyataan. opsi: { jenis, pilih: [idLog], refKasus, sesudah(hasil) }.
+   */
+  async function bukaPernyataan(nis, opsi) {
+    opsi = opsi || {};
+    Object.assign(PB, { data: null, jenis: '', pilih: new Set(opsi.pilih || []), refKasus: opsi.refKasus || '', idCatat: uuid(), waktu: new Date(), sesudah: opsi.sesudah || null, menyimpan: false });
+    $('pbn-form').hidden = false; $('pbn-hasil').hidden = true; $('pbn-aksi').hidden = false;
+    $('pbn-simpan').disabled = true; $('pbn-simpan').textContent = 'Simpan pernyataan';
+    $('pbn-pesan').textContent = ''; $('pbn-ringkasan').value = ''; $('pbn-komitmen').value = '';
+    $('pbn-siswa').innerHTML = '<p class="memuat">Memuat data siswa…</p>'; $('pbn-plg').innerHTML = ''; $('pbn-teks').textContent = '';
+    if (PB.foto) PB.foto.atur('');
+    $('modal-pbn').hidden = false;
+    requestAnimationFrame(() => { PB.ttd.siswa.ukur(); PB.ttd.pembina.ukur(); });
+    try {
+      const d = await api('tatib.pembinaanAwal', { nis: nis });
+      PB.data = d;
+      PB.jenis = d.jenis.some((j) => j.kode === opsi.jenis) ? opsi.jenis : d.jenis[0].kode;
+      if (!PB.pilih.size) d.pelanggaran.filter((p) => !p.dibina).slice(0, 3).forEach((p) => PB.pilih.add(p.idLog));
+      const s = d.siswa;
+      $('pbn-siswa').innerHTML = fotoHtml(s) + '<span><strong>' + esc(s.nama) + '</strong><span class="redup">' + esc(s.kelas) + ', NIS ' + esc(s.nis) + '</span>' +
+        (d.riwayat.length ? '<span class="redup">Pembinaan sebelumnya: ' + esc(d.riwayat.slice(0, 3).map((r) => r.jenis.replace(/ (khusus )?wali kelas| Guru BK/, '') + ' ' + r.tanggal).join('; ')) + '</span>' : '') + '</span>';
+      muatFoto(s.nis);
+      $('ttd-siswa-label').textContent = 'Tanda tangan ' + s.nama;
+      $('ttd-pembina-label').textContent = 'Tanda tangan ' + namaPendek(S.guru.nama) + ' (pembina)';
+      $('pbn-jenis-wadah').hidden = d.jenis.length < 2;
+      $('pbn-jenis').innerHTML = d.jenis.map((j) => '<button type="button" data-jenis="' + j.kode + '" aria-pressed="' + (j.kode === PB.jenis) + '">' + esc(j.nama) + '</button>').join('');
+      renderPlgPbn();
+      $('pbn-simpan').disabled = false;
+    } catch (e) {
+      $('pbn-siswa').innerHTML = '<p class="kosong">' + esc(e.message) + '</p>';
+    }
+  }
+  function renderPlgPbn() {
+    const d = PB.data;
+    $('pbn-plg').innerHTML = d.pelanggaran.length ? d.pelanggaran.map((p) => '<li><label class="centang"><input type="checkbox" value="' + esc(p.idLog) + '"' + (PB.pilih.has(p.idLog) ? ' checked' : '') + '>' +
+      '<span>' + esc(p.pelanggaran) + ' <span class="redup">' + esc(p.hari + ' ' + p.tanggal) + ', +' + p.poin + '</span>' + (p.dibina ? ' <span class="tag hijau">sudah dibina</span>' : '') + '</span></label></li>').join('')
+      : '<li class="kosong">Belum ada pelanggaran pada periode ini.</li>';
+    renderTeksPbn();
+  }
+  function teksPernyataan() {
+    const d = PB.data, s = d.siswa, w = waktuJakarta(PB.waktu);
+    const daftar = d.pelanggaran.filter((p) => PB.pilih.has(p.idLog)).map((p, i) => (i + 1) + '. ' + p.pelanggaran + ', ' + p.hari + ' ' + p.tanggal).join('\n');
+    const binaWali = PB.jenis === 'bk' ? d.riwayat.filter((r) => /wali kelas/i.test(r.jenis)).map((r) => r.tanggal) : [];
+    return isiTemplat(d.templat[PB.jenis], {
+      nama: s.nama, nis: s.nis, kelas: s.kelas, hari: w.hari, tanggal: w.tanggal, jam: w.jam, pembina: S.guru.nama, sekolah: d.sekolah,
+      pelanggaran: daftar || '(pilih pelanggaran yang dibina)', komitmen: $('pbn-komitmen').value.trim() || '(tulis janji siswa)',
+      binaWali: binaWali.length ? ' yang sebelumnya telah dibina wali kelas pada ' + binaWali.slice(0, 3).join(', ') : ''
+    });
+  }
+  function renderTeksPbn() { if (PB.data) $('pbn-teks').textContent = teksPernyataan(); }
+  function tutupPernyataan() { $('modal-pbn').hidden = true; }
+  async function simpanPernyataan() {
+    if (PB.menyimpan || !PB.data) return;
+    const galat = (t) => { $('pbn-pesan').textContent = t; };
+    if (!PB.pilih.size) return galat('Pilih pelanggaran yang dibina.');
+    if (!$('pbn-komitmen').value.trim()) { $('pbn-komitmen').focus(); return galat('Tulis janji siswa.'); }
+    if (PB.ttd.siswa.kosong()) return galat('Siswa belum menandatangani pernyataan.');
+    if (PB.ttd.pembina.kosong()) return galat('Pembina belum menandatangani.');
+    galat('');
+    PB.menyimpan = true;
+    const b = $('pbn-simpan'); b.disabled = true; b.textContent = 'Menyimpan…';
+    try {
+      const d = await api('tatib.simpanPembinaan', {
+        nis: PB.data.siswa.nis, jenis: PB.jenis, refPlg: Array.from(PB.pilih), ringkasan: $('pbn-ringkasan').value.trim(),
+        komitmen: $('pbn-komitmen').value.trim(), pernyataan: teksPernyataan(), ttdSiswa: PB.ttd.siswa.png(), ttdPembina: PB.ttd.pembina.png(),
+        foto: PB.foto.data, refKasus: PB.refKasus, idCatat: PB.idCatat
+      });
+      PB.hasil = d;
+      $('pbn-form').hidden = true;
+      $('pbn-hasil').hidden = false;
+      $('pbn-hasil').innerHTML = '<p class="pbn-ok">' + ikon('cek') + '<span><strong>Pernyataan tersimpan.</strong> ' + esc(PB.data.siswa.nama) + ', ' + esc(d.jenis.toLowerCase()) + ', ' + esc(d.tanggal) + '. Nomor ' + esc(d.id) + '.</span></p>' +
+        '<p class="keterangan">Pernyataan ini otomatis masuk ke berkas bukti SP. Cetak PDF-nya bila orang tua perlu ikut menandatangani.</p>' +
+        '<div id="pbn-pdf"><button type="button" class="tombol tombol-garis" data-aksi="pdf-pbn" data-id="' + esc(d.id) + '">Buat PDF untuk dicetak</button></div>';
+      $('pbn-aksi').hidden = false; $('pbn-batal').textContent = 'Selesai'; b.hidden = true;
+      if (PB.sesudah) PB.sesudah(d);
+      toast('Pernyataan pembinaan tersimpan.', 'hadir');
+    } catch (e) {
+      galat(e.message);
+      b.disabled = false; b.textContent = 'Simpan pernyataan';
+    } finally { PB.menyimpan = false; }
+  }
+  async function pdfPernyataan(tombol, id) {
+    tombol.disabled = true; tombol.textContent = 'Membuat PDF…';
+    try {
+      const p = pdfDariBase64(await api('tatib.pembinaanPdf', { id: id }));
+      tombol.outerHTML = tautanPdf('Pernyataan siap', p);
+    } catch (e) { tombol.disabled = false; tombol.textContent = 'Buat PDF untuk dicetak'; toast(e.message, 'galat', 5000); }
+  }
+  function pasangPernyataan() {
+    PB.ttd.siswa = padTtd($('ttd-siswa'));
+    PB.ttd.pembina = padTtd($('ttd-pembina'));
+    PB.foto = pasangInputFoto('pbn-foto-input', 'pbn-foto-pratinjau', 'pbn-foto-hapus', 'pbn-foto-label');
+    $('modal-pbn').addEventListener('click', (e) => {
+      const u = e.target.closest('[data-ulang]');
+      if (u) { PB.ttd[u.dataset.ulang === 'ttd-siswa' ? 'siswa' : 'pembina'].bersih(); return; }
+      const j = e.target.closest('[data-jenis]');
+      if (j) { PB.jenis = j.dataset.jenis; $('pbn-jenis').querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(x === j))); renderTeksPbn(); return; }
+      const p = e.target.closest('[data-aksi="pdf-pbn"]');
+      if (p) pdfPernyataan(p, p.dataset.id);
+    });
+    $('pbn-plg').addEventListener('change', (e) => {
+      if (e.target.type !== 'checkbox') return;
+      if (e.target.checked) PB.pilih.add(e.target.value); else PB.pilih.delete(e.target.value);
+      renderTeksPbn();
+    });
+    $('pbn-komitmen').addEventListener('input', renderTeksPbn);
+    ['ttd-siswa', 'ttd-pembina'].forEach((id) => $(id).addEventListener('pointerdown', () => { $('pbn-pesan').textContent = ''; }));
+    $('pbn-batal').addEventListener('click', () => { tutupPernyataan(); $('pbn-simpan').hidden = false; $('pbn-batal').textContent = 'Batal'; });
+    $('pbn-simpan').addEventListener('click', simpanPernyataan);
+    let t = null;
+    window.addEventListener('resize', () => {
+      clearTimeout(t);
+      t = setTimeout(() => { if (!$('modal-pbn').hidden && PB.ttd.siswa.kosong() && PB.ttd.pembina.kosong()) { PB.ttd.siswa.ukur(); PB.ttd.pembina.ukur(); } }, 200);
+    });
   }
 
   /* =================================================================
@@ -1595,6 +1869,8 @@
     $('titip-batal').addEventListener('click', tutupTitip);
     $('titip-simpan').addEventListener('click', simpanTitip);
     $('titip-plg').addEventListener('change', infoNaikTitip);
+    document.querySelectorAll('.ik-kamera').forEach((el) => { el.outerHTML = ikon('kamera'); });
+    pasangPernyataan();
     $('foto-tutup').addEventListener('click', () => { $('modal-foto').hidden = true; });
     $('modal-foto').addEventListener('click', (e) => { if (e.target === $('modal-foto')) $('modal-foto').hidden = true; });
     $('scan-tutup').addEventListener('click', tutupScan);
@@ -1603,7 +1879,7 @@
     window.addEventListener('hashchange', () => { if (!$('layar-utama').hidden && S.menu.length) buka(halamanDariHash()); });
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
-      if (!$('modal-scan').hidden) tutupScan(); else if (!$('modal-foto').hidden) $('modal-foto').hidden = true; else if (!$('modal-titip').hidden) tutupTitip();
+      if (!$('modal-scan').hidden) tutupScan(); else if (!$('modal-foto').hidden) $('modal-foto').hidden = true; else if (!$('modal-titip').hidden) tutupTitip(); else if (!$('modal-pbn').hidden) tutupPernyataan();
       else if (!$('lembar-kios').hidden) $('lembar-kios').hidden = true; else if (!$('lembar-lainnya').hidden) $('lembar-lainnya').hidden = true; else if (!$('menu').hidden) tutupMenu();
     });
     document.addEventListener('click', (e) => { if (!$('menu').hidden && !e.target.closest('#menu') && !e.target.closest('#tombol-menu')) tutupMenu(); });
@@ -1617,6 +1893,6 @@
     else tampilLogin();
   }
 
-  window.SMKT_tatib = { keadaan: S, C: C };
+  window.SMKT_tatib = { keadaan: S, C: C, PB: PB };
   mulai();
 })();
