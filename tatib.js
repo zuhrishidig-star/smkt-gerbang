@@ -154,10 +154,17 @@
       throw Object.assign(new Error('Jawaban server tidak terbaca. Coba lagi sebentar lagi.'), { jaringan: true });
     }
     if (!j.ok) {
+      if (j.kode === 'TIDAK_TERDAFTAR') j.pesan = pesanBelumTerdaftar(j.pesan);
       if (j.kode === 'SESI' || j.kode === 'TIDAK_TERDAFTAR') { hapusSesi(); tampilLogin(j.pesan); }
       throw Object.assign(new Error(j.pesan || 'Permintaan ditolak server.'), { kode: j.kode });
     }
     return j.data;
+  }
+  /** Pesan untuk akun Google yang emailnya belum ada di tab Guru. */
+  function pesanBelumTerdaftar(pesan) {
+    const m = /Email (\S+@\S+)/.exec(pesan || '');
+    return 'Email ' + (m ? m[1] + ' ' : '') + 'belum didaftarkan oleh Tim Tata Tertib. Silakan hubungi Tim Tata Tertib. ' +
+      'Bila baru saja didaftarkan, tunggu 5 menit lalu coba lagi.';
   }
 
   /* ---------------- Login ---------------- */
