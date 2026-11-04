@@ -3,16 +3,16 @@
  * antrean scan disimpan oleh app.js dan kios.js.
  * Model wajah (vendor/mediapipe, ±27 MB) sengaja tidak dipasang di awal:
  * tersimpan otomatis saat kios pertama kali dibuka. */
-const CACHE = 'smkt-gerbang-v8';
+const CACHE = 'smkt-gerbang-v9';
 const ASET = [
-  './', 'index.html', 'style.css', 'config.js', 'app.js', 'manifest.webmanifest',
+  './', 'index.html', 'style.css', 'tema.css', 'config.js', 'app.js', 'manifest.webmanifest',
   'tatib.html', 'tatib.css', 'tatib.js',
   'kios.html', 'kios.css', 'kios.js', 'vendor/jsQR.js',
   'vendor/html5-qrcode.min.js',
   'fonts/plus-jakarta-sans-latin-500-normal.woff2',
   'fonts/plus-jakarta-sans-latin-700-normal.woff2',
   'fonts/plus-jakarta-sans-latin-800-normal.woff2',
-  'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'
+  'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/logo-64.png', 'icons/logo-128.png', 'icons/logo-256.png'
 ];
 
 self.addEventListener('install', (e) => {

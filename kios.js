@@ -534,8 +534,14 @@
     let n = 0;
     try { n = (await DB.semua()).length; } catch (e) { n = 0; }
     $('k-antre').hidden = !n;
-    $('k-antre').textContent = n + ' scan menunggu dikirim. Data aman di tablet ini.';
+    $('k-antre').textContent = n + ' scan menunggu dikirim. Data aman di tablet ini.' + (n && S.galatKirim ? ' (' + S.galatKirim + ')' : '');
     return n;
+  }
+
+  function catatDitolak(item, pesan) {
+    const l = simpan.get('smkt_kios_ditolak', []) || [];
+    l.push({ nis: item.nis, jam: hhmm(item.waktuKlien), pesan: String(pesan || '').slice(0, 120) });
+    simpan.set('smkt_kios_ditolak', l.slice(-20));
   }
 
   async function kirimAntrean() {
@@ -547,12 +553,16 @@
       for (const item of semua) {
         try {
           const r = await api('kios.scan', item);
+          S.galatKirim = '';
           await DB.buang(item.idScan);
           koreksiHasil(item, r);
         } catch (e) {
           if (e.kode === 'KIOS') { cabut(e.message); return; }
-          if (e.jaringan || e.kode === 'SIBUK') { S.timerKirim = setTimeout(kirimAntrean, 10000); break; }
-          await DB.buang(item.idScan);   // ditolak server (mis. data salah): tidak diulang terus
+          // Hanya data yang memang salah (mis. NIS tidak dikenal) yang dibuang. Gangguan server,
+          // izin Google, atau sinyal: scan tetap disimpan di tablet dan dicoba lagi.
+          if (e.kode !== 'DATA') { S.timerKirim = setTimeout(kirimAntrean, e.jaringan || e.kode === 'SIBUK' ? 10000 : 60000); S.galatKirim = e.message; break; }
+          catatDitolak(item, e.message);
+          await DB.buang(item.idScan);
           console.warn('Scan ditolak server:', e.message);
         }
       }
@@ -606,7 +616,8 @@
     const d = S.data || {};
     const baris = [['Nama kios', k.nama || '-'], ['Berlaku sampai', k.sampai || '-'], ['Siswa aktif', String(S.siswa.size)],
       ['Daftar dimuat', d.dimuat ? new Intl.DateTimeFormat('id-ID', Object.assign({ dateStyle: 'short', timeStyle: 'short' }, zona)).format(new Date(d.dimuat)) : '-'],
-      ['Belum terkirim', String(n)], ['Pemeriksaan QR', S.barcode ? 'Pembaca bawaan Chrome' : 'jsQR']];
+      ['Belum terkirim', String(n) + (n && S.galatKirim ? ': ' + S.galatKirim : '')],
+      ['Ditolak server', ((simpan.get('smkt_kios_ditolak', []) || []).slice(-3).map((x) => x.nis + ' ' + x.jam + ' (' + x.pesan + ')').join('; ')) || '-'], ['Pemeriksaan QR', S.barcode ? 'Pembaca bawaan Chrome' : 'jsQR']];
     const dl = $('atur-info');
     dl.textContent = '';
     baris.forEach(([a, b]) => { const dt = document.createElement('dt'); dt.textContent = a; const dd = document.createElement('dd'); dd.textContent = b; dl.append(dt, dd); });

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#17305C">
+  <meta name="theme-color" content="#0B6AAA">
   <title>Tata Tertib SMKT</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon-192.png">
@@ -11,13 +11,14 @@
   <link rel="preload" href="fonts/plus-jakarta-sans-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="tatib.css">
+  <link rel="stylesheet" href="tema.css">
 </head>
 <body class="tt">
 
   <!-- Login -->
   <section id="layar-login" class="layar layar-login" hidden>
     <div class="login-isi">
-      <img src="icons/icon-192.png" alt="" class="login-logo" width="64" height="64">
+      <img src="icons/logo-256.png" alt="Logo SMP Negeri 1 Wonosari" class="login-logo" width="112" height="112">
       <h1>Tata Tertib SMKT</h1>
       <p class="login-sekolah" id="nama-sekolah"></p>
       <p class="login-ket">Masuk dengan akun Google yang sudah didaftarkan oleh Tim Tata Tertib.</p>
@@ -31,7 +32,7 @@
   <section id="layar-utama" class="layar tt-layar" hidden>
     <aside class="tt-sisi" id="sisi" aria-label="Menu utama">
       <div class="sisi-merek">
-        <img src="icons/icon-192.png" alt="" width="40" height="40">
+        <img src="icons/logo-128.png" alt="" width="44" height="44">
         <div><strong>Tata Tertib</strong><span id="sisi-sekolah"></span></div>
       </div>
       <nav class="sisi-nav" id="sisi-nav" aria-label="Halaman"></nav>
@@ -40,6 +41,7 @@
 
     <div class="tt-kolom">
     <header class="tt-kepala">
+      <img src="icons/logo-64.png" alt="" class="logo-kepala" width="34" height="34">
       <div class="tt-kepala-judul">
         <span class="tt-merek">Tata Tertib</span>
         <strong id="judul-halaman">Beranda</strong>
@@ -158,6 +160,44 @@
         <ol class="daftar-kartu" id="z-daftar"></ol>
       </section>
 
+      <!-- MASA PEMBINAAN -->
+      <section id="p-pembinaan" class="panel" hidden>
+        <div class="prg-atas">
+          <div class="segmen" id="prg-segmen" role="group" aria-label="Tampilkan">
+            <button type="button" data-filter="aktif" aria-pressed="true">Berjalan <span class="badge" id="prg-n-aktif" hidden></span></button>
+            <button type="button" data-filter="lalu" aria-pressed="false">Selesai</button>
+          </div>
+          <button id="prg-baru" class="tombol tombol-utama" type="button" hidden>Tetapkan masa pembinaan</button>
+        </div>
+        <p class="keterangan" id="prg-ket"></p>
+        <ol class="prg-daftar" id="prg-daftar"></ol>
+
+        <details class="blok prg-lipat" id="prg-kalender">
+          <summary><span>Kalender sekolah</span><small>Hari libur dan hari daring tidak dihitung sebagai hari pembinaan</small></summary>
+          <ul class="kal-daftar" id="prg-kal-daftar"></ul>
+          <form id="prg-kal-form" class="kal-form" hidden>
+            <div><label class="label" for="kal-tgl">Tanggal</label><input id="kal-tgl" class="isian" type="date" required></div>
+            <div><label class="label" for="kal-jenis">Jenis</label><select id="kal-jenis" class="isian"><option>Libur</option><option>Daring</option></select></div>
+            <div class="lebar"><label class="label" for="kal-ket">Keterangan</label><input id="kal-ket" class="isian" type="text" maxlength="120" placeholder="Contoh: rapat guru, pembelajaran daring"></div>
+            <button class="tombol tombol-garis" type="submit">Tambahkan ke kalender</button>
+          </form>
+        </details>
+
+        <details class="blok prg-lipat" id="prg-bentuk">
+          <summary><span>Pilihan bentuk pembinaan</span><small>Waka Kesiswaan, Koordinator Tatib, Tim Tatib, dan Guru BK bisa menambah rekomendasi</small></summary>
+          <ul class="baris-ringkas" id="prg-bentuk-daftar"></ul>
+          <form id="prg-bentuk-form" class="bentuk-form" hidden>
+            <label class="label" for="bt-nama">Bentuk pembinaan yang direkomendasikan</label>
+            <input id="bt-nama" class="isian" type="text" maxlength="120" placeholder="Contoh: menulis surat permintaan maaf">
+            <div class="dua-kolom">
+              <div><label class="label" for="bt-cocok">Cocok untuk</label><input id="bt-cocok" class="isian" type="text" maxlength="80" placeholder="Ringan, Sedang"></div>
+              <div><label class="label" for="bt-ket">Keterangan</label><input id="bt-ket" class="isian" type="text" maxlength="300" placeholder="Cara pelaksanaan singkat"></div>
+            </div>
+            <button class="tombol tombol-garis" type="submit">Tambahkan rekomendasi</button>
+          </form>
+        </details>
+      </section>
+
       <!-- PULIH -->
       <section id="p-pulih" class="panel" hidden>
         <p class="keterangan" id="pm-ket"></p>
@@ -222,6 +262,21 @@
             </div>
             <p class="keterangan" id="e-kosong" hidden>Belum ada anggota. Tambahkan lewat tab Anggota, lalu kembali ke sini untuk absensi.</p>
             <ul class="eks-daftar" id="e-daftar"></ul>
+            <div class="blok eks-sesi" id="e-sesi">
+              <h2 class="judul-blok">Pertemuan ini</h2>
+              <div class="eks-sesi-grid">
+                <fieldset><legend class="label">Pembina yang hadir</legend><div id="es-pembina" class="daftar-centang"></div></fieldset>
+                <fieldset><legend class="label">Pelatih yang hadir</legend><div id="es-pelatih" class="daftar-centang"></div></fieldset>
+              </div>
+              <span class="label">Foto kegiatan <span class="redup">(bukti pembinaan, maks. 6)</span></span>
+              <div class="eks-foto" id="es-foto"></div>
+              <label class="tombol tombol-garis tombol-foto" for="es-foto-input"><span class="ik ik-kamera"></span><span id="es-foto-label">Ambil foto kegiatan</span></label>
+              <input type="file" id="es-foto-input" class="input-foto" accept="image/*" multiple>
+              <label class="label" for="es-catatan">Catatan latihan <span class="redup">(opsional)</span></label>
+              <input id="es-catatan" class="isian" type="text" maxlength="300" placeholder="Materi latihan hari ini">
+              <button id="es-simpan" class="tombol tombol-utama" type="button">Simpan pertemuan</button>
+              <p class="status-simpan" id="es-status" aria-live="polite"></p>
+            </div>
           </div>
 
           <div id="e-rekap" hidden>
@@ -309,6 +364,39 @@
       <div class="modal-aksi" id="pbn-aksi">
         <button id="pbn-batal" class="tombol tombol-garis" type="button">Batal</button>
         <button id="pbn-simpan" class="tombol tombol-utama" type="button">Simpan pernyataan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Penetapan masa pembinaan -->
+  <div id="modal-prg" class="modal modal-lebar" hidden role="dialog" aria-modal="true" aria-labelledby="pf-judul">
+    <div class="modal-isi">
+      <h2 id="pf-judul" class="judul-blok">Tetapkan masa pembinaan</h2>
+      <div id="pf-siswa" class="pf-siswa"></div>
+      <p class="keterangan" id="pf-kasus" hidden></p>
+      <span class="label">Jenis</span>
+      <div class="segmen" id="pf-jenis" role="group" aria-label="Jenis">
+        <button type="button" data-jenis="Pembinaan" aria-pressed="true">Pembinaan</button>
+        <button type="button" data-jenis="Skorsing" aria-pressed="false">Skorsing</button>
+      </div>
+      <span class="label">Bentuk pembinaan <span class="redup">(boleh lebih dari satu)</span></span>
+      <div class="pf-bentuk" id="pf-bentuk"></div>
+      <label class="label" for="pf-lain">Bentuk lain <span class="redup">(opsional)</span></label>
+      <input id="pf-lain" class="isian" type="text" maxlength="160" placeholder="Tulis bila tidak ada di pilihan">
+      <div class="dua-kolom">
+        <div><label class="label" for="pf-mulai">Mulai</label><input id="pf-mulai" class="isian" type="date"></div>
+        <div><label class="label" for="pf-hari">Jumlah hari sekolah</label><input id="pf-hari" class="isian" type="number" min="1" max="60" inputmode="numeric"></div>
+      </div>
+      <div class="pf-cepat" id="pf-cepat" role="group" aria-label="Jumlah hari cepat">
+        <button type="button" data-hari="1">1 hari</button><button type="button" data-hari="3">3 hari</button><button type="button" data-hari="5">5 hari</button><button type="button" data-hari="10">10 hari</button>
+      </div>
+      <div class="pf-pratinjau" id="pf-pratinjau" aria-live="polite"></div>
+      <label class="label" for="pf-catatan">Catatan <span class="redup">(opsional, ikut tercetak)</span></label>
+      <textarea id="pf-catatan" class="isian" rows="2" maxlength="500" placeholder="Contoh: didampingi Guru BK setiap pukul 09.30"></textarea>
+      <p class="pesan-galat" id="pf-pesan" role="alert"></p>
+      <div class="modal-aksi">
+        <button id="pf-batal" class="tombol tombol-garis" type="button">Batal</button>
+        <button id="pf-simpan" class="tombol tombol-utama" type="button">Tetapkan</button>
       </div>
     </div>
   </div>

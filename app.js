@@ -477,7 +477,7 @@
       $('tombol-simpan').hidden = false;
       $('tombol-simpan').disabled = true;
       $('tombol-batal').textContent = 'Batal';
-      $('kartu-ket').textContent = 'Tulis alasannya, lalu tekan Simpan.';
+      $('kartu-ket').textContent = 'Pilih atau tulis alasannya, lalu tekan Simpan.';
       $('popup').hidden = false;
       setTimeout(() => $('input-ket').focus(), 50);
       return;
@@ -775,6 +775,11 @@
     $('tombol-batal').addEventListener('click', batalPopup);
     $('tombol-simpan').addEventListener('click', konfirmasiPopup);
     $('input-ket').addEventListener('input', () => { $('tombol-simpan').disabled = !$('input-ket').value.trim(); });
+    // Alasan "sakit" dibaca masa pembinaan: hari itu tidak dihitung dan jadwal diperpanjang.
+    $('alasan-cepat').addEventListener('click', (e) => {
+      const b = e.target.closest('button'); if (!b) return;
+      $('input-ket').value = b.textContent; $('tombol-simpan').disabled = false; $('input-ket').focus();
+    });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && S.popup) batalPopup(); });
     $('tombol-menu').addEventListener('click', () => ($('menu').hidden ? bukaMenu() : tutupMenu()));
     $('menu-perbarui').addEventListener('click', perbaruiData);

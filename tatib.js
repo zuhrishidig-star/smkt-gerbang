@@ -24,6 +24,8 @@
   IKON.foto = '<path d="M3 7V5a2 2 0 0 1 2-2h2" /> <path d="M17 3h2a2 2 0 0 1 2 2v2" /> <path d="M21 17v2a2 2 0 0 1-2 2h-2" /> <path d="M7 21H5a2 2 0 0 1-2-2v-2" /> <path d="M8 14s1.5 2 4 2 4-2 4-2" /> <path d="M9 9h.01" /> <path d="M15 9h.01" />';
   IKON.kamera = '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" /> <circle cx="12" cy="13" r="3" />';
   IKON.tablet = '<rect width="16" height="20" x="4" y="2" rx="2" ry="2" /> <line x1="12" x2="12.01" y1="18" y2="18" />';
+  IKON.tambah = '<path d="M5 12h14" /> <path d="M12 5v14" />';
+  IKON.pembinaan = '<path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5" /> <path d="M16 2v4" /> <path d="M8 2v4" /> <path d="M3 10h5" /> <path d="M17.5 17.5 16 16.3V14" /> <circle cx="16" cy="16" r="6" />';
 
   const MENU = [
     { id: 'beranda', label: 'Beranda', ikon: 'beranda', judul: 'Beranda', boleh: () => true },
@@ -32,6 +34,7 @@
     { id: 'verifikasi', label: 'Verifikasi', ikon: 'foto', judul: 'Verifikasi foto scan', boleh: (a) => a.verifikasi, ket: 'Cocokkan foto scan gerbang dengan foto siswa' },
     { id: 'siswa', label: 'Siswa', ikon: 'siswa', judul: 'Riwayat siswa', boleh: (a) => a.riwayat, ket: 'Poin, kehadiran, dan pembinaan per siswa' },
     { id: 'waspada', label: 'Waspada', ikon: 'waspada', judul: 'Waspada', boleh: (a) => a.zona, ket: 'Siswa yang poinnya mencapai level tindakan' },
+    { id: 'pembinaan', label: 'Pembinaan', ikon: 'pembinaan', judul: 'Masa pembinaan', boleh: (a) => a.program, ket: 'Jadwal pembinaan dan skorsing per hari sekolah' },
     { id: 'pulih', label: 'Pulih', ikon: 'pulih', judul: 'Pulih', boleh: (a) => a.pemulihan, ket: 'Program fisik dan pembinaan lain' },
     { id: 'absen', label: 'Absen', ikon: 'absen', judul: 'Absen', boleh: (a) => a.izin, ket: 'Catat izin atau sakit siswa' },
     { id: 'ekskul', label: 'Ekskul', ikon: 'ekskul', judul: 'Absensi ekskul', boleh: (a) => a.ekskul, ket: 'Kehadiran anggota ekstrakurikuler yang Anda bina' },
@@ -266,6 +269,10 @@
     bangunNav();
     aturLencana(d.menunggu || 0);
     $('memuat').hidden = true;
+    if (S.guru.kelasGanda && !sesiTab.get('smkt_ganda')) {
+      sesiTab.set('smkt_ganda', 1);
+      toast('Kelas wali Anda belum aktif: ' + S.guru.kelasGanda + ' di tab Guru. Satu kelas hanya satu wali; hubungi Tim Tata Tertib.', 'galat', 9000);
+    }
   }
   function bangunNav() {
     const nav = $('nav-bawah');
@@ -313,7 +320,7 @@
       if (aktif) x.setAttribute('aria-current', 'page'); else x.removeAttribute('aria-current');
     });
     document.querySelectorAll('.panel').forEach((p) => { p.hidden = p.id !== 'p-' + nama; });
-    ({ beranda: muatBeranda, lapor: initLapor, kotak: muatTL, verifikasi: muatVerifikasi, siswa: initRiwayat, waspada: muatZona, pulih: muatPulih, absen: initIzin, ekskul: muatEkskul })[nama]();
+    ({ beranda: muatBeranda, lapor: initLapor, kotak: muatTL, verifikasi: muatVerifikasi, siswa: initRiwayat, waspada: muatZona, pembinaan: muatProgram, pulih: muatPulih, absen: initIzin, ekskul: muatEkskul })[nama]();
     window.scrollTo(0, 0);
   }
 
@@ -1136,6 +1143,7 @@
     h += '<div class="aksi">';
     if (tunggu) h += '<button type="button" class="tombol tombol-utama" data-aksi="buka-tl">Tindak lanjuti</button>';
     if (tunggu && jenisPbnKasus(it)) h += '<button type="button" class="tombol tombol-garis" data-aksi="pbn">' + ikon('surat') + 'Pernyataan siswa</button>';
+    if (tunggu && S.akses.aturProgram) h += '<button type="button" class="tombol tombol-garis" data-aksi="program">' + ikon('pembinaan') + 'Masa pembinaan</button>';
     if (T.status !== 'Tembusan' && it.waOrtu !== undefined) {
       h += tombolWa(it.waOrtu, isiTemplat(S.templat.WA_KASUS_ORTU, { nama: it.nama, kelas: it.kelas, tanggal: it.tanggal, pelanggaran: it.pelanggaran, pengirim: namaPendek(S.guru.nama), sekolah: S.sekolah }),
         it.waOrtuDibuka ? 'Ortu dikabari' : 'WA orang tua', { jenis: 'kasus-ortu', ref: it.idLog, nis: it.nis }, !!it.waOrtuDibuka);
@@ -1164,6 +1172,11 @@
     if (!a) return;
     const li = a.closest('.kasus');
     if (a.dataset.aksi === 'riwayat') { bukaRiwayatDari(a.dataset.nis); return; }
+    if (a.dataset.aksi === 'program') {
+      const it = T.item.filter((x) => x.idLog === li.dataset.id)[0];
+      if (it) bukaFormProgram({ nis: it.nis, refKasus: it.idLog, pelanggaran: it.pelanggaran + ' (' + it.tanggal + ')' });
+      return;
+    }
     if (a.dataset.aksi === 'pbn') {
       const it = T.item.filter((x) => x.idLog === li.dataset.id)[0];
       if (!it) return;
@@ -1207,6 +1220,8 @@
       if (aksi === 'foto-bukti') { lihatFotoBukti(a.dataset.id, a.dataset.judul); return; }
       if (aksi === 'pdf-pbn') { pdfPernyataan(a, a.dataset.id); return; }
       if (aksi === 'pernyataan') { const nis = a.dataset.nis; bukaPernyataan(nis, { sesudah: () => bukaRiwayat(nis, true) }); return; }
+      if (aksi === 'program') { bukaFormProgram({ nis: a.dataset.nis }); return; }
+      if (aksi === 'lihat-prg') { PR.buka = a.dataset.id; PR.filter = 'aktif'; return; }
       if (aksi === 'berkas') {
         a.disabled = true; a.textContent = 'Menyusun berkas…';
         $('r-berkas').innerHTML = '<p class="keterangan">Menyusun PDF berisi rekap pelanggaran, foto bukti, dan pernyataan. Bisa sampai setengah menit.</p>';
@@ -1251,6 +1266,7 @@
       '<span class="meta">Oleh ' + esc(namaPendek(b.pembina)) + '. ' + esc(b.pelanggaran) + '</span>' + (b.komitmen ? '<span class="meta">Janji siswa: ' + esc(b.komitmen) + '</span>' : '') +
       '<span class="meta"><button type="button" class="tautan" data-aksi="pdf-pbn" data-id="' + esc(b.id) + '">Buat PDF untuk dicetak</button></span></li>').join('') + '</ul>'
       : '<p class="kosong">Belum ada pernyataan pembinaan yang ditandatangani siswa.</p>';
+    h += programRiwayatHtml(d);
     if (d.pemulihan.length) h += '<h3 class="sub-judul">Pemulihan dan pembinaan</h3><ul class="baris-ringkas">' + d.pemulihan.map((r) =>
       '<li>' + esc(r.kategori) + ': <strong>' + esc(r.status) + '</strong>' + (r.potongan ? ' <span class="tag hijau">−' + r.potongan + ' poin</span>' : '') +
       '<span class="meta">' + esc(r.tanggal) + (r.catatan ? ', ' + esc(r.catatan) : '') + '</span></li>').join('') + '</ul>';
@@ -1260,6 +1276,7 @@
       '<li><strong>' + esc(x.status) + '</strong>, ' + esc(x.tanggal) + (x.jam ? ', ' + esc(String(x.jam).slice(0, 5)) : '') + (x.ket ? '<span class="meta">' + esc(x.ket) + '</span>' : '') + '</li>').join('') + '</ul>';
     h += '<div class="aksi-riwayat">';
     if ((d.bolehPembinaan || []).length) h += '<button type="button" class="tombol tombol-utama" data-aksi="pernyataan" data-nis="' + esc(s.nis) + '">' + ikon('surat') + 'Catat pernyataan pembinaan</button>';
+    if (d.bolehAturProgram) h += '<button type="button" class="tombol tombol-garis" data-aksi="program" data-nis="' + esc(s.nis) + '">' + ikon('pembinaan') + 'Tetapkan masa pembinaan</button>';
     if (d.bolehBerkas) h += '<button type="button" class="tombol tombol-garis" data-aksi="berkas" data-nis="' + esc(s.nis) + '">Buat berkas bukti (PDF)</button>';
     h += '<button type="button" class="tombol tombol-garis" data-aksi="lapor-siswa" data-nis="' + esc(s.nis) + '">Lapor pelanggaran siswa ini</button></div><div id="r-berkas"></div>';
     return h + '</div>';
@@ -1658,6 +1675,8 @@
     $('e-simpan').addEventListener('click', (e) => { if (e.target.closest('[data-aksi="simpan-lagi"]')) simpanE(); });
     $('e-bulan').addEventListener('change', muatRekapE);
     $('e-anggota-daftar').addEventListener('click', klikAnggotaE);
+    pasangSesiE();
+    ['es-pembina', 'es-pelatih'].forEach((id) => $(id).addEventListener('change', () => { clearTimeout(ES.timer); ES.timer = setTimeout(() => simpanSesiE(), 700); }));
     window.addEventListener('beforeunload', (e) => { if (E.antre.size) { e.preventDefault(); e.returnValue = ''; } });
   }
 
@@ -1667,9 +1686,9 @@
     if (!E.data) { $('e-isi').hidden = true; $('e-ket').hidden = false; $('e-ket').textContent = 'Memuat ekskul…'; }
     try {
       E.data = await api('ekskul.awal');
-      if (!E.data.ekskul.length) { $('e-isi').hidden = true; $('e-ket').hidden = false; $('e-ket').textContent = 'Anda belum terdaftar sebagai pembina ekskul. Tim Tata Tertib mengisi email pembina di tab Ekskul.'; return; }
+      if (!E.data.ekskul.length) { $('e-isi').hidden = true; $('e-ket').hidden = false; $('e-ket').textContent = 'Anda belum terdaftar sebagai pembina ekskul. Tim Tata Tertib memilih ekskul binaan Anda di kolom Ekskul_Binaan tab Guru.'; return; }
       if (!eAktif()) E.aktif = (simpan.get('smkt_ekskul', '') && E.data.ekskul.some((x) => x.nama === simpan.get('smkt_ekskul', ''))) ? simpan.get('smkt_ekskul', '') : E.data.ekskul[0].nama;
-      E.tanggal = E.data.hariIni; E.status = eAktif().status || {};
+      E.tanggal = E.data.hariIni; E.status = eAktif().status || {}; ES.sesi = eAktif().sesi || null;
       const t = $('e-tanggal'); t.value = E.tanggal; t.max = E.data.hariIni; t.min = hariIni(-E.data.mundur);
       if (!$('e-bulan').value) $('e-bulan').value = E.data.hariIni.slice(0, 7);
       $('e-ket').hidden = true; $('e-isi').hidden = false;
@@ -1688,7 +1707,7 @@
       '<p class="eks-jadwal">' + ((e.hari || e.jam) ? 'Latihan ' + esc([e.hari, e.jam].filter(Boolean).join(', pukul ')) + '. ' : '') + e.anggota.length + ' anggota.</p>';
     document.querySelectorAll('#e-mode button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === E.mode)));
     $('e-absen').hidden = E.mode !== 'absen'; $('e-rekap').hidden = E.mode !== 'rekap'; $('e-anggota').hidden = E.mode !== 'anggota';
-    if (E.mode === 'absen') renderAbsenE();
+    if (E.mode === 'absen') { renderAbsenE(); renderSesiE(); }
     else if (E.mode === 'rekap') muatRekapE();
     else renderAnggotaE();
   }
@@ -1706,7 +1725,7 @@
     if (!(await tuntaskanE())) { $('e-ekskul').value = E.aktif; return; }
     E.aktif = nama; simpan.set('smkt_ekskul', nama);
     const e = eAktif();
-    E.tanggal = E.data.hariIni; $('e-tanggal').value = E.tanggal; E.status = e.status || {};
+    E.tanggal = E.data.hariIni; $('e-tanggal').value = E.tanggal; E.status = e.status || {}; ES.sesi = e.sesi || null;
     if (E.pemilih) { E.pemilih.render(); }
     renderEkskul();
   }
@@ -1717,9 +1736,9 @@
     $('e-daftar').innerHTML = '<li class="memuat">Memuat absensi ' + esc(tglPendek(tgl)) + '…</li>';
     try {
       const d = await api('ekskul.hari', { ekskul: E.aktif, tanggal: tgl });
-      if (d.tanggal === E.tanggal && d.ekskul === E.aktif) { E.status = d.status; if (tgl === E.data.hariIni) eAktif().status = d.status; }
+      if (d.tanggal === E.tanggal && d.ekskul === E.aktif) { E.status = d.status; ES.sesi = d.sesi || null; if (tgl === E.data.hariIni) { eAktif().status = d.status; eAktif().sesi = d.sesi || null; } }
     } catch (e) { toast(e.message, 'galat', 5000); }
-    renderAbsenE();
+    renderAbsenE(); renderSesiE();
   }
 
   function renderAbsenE() {
@@ -1805,6 +1824,7 @@
             '<td>' + a.hadir + '</td><td>' + a.izin + '</td><td>' + a.sakit + '</td><td' + (a.alpa ? ' class="alpa"' : '') + '>' + a.alpa + '</td>' +
             '<td class="persen">' + (a.persen === null ? '–' : a.persen + '%') + '</td></tr>').join('') + '</tbody></table></div>';
       }
+      h += rekapSesiHtml(d);
       $('e-rekap-isi').innerHTML = h;
     } catch (er) { $('e-rekap-isi').innerHTML = '<p class="memuat">' + esc(er.message) + '</p>'; }
   }
@@ -1839,6 +1859,443 @@
       if (E.aktif === nama) renderEkskul();
       toast('Anggota dikeluarkan. Absensinya yang lalu tetap ada di rekap.', 'hadir', 4000);
     } catch (er) { b.disabled = false; b.textContent = 'Keluarkan'; b.dataset.aksi = 'keluar'; toast(er.message, 'galat', 5000); }
+  }
+
+  /* =================================================================
+   *  MASA PEMBINAAN & SKORSING (v1.5)
+   *  Tim Tatib menetapkan mulai dan jumlah hari; jadwal mengikuti hari
+   *  sekolah dan otomatis mundur bila siswa izin/sakit/pulang sakit atau
+   *  ada hari daring. Orang tua menyetujui di kertas, fotonya diunggah.
+   * ================================================================= */
+  const PR = { data: null, filter: 'aktif', buka: '', bentuk: null, kal: null, pasang: false, form: null, rinci: {}, timerPratinjau: null };
+  const NAMA_BULAN_PENDEK = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+  const NAMA_HARI_PENDEK = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+  const keDate = (ymd) => { const p = String(ymd || '').split('-').map(Number); return p.length === 3 ? new Date(p[0], p[1] - 1, p[2]) : null; };
+  function tglManis(ymd, panjang) {
+    const d = keDate(ymd); if (!d) return '-';
+    return (panjang ? NAMA_HARI_PENDEK[d.getDay()] + ', ' : '') + d.getDate() + ' ' + NAMA_BULAN_PENDEK[d.getMonth()] + (panjang && d.getFullYear() !== new Date().getFullYear() ? ' ' + d.getFullYear() : '');
+  }
+  const LABEL_HARI = { terlaksana: 'Terlaksana', 'hari ini': 'Hari ini', rencana: 'Rencana', tertunda: 'Tidak dihitung', libur: 'Libur', daring: 'Daring' };
+  const kelasTahap = (t) => ({ 'Berjalan': 'berjalan', 'Belum mulai': 'belum', 'Tuntas': 'tuntas', 'Selesai': 'selesai', 'Dibatalkan': 'batal' }[t] || 'berjalan');
+
+  function pasangProgram() {
+    if (PR.pasang) return;
+    PR.pasang = true;
+    $('prg-baru').innerHTML = ikon('tambah') + 'Tetapkan masa pembinaan';
+    $('prg-baru').addEventListener('click', () => bukaFormProgram({}));
+    $('prg-segmen').addEventListener('click', (e) => {
+      const b = e.target.closest('button[data-filter]'); if (!b) return;
+      PR.filter = b.dataset.filter; renderProgram();
+    });
+    $('prg-daftar').addEventListener('click', klikProgram);
+    $('prg-daftar').addEventListener('change', unggahPersetujuan);
+    $('prg-kal-form').addEventListener('submit', simpanKalender);
+    $('prg-kal-daftar').addEventListener('click', hapusKalender);
+    $('prg-bentuk-form').addEventListener('submit', tambahBentuk);
+    // Form penetapan
+    $('pf-batal').addEventListener('click', tutupFormProgram);
+    $('pf-simpan').addEventListener('click', simpanProgram);
+    $('pf-jenis').addEventListener('click', (e) => {
+      const b = e.target.closest('button[data-jenis]'); if (!b) return;
+      PR.form.jenis = b.dataset.jenis; renderJenisForm();
+    });
+    $('pf-cepat').addEventListener('click', (e) => {
+      const b = e.target.closest('button[data-hari]'); if (!b) return;
+      $('pf-hari').value = b.dataset.hari; jadwalPratinjau();
+    });
+    ['pf-mulai', 'pf-hari'].forEach((id) => $(id).addEventListener('input', jadwalPratinjau));
+    $('pf-bentuk').addEventListener('change', () => { PR.form.galat = ''; $('pf-pesan').textContent = ''; });
+  }
+
+  async function muatProgram(diam) {
+    pasangProgram();
+    if (!PR.data && !diam) $('prg-daftar').innerHTML = '<li class="memuat">Memuat masa pembinaan…</li>';
+    try {
+      const [d, k, b] = await Promise.all([api('program.daftar'), api('program.kalender'), PR.bentuk ? Promise.resolve(PR.bentuk) : api('program.bentuk')]);
+      PR.data = d; PR.kal = k; PR.bentuk = b;
+      renderProgram(); renderKalender(); renderBentuk();
+    } catch (e) {
+      if (!PR.data) $('prg-daftar').innerHTML = '<li class="kosong">' + esc(e.message) + '</li>';
+    }
+  }
+
+  function renderProgram() {
+    const d = PR.data; if (!d) return;
+    $('prg-baru').hidden = !d.bolehAtur;
+    const aktif = (p) => ['Berjalan', 'Belum mulai', 'Tuntas'].indexOf(p.tahap) > -1;
+    const daftar = d.program.filter((p) => (PR.filter === 'aktif' ? aktif(p) : !aktif(p)));
+    const nAktif = d.program.filter(aktif).length;
+    document.querySelectorAll('#prg-segmen button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === PR.filter)));
+    $('prg-n-aktif').textContent = nAktif ? String(nAktif) : '';
+    $('prg-n-aktif').hidden = !nAktif;
+    $('prg-ket').textContent = PR.filter === 'aktif'
+      ? (nAktif ? 'Hari yang tidak dihitung (izin, sakit, pulang sakit, libur, daring) otomatis menggeser tanggal selesai.' : '')
+      : 'Masa pembinaan yang sudah selesai atau dibatalkan dalam 45 hari terakhir.';
+    if (!daftar.length) {
+      $('prg-daftar').innerHTML = '<li class="kosong">' + (PR.filter === 'aktif'
+        ? (d.bolehAtur ? 'Belum ada masa pembinaan berjalan. Tetapkan dari tombol di atas, dari Kotak Masuk, atau dari riwayat siswa.' : 'Belum ada masa pembinaan berjalan untuk siswa Anda.')
+        : 'Belum ada masa pembinaan yang selesai.') + '</li>';
+      return;
+    }
+    $('prg-daftar').innerHTML = daftar.map(kartuProgram).join('');
+    daftar.forEach((p) => { muatFoto(p.nis); });
+    if (PR.buka) { const el = $('prg-daftar').querySelector('[data-id="' + PR.buka + '"]'); if (el) muatRinciProgram(PR.buka, el); }
+  }
+
+  function kartuProgram(p) {
+    const persen = Math.min(100, Math.round(p.terlaksana / p.jumlah * 100));
+    const terbuka = PR.buka === p.id;
+    let h = '<li class="prg ' + kelasTahap(p.tahap) + '" data-id="' + esc(p.id) + '">' +
+      '<button type="button" class="prg-kepala" data-aksi="buka" aria-expanded="' + terbuka + '">' + fotoHtml(p) +
+      '<span class="prg-identitas"><span class="nm">' + esc(p.nama) + '</span><span class="kl">' + esc(p.kelas) + ' · ' + esc(p.jenis) + '</span></span>' +
+      '<span class="prg-tahap">' + esc(p.tahap) + '</span></button>' +
+      '<div class="prg-badan"><p class="prg-bentuk">' + p.bentuk.map(esc).join('<br>') + '</p>' +
+      '<div class="prg-meter" role="img" aria-label="' + p.terlaksana + ' dari ' + p.jumlah + ' hari terlaksana"><span style="width:' + persen + '%"></span></div>' +
+      '<dl class="prg-fakta"><div><dt>Terlaksana</dt><dd><b>' + p.terlaksana + '</b> / ' + p.jumlah + ' hari</dd></div>' +
+      '<div><dt>' + (p.tahap === 'Selesai' || p.tahap === 'Dibatalkan' ? 'Rencana selesai' : 'Perkiraan selesai') + '</dt><dd>' + esc(tglManis(p.selesai, true)) + '</dd></div>' +
+      (p.tertunda ? '<div class="tunda"><dt>Diperpanjang</dt><dd>+' + p.tertunda + ' hari</dd></div>' : '') +
+      '<div class="' + (p.setuju ? 'setuju' : 'belum-setuju') + '"><dt>Orang tua</dt><dd>' + (p.setuju ? 'Sudah tanda tangan' : 'Belum tanda tangan') + '</dd></div></dl>' +
+      (p.hariIni && p.tahap === 'Berjalan' ? '<p class="prg-hariini">Hari ini: ' + esc(LABEL_HARI[p.hariIni] || p.hariIni) + '</p>' : '') +
+      '</div><div class="prg-rinci" ' + (terbuka ? '' : 'hidden') + '></div></li>';
+    return h;
+  }
+
+  async function muatRinciProgram(id, li) {
+    const el = li.querySelector('.prg-rinci');
+    el.hidden = false;
+    li.querySelector('.prg-kepala').setAttribute('aria-expanded', 'true');
+    const p = PR.data.program.filter((x) => x.id === id)[0];
+    if (!PR.rinci[id]) el.innerHTML = '<p class="memuat">Memuat jadwal…</p>';
+    else el.innerHTML = rinciProgramHtml(PR.rinci[id]);
+    try {
+      const d = await api('program.siswa', { nis: p.nis });
+      d.program.forEach((x) => { PR.rinci[x.id] = Object.assign(x, { bolehAtur: d.bolehAtur, bolehUnggah: d.bolehUnggah }); });
+      if (PR.buka === id && PR.rinci[id]) el.innerHTML = rinciProgramHtml(PR.rinci[id]);
+    } catch (e) { el.innerHTML = '<p class="pesan-galat">' + esc(e.message) + '</p>'; }
+  }
+
+  function kalenderHariHtml(hari) {
+    return '<ol class="kal-hari">' + hari.map((x) => '<li class="kh-' + x.status.replace(' ', '-') + '" title="' + esc(LABEL_HARI[x.status] + (x.ket ? ': ' + x.ket : '')) + '">' +
+      '<span class="kh-tgl"><small>' + esc(String(x.hari).slice(0, 3)) + '</small>' + esc(keDate(x.tgl).getDate()) + '</span>' +
+      '<span class="kh-ket">' + (x.ke ? 'Hari ke-' + x.ke : esc(LABEL_HARI[x.status])) + (x.ket && x.status !== 'rencana' ? '<small>' + esc(x.ket) + '</small>' : '') + '</span></li>').join('') + '</ol>';
+  }
+
+  function rinciProgramHtml(p) {
+    let h = '';
+    if (p.pelanggaran) h += '<p class="meta">Karena: ' + esc(p.pelanggaran) + '</p>';
+    if (p.catatan) h += '<p class="meta">Catatan: ' + esc(p.catatan) + '</p>';
+    h += '<p class="meta">Mulai ' + esc(tglManis(p.mulai, true)) + ', ' + p.jumlah + ' hari sekolah. Ditetapkan ' + esc(namaPendek(p.penetap)) + '.</p>';
+    h += kalenderHariHtml(p.hari || []);
+    h += '<div class="prg-legenda"><span class="kh-terlaksana">Terlaksana</span><span class="kh-hari-ini">Hari ini</span><span class="kh-rencana">Rencana</span><span class="kh-tertunda">Tidak dihitung</span><span class="kh-libur">Libur/daring</span></div>';
+    h += '<div class="aksi-riwayat">';
+    h += '<button type="button" class="tombol tombol-garis" data-aksi="pdf">' + ikon('surat') + 'Surat persetujuan ortu (PDF)</button>';
+    if (p.bolehUnggah && p.status !== 'Dibatalkan') {
+      h += '<label class="tombol ' + (p.setuju ? 'tombol-garis' : 'tombol-utama') + ' tombol-foto">' + ikon('kamera') + (p.setuju ? 'Ganti foto lembar bertanda tangan' : 'Unggah foto lembar bertanda tangan') +
+        '<input type="file" class="input-foto" accept="image/*" capture="environment" data-unggah="' + esc(p.id) + '"></label>';
+    }
+    h += '</div><div class="prg-pdf"></div>';
+    if (p.bolehAtur && p.status !== 'Dibatalkan') {
+      h += '<details class="prg-ubah"><summary>Ubah jadwal atau status</summary>' +
+        '<div class="dua-kolom"><div><label class="label">Mulai</label><input type="date" class="isian" data-ubah="mulai" value="' + esc(p.mulai) + '"></div>' +
+        '<div><label class="label">Jumlah hari sekolah</label><input type="number" class="isian" min="1" max="60" data-ubah="hari" value="' + p.jumlah + '"></div></div>' +
+        '<label class="label">Alasan perubahan</label><input type="text" class="isian" maxlength="200" data-ubah="alasan" placeholder="Contoh: kesepakatan dengan orang tua">' +
+        '<div class="aksi-riwayat"><button type="button" class="tombol tombol-utama" data-aksi="simpan-ubah">Simpan perubahan</button>' +
+        (p.status === 'Berjalan' ? '<button type="button" class="tombol tombol-garis" data-aksi="selesai">Tandai selesai</button>' : '<button type="button" class="tombol tombol-garis" data-aksi="lanjut">Buka lagi</button>') +
+        '<button type="button" class="tautan merah" data-aksi="batal">Batalkan masa pembinaan</button></div></details>';
+    }
+    if ((p.riwayatUbah || []).length) h += '<details class="prg-log"><summary>Riwayat perubahan</summary><ul>' + p.riwayatUbah.map((x) => '<li>' + esc(x) + '</li>').join('') + '</ul></details>';
+    return h;
+  }
+
+  async function klikProgram(e) {
+    const a = e.target.closest('[data-aksi]'); if (!a) return;
+    const li = a.closest('.prg'); if (!li) return;
+    const id = li.dataset.id;
+    const aksi = a.dataset.aksi;
+    if (aksi === 'buka') {
+      if (PR.buka === id) { PR.buka = ''; li.querySelector('.prg-rinci').hidden = true; a.setAttribute('aria-expanded', 'false'); return; }
+      const lama = PR.buka && $('prg-daftar').querySelector('[data-id="' + PR.buka + '"]');
+      if (lama) { lama.querySelector('.prg-rinci').hidden = true; lama.querySelector('.prg-kepala').setAttribute('aria-expanded', 'false'); }
+      PR.buka = id; muatRinciProgram(id, li); return;
+    }
+    if (aksi === 'pdf') {
+      a.disabled = true; const teks = a.innerHTML; a.textContent = 'Menyusun PDF…';
+      try { const d = await api('program.pdf', { id: id }); li.querySelector('.prg-pdf').innerHTML = tautanPdf('Surat persetujuan siap dicetak', pdfDariBase64(d)); }
+      catch (er) { toast(er.message, 'galat', 5000); }
+      a.disabled = false; a.innerHTML = teks; return;
+    }
+    const rinci = li.querySelector('.prg-rinci');
+    const nilai = (k) => { const x = rinci.querySelector('[data-ubah="' + k + '"]'); return x ? x.value.trim() : ''; };
+    let kirim = null;
+    if (aksi === 'simpan-ubah') kirim = { id: id, mulai: nilai('mulai'), jumlahHari: nilai('hari'), alasan: nilai('alasan') };
+    if (aksi === 'selesai') kirim = { id: id, ubah: 'selesai', alasan: nilai('alasan') };
+    if (aksi === 'lanjut') kirim = { id: id, ubah: 'lanjut', alasan: nilai('alasan') };
+    if (aksi === 'batal') {
+      if (a.dataset.yakin !== '1') { a.dataset.yakin = '1'; a.textContent = 'Ketuk lagi untuk membatalkan'; if (!nilai('alasan')) { rinci.querySelector('[data-ubah="alasan"]').focus(); toast('Tulis alasan pembatalan dulu.', 'galat'); } return; }
+      kirim = { id: id, ubah: 'batal', alasan: nilai('alasan') };
+    }
+    if (!kirim) return;
+    a.disabled = true;
+    try {
+      const d = await api('program.ubah', kirim);
+      gantiProgram(d.program);
+      toast(aksi === 'simpan-ubah' ? 'Jadwal diperbarui. Selesai ' + tglManis(d.program.selesai, true) + '.' : 'Status: ' + d.program.tahap + '.', 'hadir', 4000);
+    } catch (er) { a.disabled = false; toast(er.message, 'galat', 5000); }
+  }
+
+  function gantiProgram(p) {
+    if (!PR.data) return;
+    const lama = PR.rinci[p.id] || {};
+    PR.rinci[p.id] = Object.assign(p, { bolehAtur: lama.bolehAtur !== undefined ? lama.bolehAtur : PR.data.bolehAtur, bolehUnggah: lama.bolehUnggah !== undefined ? lama.bolehUnggah : true });
+    const i = PR.data.program.findIndex((x) => x.id === p.id);
+    if (i > -1) PR.data.program[i] = p; else PR.data.program.unshift(p);
+    renderProgram();
+  }
+
+  async function unggahPersetujuan(e) {
+    const inp = e.target.closest('input[data-unggah]'); if (!inp) return;
+    const f = inp.files && inp.files[0]; inp.value = '';
+    if (!f) return;
+    toast('Mengunggah foto lembar persetujuan…', '', 10000);
+    try {
+      const data = await kompresFoto(f, 1800, 850000);
+      const d = await api('program.unggahTtd', { id: inp.dataset.unggah, foto: data });
+      gantiProgram(d.program);
+      toast('Foto persetujuan tersimpan. Status orang tua: sudah tanda tangan.', 'hadir', 4500);
+    } catch (er) { toast(er.message, 'galat', 6000); }
+  }
+
+  /* ---------- Form penetapan ---------- */
+  /** Hari ini, atau Senin bila hari ini Sabtu/Minggu. */
+  function hariSekolahBerikut() {
+    const k = new Date(hariIni() + 'T00:00:00');
+    if (k.getDay() === 6) k.setDate(k.getDate() + 2); else if (k.getDay() === 0) k.setDate(k.getDate() + 1);
+    return k.getFullYear() + '-' + String(k.getMonth() + 1).padStart(2, '0') + '-' + String(k.getDate()).padStart(2, '0');
+  }
+
+  async function bukaFormProgram(opsi) {
+    pasangProgram();
+    PR.form = { nis: opsi.nis || '', refKasus: opsi.refKasus || '', pelanggaran: opsi.pelanggaran || '', jenis: 'Pembinaan', kunci: uuid(), menyimpan: false };
+    $('pf-pesan').textContent = '';
+    $('pf-catatan').value = '';
+    $('pf-lain').value = '';
+    $('pf-mulai').value = hariSekolahBerikut();
+    $('pf-mulai').min = hariIni(-30);
+    $('pf-hari').value = 3;
+    $('pf-kasus').hidden = !PR.form.pelanggaran;
+    $('pf-kasus').textContent = PR.form.pelanggaran ? 'Rujukan kasus: ' + PR.form.pelanggaran : '';
+    $('pf-simpan').disabled = false; $('pf-simpan').textContent = 'Tetapkan';
+    renderJenisForm();
+    renderSiswaForm();
+    $('pf-bentuk').innerHTML = '<p class="memuat">Memuat pilihan…</p>';
+    $('modal-prg').hidden = false;
+    try {
+      if (!PR.bentuk) PR.bentuk = await api('program.bentuk');
+      $('pf-bentuk').innerHTML = PR.bentuk.bentuk.map((b, i) => '<label class="opsi-bentuk"><input type="checkbox" value="' + esc(b.bentuk) + '"' + '>' +
+        '<span><strong>' + esc(b.bentuk) + '</strong>' + (b.ket || b.cocok ? '<small>' + esc([b.cocok, b.ket].filter(Boolean).join(' · ')) + '</small>' : '') +
+        (b.oleh && b.oleh !== 'Contoh awal aplikasi' ? '<small class="oleh">Rekomendasi ' + esc(namaPendek(b.oleh)) + (b.peran ? ' (' + esc(b.peran) + ')' : '') + '</small>' : '') + '</span></label>').join('');
+    } catch (e) { $('pf-bentuk').innerHTML = '<p class="pesan-galat">' + esc(e.message) + '</p>'; }
+    jadwalPratinjau();
+  }
+  function renderJenisForm() {
+    document.querySelectorAll('#pf-jenis button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.jenis === PR.form.jenis)));
+    $('pf-judul').textContent = 'Tetapkan masa ' + PR.form.jenis.toLowerCase();
+  }
+  function renderSiswaForm() {
+    const s = PR.form.nis ? S.siswa.get(PR.form.nis) : null;
+    const wadah = $('pf-siswa');
+    if (s) {
+      wadah.innerHTML = kartuSiswaHtml(s, PR.form.refKasus ? '' : 'ganti-siswa-prg');
+      muatFoto(s.nis);
+      const g = wadah.querySelector('[data-aksi="ganti-siswa-prg"]');
+      if (g) g.addEventListener('click', () => { PR.form.nis = ''; renderSiswaForm(); });
+    } else {
+      pemilihSiswa(wadah, { id: 'pf', label: 'Siswa', pilih: (x) => { PR.form.nis = x.nis; renderSiswaForm(); jadwalPratinjau(); } });
+    }
+  }
+  function jadwalPratinjau() {
+    clearTimeout(PR.timerPratinjau);
+    $('pf-pratinjau').innerHTML = '<p class="memuat">Menghitung jadwal…</p>';
+    PR.timerPratinjau = setTimeout(pratinjauProgram, 450);
+  }
+  async function pratinjauProgram() {
+    const mulai = $('pf-mulai').value, n = Number($('pf-hari').value);
+    if (!mulai || !n || n < 1 || n > 60) { $('pf-pratinjau').innerHTML = '<p class="keterangan">Isi tanggal mulai dan jumlah hari (1–60).</p>'; return; }
+    try {
+      const d = await api('program.kalender', { mulai: mulai, jumlahHari: n, nis: PR.form.nis });
+      const p = d.pratinjau;
+      $('pf-pratinjau').innerHTML = '<p class="pf-selesai">Selesai <strong>' + esc(tglManis(p.selesai, true)) + '</strong>' +
+        (p.libur ? '<span>' + p.libur + ' hari libur/daring dilewati</span>' : '') + (p.tertunda ? '<span>' + p.tertunda + ' hari izin/sakit tidak dihitung</span>' : '') + '</p>' + kalenderHariHtml(p.hari);
+    } catch (e) { $('pf-pratinjau').innerHTML = '<p class="pesan-galat">' + esc(e.message) + '</p>'; }
+  }
+  function tutupFormProgram() { $('modal-prg').hidden = true; clearTimeout(PR.timerPratinjau); }
+  async function simpanProgram() {
+    const f = PR.form; if (!f || f.menyimpan) return;
+    const bentuk = Array.from($('pf-bentuk').querySelectorAll('input:checked')).map((x) => x.value);
+    const lain = $('pf-lain').value.trim();
+    if (lain) bentuk.push(lain);
+    const pesan = !f.nis ? 'Pilih siswanya dulu.' : !bentuk.length ? 'Pilih minimal satu bentuk pembinaan.' : !$('pf-mulai').value ? 'Isi tanggal mulai.' : '';
+    if (pesan) { $('pf-pesan').textContent = pesan; return; }
+    f.menyimpan = true; $('pf-simpan').disabled = true; $('pf-simpan').textContent = 'Menyimpan…';
+    try {
+      const d = await api('program.simpan', { nis: f.nis, jenis: f.jenis, bentuk: bentuk, mulai: $('pf-mulai').value, jumlahHari: Number($('pf-hari').value),
+        refKasus: f.refKasus, pelanggaran: f.pelanggaran, catatan: $('pf-catatan').value.trim(), kunci: f.kunci });
+      tutupFormProgram();
+      PR.buka = d.program.id;
+      if (S.tab !== 'pembinaan') buka('pembinaan'); else { PR.filter = 'aktif'; gantiProgram(d.program); }
+      toast('Masa ' + f.jenis.toLowerCase() + ' ditetapkan, selesai ' + tglManis(d.program.selesai, true) + '. Cetak surat persetujuan untuk orang tua.', 'hadir', 6000);
+    } catch (e) {
+      $('pf-pesan').textContent = e.message;
+      $('pf-simpan').disabled = false; $('pf-simpan').textContent = 'Tetapkan';
+    } finally { f.menyimpan = false; }
+  }
+
+  /* ---------- Kalender sekolah & pilihan bentuk ---------- */
+  function renderKalender() {
+    const k = PR.kal; if (!k) return;
+    $('prg-kal-form').hidden = !k.bolehUbah;
+    const kini = hariIni();
+    const daftar = k.daftar.filter((x) => x.tgl >= hariIni(-14));
+    $('prg-kal-daftar').innerHTML = daftar.length ? daftar.map((x) => '<li class="' + (x.jenis === 'Daring' ? 'daring' : 'libur') + (x.tgl < kini ? ' lewat' : '') + '">' +
+      '<span class="kal-tgl">' + esc(tglManis(x.tgl, true)) + '</span><span class="kal-jenis">' + esc(x.jenis) + '</span><span class="kal-ket">' + esc(x.ket) + '</span>' +
+      (k.bolehUbah ? '<button type="button" class="tautan merah" data-hapus="' + esc(x.tgl) + '">Hapus</button>' : '') + '</li>').join('')
+      : '<li class="kosong">Belum ada hari libur atau daring yang dicatat.</li>';
+  }
+  async function simpanKalender(e) {
+    e.preventDefault();
+    const tanggal = $('kal-tgl').value, jenis = $('kal-jenis').value, ket = $('kal-ket').value.trim();
+    if (!tanggal) { $('kal-tgl').focus(); return; }
+    const b = e.target.querySelector('button[type="submit"]'); b.disabled = true;
+    try {
+      PR.kal = await api('program.kalender', { tambah: { tanggal: tanggal, jenis: jenis, ket: ket } });
+      $('kal-ket').value = '';
+      renderKalender();
+      toast(jenis + ' ' + tglManis(tanggal, true) + ' dicatat. Jadwal pembinaan yang terkena ikut bergeser.', 'hadir', 4500);
+      PR.rinci = {}; muatProgram(true);
+    } catch (er) { toast(er.message, 'galat', 5000); }
+    b.disabled = false;
+  }
+  async function hapusKalender(e) {
+    const b = e.target.closest('button[data-hapus]'); if (!b) return;
+    if (b.dataset.yakin !== '1') { b.dataset.yakin = '1'; b.textContent = 'Yakin hapus?'; return; }
+    b.disabled = true;
+    try { PR.kal = await api('program.kalender', { hapus: b.dataset.hapus }); renderKalender(); PR.rinci = {}; muatProgram(true); }
+    catch (er) { b.disabled = false; toast(er.message, 'galat', 5000); }
+  }
+  function renderBentuk() {
+    const b = PR.bentuk; if (!b) return;
+    $('prg-bentuk-form').hidden = !b.bolehTambah;
+    $('prg-bentuk-daftar').innerHTML = b.bentuk.map((x) => '<li><strong>' + esc(x.bentuk) + '</strong>' +
+      (x.cocok || x.ket ? '<span class="meta">' + esc([x.cocok, x.ket].filter(Boolean).join(' · ')) + '</span>' : '') +
+      (x.oleh && x.oleh !== 'Contoh awal aplikasi' ? '<span class="meta oleh">Rekomendasi ' + esc(namaPendek(x.oleh)) + (x.peran ? ' (' + esc(x.peran) + ')' : '') + '</span>' : '') + '</li>').join('');
+  }
+  async function tambahBentuk(e) {
+    e.preventDefault();
+    const bentuk = $('bt-nama').value.trim();
+    if (bentuk.length < 5) { $('bt-nama').focus(); toast('Tulis nama bentuk pembinaan minimal 5 huruf.', 'galat'); return; }
+    const b = e.target.querySelector('button[type="submit"]'); b.disabled = true;
+    try {
+      const d = await api('program.tambahBentuk', { bentuk: bentuk, ket: $('bt-ket').value.trim(), cocok: $('bt-cocok').value.trim() });
+      PR.bentuk.bentuk = d.bentuk; renderBentuk();
+      $('bt-nama').value = ''; $('bt-ket').value = ''; $('bt-cocok').value = '';
+      toast('Rekomendasi ditambahkan ke pilihan bentuk pembinaan.', 'hadir');
+    } catch (er) { toast(er.message, 'galat', 5000); }
+    b.disabled = false;
+  }
+
+  /** Riwayat siswa: ringkasan masa pembinaan. */
+  function programRiwayatHtml(d) {
+    const prg = d.program || [];
+    let h = '<h3 class="sub-judul">Masa pembinaan dan skorsing (' + prg.length + ')</h3>';
+    h += prg.length ? '<ul class="baris-ringkas">' + prg.map((p) => '<li><strong>' + esc(p.jenis) + ': ' + esc(p.tahap) + '</strong>, ' + p.terlaksana + ' dari ' + p.jumlah + ' hari' +
+      (p.tertunda ? ' <span class="tag">+' + p.tertunda + ' diperpanjang</span>' : '') +
+      '<span class="meta">' + esc(p.bentuk.join('; ')) + '</span><span class="meta">' + esc(tglManis(p.mulai, true)) + ' sampai ' + esc(tglManis(p.selesai, true)) +
+      ', orang tua ' + (p.setuju ? 'sudah tanda tangan' : 'belum tanda tangan') + '. <a class="tautan" href="#pembinaan" data-aksi="lihat-prg" data-id="' + esc(p.id) + '">Lihat jadwal</a></span></li>').join('') + '</ul>'
+      : '<p class="kosong">Belum ada masa pembinaan.</p>';
+    return h;
+  }
+
+  /* =================================================================
+   *  EKSKUL: pembina & pelatih yang hadir, foto kegiatan, lampiran
+   * ================================================================= */
+  const ES = { sesi: null, foto: new Map(), menyimpan: false, timer: null };
+  function renderSesiE() {
+    const e = eAktif(); if (!e) return;
+    const s = ES.sesi || { pembinaHadir: [], pelatihHadir: [], foto: [], catatan: '' };
+    const saya = String(S.guru.email || '').toLowerCase();
+    const pembina = e.pembina || [];
+    const hadirP = ES.sesi ? s.pembinaHadir : [saya];
+    $('es-pembina').innerHTML = pembina.length ? pembina.map((g) => '<label class="centang-kecil"><input type="checkbox" value="' + esc(g.email) + '"' + (hadirP.indexOf(g.email) > -1 ? ' checked' : '') + '>' +
+      '<span>' + esc(namaPendek(g.nama)) + (g.email === saya ? ' <small>(Anda)</small>' : '') + '</span></label>').join('') : '<p class="keterangan">Belum ada pembina terdaftar.</p>';
+    $('es-pelatih').innerHTML = (e.pelatih || []).length ? e.pelatih.map((n) => '<label class="centang-kecil"><input type="checkbox" value="' + esc(n) + '"' + (s.pelatihHadir.indexOf(n) > -1 ? ' checked' : '') + '><span>' + esc(n) + '</span></label>').join('')
+      : '<p class="keterangan">Belum ada nama pelatih. Tim Tatib menuliskannya di kolom Pelatih tab Ekskul.</p>';
+    $('es-catatan').value = s.catatan || '';
+    $('es-foto').innerHTML = s.foto.map((id) => '<figure data-id="' + esc(id) + '">' + (ES.foto.get(id) ? '<img alt="Foto kegiatan" src="' + ES.foto.get(id) + '">' : '<span class="ganti">Memuat…</span>') +
+      '<button type="button" class="tautan merah" data-hapus-foto="' + esc(id) + '">Hapus</button></figure>').join('');
+    $('es-foto-label').textContent = s.foto.length >= 6 ? 'Maksimal 6 foto' : s.foto.length ? 'Tambah foto' : 'Ambil foto kegiatan';
+    $('es-foto-input').disabled = s.foto.length >= 6;
+    $('es-status').textContent = ES.sesi ? 'Tersimpan pukul ' + (s.waktu || '-') + '.' : 'Belum disimpan untuk tanggal ini.';
+    const perlu = s.foto.filter((id) => !ES.foto.has(id));
+    if (perlu.length) {
+      api('ekskul.foto', { ekskul: E.aktif, ids: perlu }).then((d) => {
+        Object.keys(d.foto).forEach((id) => { if (d.foto[id].data) ES.foto.set(id, d.foto[id].data); });
+        perlu.forEach((id) => { const f = $('es-foto').querySelector('figure[data-id="' + id + '"]'); if (f && ES.foto.get(id)) f.querySelector('.ganti').outerHTML = '<img alt="Foto kegiatan" src="' + ES.foto.get(id) + '">'; });
+      }).catch(() => {});
+    }
+  }
+  async function simpanSesiE(tambahan) {
+    if (ES.menyimpan) return;
+    ES.menyimpan = true;
+    $('es-simpan').disabled = true; $('es-status').textContent = 'Menyimpan…';
+    try {
+      const d = await api('ekskul.sesi', Object.assign({ ekskul: E.aktif, tanggal: E.tanggal,
+        pembinaHadir: Array.from($('es-pembina').querySelectorAll('input:checked')).map((x) => x.value),
+        pelatihHadir: Array.from($('es-pelatih').querySelectorAll('input:checked')).map((x) => x.value),
+        catatan: $('es-catatan').value }, tambahan || {}));
+      ES.sesi = d.sesi;
+      if (E.tanggal === E.data.hariIni) eAktif().sesi = d.sesi;
+      renderSesiE();
+      if (d.fotoDitolak) toast(d.fotoDitolak + ' foto tidak tersimpan (maksimal 6 foto per pertemuan).', 'galat', 5000);
+      else toast('Pertemuan tersimpan.', 'hadir');
+    } catch (er) { $('es-status').textContent = 'Belum tersimpan: ' + er.message; toast(er.message, 'galat', 5000); }
+    finally { ES.menyimpan = false; $('es-simpan').disabled = false; }
+  }
+  function pasangSesiE() {
+    $('es-simpan').addEventListener('click', () => simpanSesiE());
+    $('es-foto-input').addEventListener('change', async (ev) => {
+      const files = Array.from(ev.target.files || []).slice(0, 3); ev.target.value = '';
+      if (!files.length) return;
+      $('es-status').textContent = 'Mengunggah ' + files.length + ' foto…';
+      try {
+        const foto = [];
+        for (const f of files) foto.push(await kompresFoto(f, 1280, 380000));
+        await simpanSesiE({ foto: foto });
+      } catch (er) { toast(er.message, 'galat', 5000); }
+    });
+    $('es-foto').addEventListener('click', (ev) => {
+      const b = ev.target.closest('button[data-hapus-foto]'); if (!b) return;
+      if (b.dataset.yakin !== '1') { b.dataset.yakin = '1'; b.textContent = 'Yakin?'; return; }
+      simpanSesiE({ hapusFoto: [b.dataset.hapusFoto] });
+    });
+    $('e-rekap-isi').addEventListener('click', async (ev) => {
+      const b = ev.target.closest('button[data-aksi="lampiran"]'); if (!b) return;
+      b.disabled = true; b.textContent = 'Menyusun lampiran…';
+      try {
+        const d = await api('ekskul.lampiran', { ekskul: E.aktif, bulan: $('e-bulan').value || E.data.hariIni.slice(0, 7) });
+        $('e-lampiran').innerHTML = tautanPdf('Lampiran kehadiran ' + d.pertemuan + ' pertemuan siap', pdfDariBase64(d));
+      } catch (er) { toast(er.message, 'galat', 5000); }
+      b.disabled = false; b.textContent = 'Buat ulang lampiran PDF';
+    });
+  }
+  function rekapSesiHtml(d) {
+    if (!d.sesi || !d.sesi.length) return '';
+    let h = '<h3 class="sub-judul">Pembina dan pelatih per pertemuan</h3><ul class="baris-ringkas">' + d.sesi.map((s) =>
+      '<li><strong>' + esc(tglManis(s.tgl, true)) + '</strong><span class="meta">Pembina: ' + esc(s.pembina.map(namaPendek).join(', ') || '-') +
+      '. Pelatih: ' + esc(s.pelatih.join(', ') || '-') + '. ' + s.foto + ' foto.</span></li>').join('') + '</ul>';
+    h += '<div class="aksi-riwayat"><button type="button" class="tombol tombol-garis" data-aksi="lampiran">' + ikon('surat') + (d.lampiran ? 'Buat ulang lampiran PDF' : 'Buat lampiran PDF') + '</button></div>';
+    h += '<div id="e-lampiran">' + (d.lampiran && d.lampiran.url ? '<div class="surat-siap">Lampiran tersimpan ' + esc(d.lampiran.dibuat) + ': <a href="' + esc(d.lampiran.url) + '" target="_blank" rel="noopener">Lihat di Drive</a></div>' : '') + '</div>';
+    h += '<p class="keterangan">Lampiran bulan lalu dibuat otomatis setiap tanggal 1 pukul 06.00.</p>';
+    return h;
   }
 
   /* ---------------- Mulai ---------------- */
@@ -1879,7 +2336,7 @@
     window.addEventListener('hashchange', () => { if (!$('layar-utama').hidden && S.menu.length) buka(halamanDariHash()); });
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
-      if (!$('modal-scan').hidden) tutupScan(); else if (!$('modal-foto').hidden) $('modal-foto').hidden = true; else if (!$('modal-titip').hidden) tutupTitip(); else if (!$('modal-pbn').hidden) tutupPernyataan();
+      if (!$('modal-scan').hidden) tutupScan(); else if (!$('modal-foto').hidden) $('modal-foto').hidden = true; else if (!$('modal-titip').hidden) tutupTitip(); else if (!$('modal-pbn').hidden) tutupPernyataan(); else if (!$('modal-prg').hidden) tutupFormProgram();
       else if (!$('lembar-kios').hidden) $('lembar-kios').hidden = true; else if (!$('lembar-lainnya').hidden) $('lembar-lainnya').hidden = true; else if (!$('menu').hidden) tutupMenu();
     });
     document.addEventListener('click', (e) => { if (!$('menu').hidden && !e.target.closest('#menu') && !e.target.closest('#tombol-menu')) tutupMenu(); });
@@ -1893,6 +2350,6 @@
     else tampilLogin();
   }
 
-  window.SMKT_tatib = { keadaan: S, C: C, PB: PB };
+  window.SMKT_tatib = { keadaan: S, C: C, PB: PB, PR: PR, ES: ES };
   mulai();
 })();
