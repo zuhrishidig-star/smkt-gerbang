@@ -2046,7 +2046,7 @@
   function gantiProgram(p) {
     if (!PR.data) return;
     const lama = PR.rinci[p.id] || {};
-    PR.rinci[p.id] = Object.assign(p, { bolehAtur: lama.bolehAtur !== undefined ? lama.bolehAtur : PR.data.bolehAtur, bolehUnggah: lama.bolehUnggah !== undefined ? lama.bolehUnggah : true });
+    PR.rinci[p.id] = Object.assign(p, { bolehAtur: lama.bolehAtur !== undefined ? lama.bolehAtur : PR.data.bolehAtur, bolehUnggah: lama.bolehUnggah !== undefined ? lama.bolehUnggah : false });
     const i = PR.data.program.findIndex((x) => x.id === p.id);
     if (i > -1) PR.data.program[i] = p; else PR.data.program.unshift(p);
     renderProgram();
