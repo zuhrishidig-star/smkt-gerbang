@@ -10,7 +10,7 @@
   const K = { awal: null, pilih: new Set(), logo: '', latar: null, menyusun: false, tata: 'bawaan', huruf: false };
 
   const skrip = {};
-  const VERSI_ASET = '20261109b';
+  const VERSI_ASET = '20261109c';
   function muatSkrip(src) {
     src = src + (src.indexOf('?') > -1 ? '&' : '?') + 'v=' + VERSI_ASET;
     if (!skrip[src]) skrip[src] = new Promise((ok, gagal) => {
@@ -293,7 +293,17 @@
   }
 
   /* ---------------- Penyusunan PDF ---------------- */
-  function status(t) { $('kt-status').textContent = t; }
+  function status(t) { K.tahap = t && /…$/.test(t) ? t.replace(/…$/, '') : K.tahap; $('kt-status').textContent = t; }
+  /** Unduh otomatis, plus tautan cadangan bila browser menahan unduhan otomatis. */
+  function tautanUnduh(doc, nama) {
+    const blob = doc.output('blob');
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = nama; document.body.appendChild(a); a.click(); a.remove();
+    let t = $('kt-tautan');
+    if (!t) { t = document.createElement('a'); t.id = 'kt-tautan'; t.className = 'tombol tombol-garis'; $('kt-status').after(t); }
+    t.href = url; t.download = nama; t.target = '_blank';
+    t.textContent = 'Unduh ulang ' + nama + ' (' + Math.round(blob.size / 1024) + ' KB)';
+  }
 
   async function ambilFoto(siswa) {
     const out = {};
@@ -368,11 +378,11 @@
         });
       }
       const nama = 'Kartu_Pelajar_' + (kelas.length > 3 ? kelas.length + '_kelas' : kelas.join('_')) + (a4 ? '_A4' : '_ukuran_kartu') + '.pdf';
-      doc.save(nama);
+      tautanUnduh(doc, nama);
       const tanpaFoto = $('kt-foto').checked ? d.siswa.filter((s) => !foto[s.nis]).length : 0;
       status(d.siswa.length + ' kartu tersimpan sebagai ' + nama + '.' + (tanpaFoto ? ' ' + tanpaFoto + ' siswa belum punya foto (kotak FOTO kosong).' : '') + (K.galatFoto ? ' Sebagian foto gagal diambil: ' + K.galatFoto : ''));
       T.toast('PDF kartu pelajar diunduh.', 'hadir');
-    } catch (e) { status(e.message); }
+    } catch (e) { console.error('[kartu]', e); status('Gagal membuat PDF: ' + (e && e.message ? e.message : e) + (K.tahap ? ' (tahap: ' + K.tahap + ')' : '')); }
     finally { K.menyusun = false; $('kt-unduh').disabled = false; }
   }
 
