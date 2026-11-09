@@ -752,3 +752,15 @@ textarea.isian { min-height: 0; resize: vertical; }
 .pl-daftar li.kosong { justify-content: center; color: var(--teks-redup); background: transparent; border-style: dashed; }
 .pl-tambah { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
 .pl-tambah .tombol { margin: 0; }
+
+/* v1.9: kartu pelajar */
+.kt-kepala { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.kt-kelas { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 6px; }
+.kt-kelas small { color: var(--teks-redup); font-weight: 500; }
+#p-kartu .centang-kecil { margin-top: 8px; }
+#kt-unduh { margin-top: 14px; }
+.kt-status { min-height: 1.4em; }
+.kt-aksi { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 14px; }
+.kt-aksi .tombol { margin: 0; }
+.kt-latar { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.kt-file { display: inline-flex; cursor: pointer; margin: 4px 8px 0 0; }

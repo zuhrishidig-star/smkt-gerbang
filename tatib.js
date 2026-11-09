@@ -24,6 +24,7 @@
   IKON.foto = '<path d="M3 7V5a2 2 0 0 1 2-2h2" /> <path d="M17 3h2a2 2 0 0 1 2 2v2" /> <path d="M21 17v2a2 2 0 0 1-2 2h-2" /> <path d="M7 21H5a2 2 0 0 1-2-2v-2" /> <path d="M8 14s1.5 2 4 2 4-2 4-2" /> <path d="M9 9h.01" /> <path d="M15 9h.01" />';
   IKON.kamera = '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" /> <circle cx="12" cy="13" r="3" />';
   IKON.tablet = '<rect width="16" height="20" x="4" y="2" rx="2" ry="2" /> <line x1="12" x2="12.01" y1="18" y2="18" />';
+  IKON.kartu = '<rect width="20" height="14" x="2" y="5" rx="2" /> <circle cx="8" cy="11" r="2" /> <path d="M5 16c.6-1.6 1.7-2.4 3-2.4s2.4.8 3 2.4" /> <path d="M14 10h5" /> <path d="M14 14h3" />';
   IKON.tambah = '<path d="M5 12h14" /> <path d="M12 5v14" />';
   IKON.pembinaan = '<path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5" /> <path d="M16 2v4" /> <path d="M8 2v4" /> <path d="M3 10h5" /> <path d="M17.5 17.5 16 16.3V14" /> <circle cx="16" cy="16" r="6" />';
 
@@ -39,6 +40,7 @@
     { id: 'absen', label: 'Absen', ikon: 'absen', judul: 'Absen', boleh: (a) => a.izin, ket: 'Catat izin atau sakit siswa' },
     { id: 'ekskul', label: 'Ekskul', ikon: 'ekskul', judul: 'Absensi ekskul', boleh: (a) => a.ekskul, ket: 'Kehadiran anggota ekstrakurikuler yang Anda bina' },
     { id: 'akun', label: 'Akun guru', ikon: 'siswa', judul: 'Kelola akun guru', boleh: (a) => a.akun, ket: 'Email, peran, dan kelas wali setiap guru' },
+    { id: 'kartu', label: 'Kartu pelajar', ikon: 'kartu', judul: 'Kartu pelajar', boleh: (a) => a.akun, ket: 'Cetak kartu ber-QR depan dan belakang, template Canva' },
   ];
   // Menu per ruang kerja. Hak sebenarnya tetap diperiksa server untuk ruang yang dipilih.
   const RUANG_MENU = {
@@ -50,7 +52,7 @@
     piket: ['beranda', 'lapor', 'absen'],
     olahraga: ['beranda', 'lapor', 'pulih'],
     ekskul: ['ekskul', 'lapor'],
-    admin: ['akun'],
+    admin: ['akun', 'kartu'],
     mapel: ['beranda', 'lapor'],
   };
   const KET_RUANG = {
@@ -356,7 +358,7 @@
       if (aktif) x.setAttribute('aria-current', 'page'); else x.removeAttribute('aria-current');
     });
     document.querySelectorAll('.panel').forEach((p) => { p.hidden = p.id !== 'p-' + nama; });
-    ({ akun: muatAkun, beranda: muatBeranda, lapor: initLapor, kotak: muatTL, verifikasi: muatVerifikasi, siswa: initRiwayat, waspada: muatZona, pembinaan: muatProgram, pulih: muatPulih, absen: initIzin, ekskul: muatEkskul })[nama]();
+    ({ kartu: muatKartu, akun: muatAkun, beranda: muatBeranda, lapor: initLapor, kotak: muatTL, verifikasi: muatVerifikasi, siswa: initRiwayat, waspada: muatZona, pembinaan: muatProgram, pulih: muatPulih, absen: initIzin, ekskul: muatEkskul })[nama]();
     window.scrollTo(0, 0);
   }
 
@@ -417,6 +419,14 @@
     'Kepala Sekolah': 'Memantau saja', 'Pembina Ekstrakurikuler': 'Pilih ekskulnya', 'Piket': 'Gerbang, izin, kios',
     'Guru Olahraga': 'Program fisik', 'Staf Kependidikan': 'Melapor pelanggaran', 'Administrator': 'Mengelola akun guru'
   };
+  async function muatKartu() {
+    window.SMKT_TATIB = { api: api, toast: toast, esc: esc };
+    if (!window.SMKTKartu) {
+      await new Promise((ok, gagal) => { const sc = document.createElement('script'); sc.src = 'kartu.js'; sc.onload = ok; sc.onerror = () => gagal(new Error('Gagal memuat menu kartu')); document.head.appendChild(sc); })
+        .catch((e) => toast(e.message, 'alfa'));
+    }
+    if (window.SMKTKartu) window.SMKTKartu.buka();
+  }
   async function muatAkun() {
     if (!S.siap.akun) {
       S.siap.akun = true;

@@ -1,0 +1,351 @@
+/* Kartu pelajar ber-QR untuk Administrator (dimuat saat menu Kartu pelajar dibuka).
+ * PDF disusun di browser dengan jsPDF; QR digambar sebagai vektor (qrcode-generator) berisi NIS,
+ * sama dengan yang dibaca Gerbang dan Kios. Ukuran kartu ID-1: 85,6 x 54 mm. */
+(function () {
+  'use strict';
+  const T = window.SMKT_TATIB;
+  const $ = (id) => document.getElementById(id);
+  const W = 85.6, H = 54;
+  const WARNA = { dongker: '#0B3558', biru: '#0B6AAA', langit: '#0090DA', gunung: '#7AC02B', lencana: '#FFE600', tinta: '#0B2238', redup: '#5B6B7E', latar: '#EEF5FA' };
+  const K = { awal: null, pilih: new Set(), logo: '', latar: null, menyusun: false };
+
+  const skrip = {};
+  function muatSkrip(src) {
+    if (!skrip[src]) skrip[src] = new Promise((ok, gagal) => {
+      const s = document.createElement('script'); s.src = src; s.onload = ok;
+      s.onerror = () => { delete skrip[src]; gagal(new Error('Gagal memuat ' + src + '. Periksa sinyal lalu coba lagi.')); };
+      document.head.appendChild(s);
+    });
+    return skrip[src];
+  }
+  async function siapkanPustaka() {
+    await Promise.all([muatSkrip('vendor/jspdf.umd.min.js'), muatSkrip('vendor/qrcode.js')]);
+    if (!K.logo) K.logo = await keDataUrl('icons/logo-256.png');
+  }
+  async function keDataUrl(url) {
+    const b = await (await fetch(url)).blob();
+    return new Promise((ok) => { const r = new FileReader(); r.onload = () => ok(r.result); r.readAsDataURL(b); });
+  }
+  function muatGambar(src) {
+    return new Promise((ok, gagal) => { const i = new Image(); i.onload = () => ok(i); i.onerror = gagal; i.src = src; });
+  }
+  /** Foto dipotong 3:4 (tengah) dan diperkecil agar PDF ringan. */
+  async function fotoTigaEmpat(dataUrl) {
+    const img = await muatGambar(dataUrl);
+    const c = document.createElement('canvas'); c.width = 300; c.height = 400;
+    const r = Math.max(300 / img.width, 400 / img.height);
+    const w = img.width * r, h = img.height * r;
+    const x = c.getContext('2d');
+    x.fillStyle = '#fff'; x.fillRect(0, 0, 300, 400);
+    x.drawImage(img, (300 - w) / 2, (400 - h) / 2.6, w, h);
+    return c.toDataURL('image/jpeg', 0.85);
+  }
+
+  /* ---------------- Gambar kartu (satuan mm) ---------------- */
+  function qr(doc, teks, x, y, s) {
+    const q = window.qrcode(0, 'M'); q.addData(String(teks)); q.make();
+    const n = q.getModuleCount(), tepi = 1.6, m = s / (n + tepi * 2);
+    doc.setFillColor('#FFFFFF'); doc.rect(x, y, s, s, 'F');
+    doc.setFillColor('#000000');
+    for (let r = 0; r < n; r++) {
+      let c = 0;
+      while (c < n) {
+        if (!q.isDark(r, c)) { c++; continue; }
+        let p = c; while (p < n && q.isDark(r, p)) p++;
+        doc.rect(x + (tepi + c) * m, y + (tepi + r) * m, (p - c) * m + 0.01, m + 0.01, 'F');
+        c = p;
+      }
+    }
+  }
+  function teks(doc, isi, x, y, o) {
+    o = o || {};
+    doc.setFont('helvetica', o.tebal ? 'bold' : 'normal'); doc.setFontSize(o.pt || 7); doc.setTextColor(o.warna || WARNA.tinta);
+    doc.text(isi, x, y, { align: o.rata || 'left', maxWidth: o.lebar, baseline: 'alphabetic' });
+  }
+  function garisPanduan(doc, x, y, w, h, label) {
+    doc.setDrawColor('#E5007E'); doc.setLineWidth(0.25); doc.setLineDashPattern([1, 0.8], 0);
+    doc.rect(x, y, w, h, 'S'); doc.setLineDashPattern([], 0);
+    teks(doc, label, x + w / 2, y + h / 2 + 1, { pt: 4.6, warna: '#E5007E', rata: 'center', lebar: w - 1, tebal: true });
+  }
+
+  /** opsi: { siswa, foto, latar, teksPutih, panduan, polos } */
+  function depan(doc, ox, oy, o) {
+    const s = o.siswa || { nama: 'NAMA LENGKAP SISWA', nis: '0000', nisn: '0000000000', kelas: '7A' };
+    const tinta = o.teksPutih ? '#FFFFFF' : WARNA.tinta;
+    const label = o.teksPutih ? '#E6EEF5' : WARNA.redup;
+    if (o.latar) {
+      doc.addImage(o.latar, ox, oy, W, H, 'latarD', 'FAST');
+    } else {
+      doc.setFillColor('#FFFFFF'); doc.rect(ox, oy, W, H, 'F');
+      doc.setFillColor(WARNA.latar); doc.rect(ox, oy + 15.5, W, 33, 'F');
+      doc.setFillColor(WARNA.dongker); doc.rect(ox, oy, W, 14, 'F');
+      doc.setFillColor(WARNA.lencana); doc.rect(ox, oy + 14, W, 0.9, 'F');
+      doc.setFillColor(WARNA.gunung); doc.rect(ox, oy + 14.9, W, 0.6, 'F');
+      if (K.logo) doc.addImage(K.logo, 'PNG', ox + 3, oy + 2, 10, 10, 'logoSek', 'FAST');
+      teks(doc, 'SMP NEGERI 1 WONOSARI', ox + 15, oy + 5.6, { pt: 8.6, tebal: true, warna: '#FFFFFF' });
+      teks(doc, 'KARTU PELAJAR', ox + 15, oy + 9.2, { pt: 6.6, tebal: true, warna: WARNA.lencana });
+      teks(doc, 'Kabupaten Malang  ·  NPSN 20517508', ox + 15, oy + 12.2, { pt: 4.8, warna: '#D6E4F0' });
+      doc.setFillColor(WARNA.biru); doc.rect(ox, oy + 49, W, 5, 'F');
+      teks(doc, 'Berlaku selama terdaftar sebagai siswa' + (K.awal && K.awal.tahunAjaran ? '  ·  TA ' + K.awal.tahunAjaran : ''), ox + 4, oy + 52.3, { pt: 4.6, warna: '#FFFFFF' });
+    }
+    if (o.polos) return;
+    // Foto 3:4
+    const fx = ox + 4, fy = oy + 18.5, fw = 19, fh = 25.3;
+    if (o.panduan) garisPanduan(doc, fx, fy, fw, fh, 'FOTO 3x4');
+    else if (o.foto) { doc.addImage(o.foto, 'JPEG', fx, fy, fw, fh, undefined, 'FAST'); doc.setDrawColor('#FFFFFF'); doc.setLineWidth(0.6); doc.rect(fx, fy, fw, fh, 'S'); }
+    else { doc.setFillColor('#D9E4EE'); doc.rect(fx, fy, fw, fh, 'F'); teks(doc, 'FOTO', fx + fw / 2, fy + fh / 2 + 1, { pt: 5, warna: WARNA.redup, rata: 'center' }); }
+    // Data
+    const tx = ox + 26, lw = 31;
+    if (o.panduan) {
+      garisPanduan(doc, tx, oy + 18.5, lw, 9, 'NAMA (2 baris)');
+      garisPanduan(doc, tx, oy + 29.5, lw, 6, 'NIS / NISN');
+      garisPanduan(doc, tx, oy + 37.5, lw, 6, 'KELAS');
+      garisPanduan(doc, ox + 59.6, oy + 18, 22, 22, 'QR (NIS) area putih');
+      return;
+    }
+    teks(doc, 'Nama', tx, oy + 20.6, { pt: 4.8, warna: label });
+    const baris = doc.setFont('helvetica', 'bold').setFontSize(8).splitTextToSize(s.nama.toUpperCase(), lw).slice(0, 2);
+    teks(doc, baris, tx, oy + 24, { pt: baris.length > 1 || s.nama.length > 22 ? 7.2 : 8, tebal: true, warna: tinta });
+    teks(doc, 'NIS / NISN', tx, oy + 31.4, { pt: 4.8, warna: label });
+    teks(doc, s.nis + (s.nisn ? '  /  ' + s.nisn : ''), tx, oy + 34.4, { pt: 6.8, warna: tinta });
+    teks(doc, 'Kelas', tx, oy + 39.4, { pt: 4.8, warna: label });
+    teks(doc, s.kelas || '-', tx, oy + 43, { pt: 9, tebal: true, warna: tinta });
+    qr(doc, s.nis, ox + 59.6, oy + 18, 22);
+    teks(doc, 'Pindai di gerbang', ox + 70.6, oy + 43.2, { pt: 4.4, warna: label, rata: 'center' });
+  }
+
+  function belakang(doc, ox, oy, o) {
+    if (o.latar) { doc.addImage(o.latar, ox, oy, W, H, 'latarB', 'FAST'); }
+    else {
+      doc.setFillColor('#FFFFFF'); doc.rect(ox, oy, W, H, 'F');
+      doc.setFillColor(WARNA.dongker); doc.rect(ox, oy, W, 8, 'F');
+      doc.setFillColor(WARNA.lencana); doc.rect(ox, oy + 8, W, 0.7, 'F');
+      teks(doc, 'KETENTUAN KARTU PELAJAR', ox + 4, oy + 5.4, { pt: 6.6, tebal: true, warna: '#FFFFFF' });
+      if (K.logo) doc.addImage(K.logo, 'PNG', ox + W - 10, oy + 1, 6, 6, 'logoSek', 'FAST');
+      const aturan = [
+        'Kartu wajib dibawa setiap hari dan dipindai saat tiba di sekolah.',
+        'Kartu hanya untuk pemiliknya. Meminjamkan kartu atau titip absen termasuk pelanggaran tata tertib.',
+        'Kartu yang hilang atau rusak segera dilaporkan kepada wali kelas.',
+        'Bila menemukan kartu ini, mohon dikembalikan ke alamat sekolah di bawah.'
+      ];
+      let y = oy + 12.6;
+      aturan.forEach((a, i) => {
+        teks(doc, (i + 1) + '.', ox + 4, y, { pt: 5.2, warna: WARNA.tinta });
+        const b = doc.setFont('helvetica', 'normal').setFontSize(5.2).splitTextToSize(a, 46);
+        teks(doc, b, ox + 7, y, { pt: 5.2, warna: WARNA.tinta });
+        y += b.length * 2.3 + 1.1;
+      });
+      // Tanda tangan kepala sekolah
+      const kx = ox + 70.5;
+      teks(doc, 'Kepala Sekolah,', kx, oy + 13, { pt: 5.2, rata: 'center' });
+      const ks = K.awal && K.awal.kepsek;
+      teks(doc, ks ? ks.nama : '(.............................)', kx, oy + 31, { pt: 5.2, tebal: true, rata: 'center', lebar: 26 });
+      teks(doc, 'NIP. ' + (ks && ks.nip ? ks.nip : '.....................'), kx, oy + 33.6, { pt: 4.6, rata: 'center' });
+      doc.setFillColor(WARNA.latar); doc.rect(ox, oy + 42.5, W, 11.5, 'F');
+      teks(doc, 'SMP Negeri 1 Wonosari  ·  Jl. Raya Bumirejo 45 Wonosari, Kab. Malang 65161', ox + W / 2, oy + 47, { pt: 4.8, rata: 'center', tebal: true });
+      teks(doc, 'esempenegeri1wonosari@gmail.com  ·  smpn01wonosari.sch.id', ox + W / 2, oy + 50.3, { pt: 4.6, rata: 'center', warna: WARNA.redup });
+      doc.setFillColor(WARNA.gunung); doc.rect(ox, oy + 53.2, W, 0.8, 'F');
+    }
+    if (o.panduan) garisPanduan(doc, ox + 57, oy + 10, 27, 26, 'TTD KEPALA SEKOLAH (opsional)');
+  }
+
+  function tandaPotong(doc, x, y) {
+    doc.setDrawColor('#9AA7B4'); doc.setLineWidth(0.1);
+    [[x, y], [x + W, y], [x, y + H], [x + W, y + H]].forEach(([a, b]) => {
+      doc.line(a - 3, b, a - 0.8, b); doc.line(a + 0.8, b, a + 3, b);
+      doc.line(a, b - 3, a, b - 0.8); doc.line(a, b + 0.8, a, b + 3);
+    });
+  }
+
+  /* ---------------- Penyusunan PDF ---------------- */
+  function status(t) { $('kt-status').textContent = t; }
+
+  async function ambilFoto(siswa) {
+    const out = {};
+    for (let i = 0; i < siswa.length; i += 25) {
+      status('Mengambil foto ' + Math.min(i + 25, siswa.length) + ' dari ' + siswa.length + '…');
+      let d;
+      try { d = await T.api('kartu.foto', { nis: siswa.slice(i, i + 25).map((s) => s.nis) }); }
+      catch (e) { K.galatFoto = e.message; continue; }
+      for (const nis of Object.keys(d.foto || {})) {
+        const f = d.foto[nis];
+        if (f && f.data) { try { out[nis] = await fotoTigaEmpat(f.data); } catch (e) { /* foto rusak: kotak kosong */ } }
+      }
+    }
+    return out;
+  }
+
+  async function latarDipakai() {
+    if (!$('kt-pakai-latar').checked) return { depan: '', belakang: '' };
+    if (!K.latar) { status('Mengambil latar desain Canva…'); K.latar = await T.api('kartu.ambilLatar'); }
+    return K.latar;
+  }
+
+  async function unduhKartu() {
+    if (K.menyusun) return;
+    const kelas = Array.from(K.pilih);
+    if (!kelas.length) { status('Pilih minimal satu kelas.'); return; }
+    K.menyusun = true; $('kt-unduh').disabled = true;
+    try {
+      await siapkanPustaka();
+      status('Mengambil data siswa…');
+      const d = await T.api('kartu.data', { kelas: kelas });
+      if (!d.siswa.length) { status('Tidak ada siswa aktif di kelas yang dipilih.'); return; }
+      K.galatFoto = '';
+      const foto = $('kt-foto').checked ? await ambilFoto(d.siswa) : {};
+      const latar = await latarDipakai();
+      const putih = $('kt-teks-putih').checked;
+      const a4 = $('kt-format').value === 'a4';
+      status('Menyusun PDF ' + d.siswa.length + ' kartu…');
+      await new Promise((r) => setTimeout(r, 30));
+      const { jsPDF } = window.jspdf;
+      let doc;
+      if (a4) {
+        doc = new jsPDF({ unit: 'mm', format: 'a4', compress: true });
+        const mx = (210 - 2 * W) / 2, my = (297 - 5 * H) / 2;
+        for (let i = 0; i < d.siswa.length; i += 10) {
+          const isi = d.siswa.slice(i, i + 10);
+          if (i) doc.addPage();
+          isi.forEach((s, j) => { const x = mx + (j % 2) * W, y = my + Math.floor(j / 2) * H; depan(doc, x, y, { siswa: s, foto: foto[s.nis], latar: latar.depan, teksPutih: putih }); tandaPotong(doc, x, y); });
+          teks(doc, 'Halaman depan ' + (i / 10 + 1) + '  ·  ' + kelas.join(', '), 105, 293, { pt: 6, warna: WARNA.redup, rata: 'center' });
+          doc.addPage();
+          // Halaman belakang dicerminkan kiri-kanan untuk cetak bolak-balik (balik sisi panjang).
+          isi.forEach((s, j) => { const x = mx + (1 - (j % 2)) * W, y = my + Math.floor(j / 2) * H; belakang(doc, x, y, { siswa: s, latar: latar.belakang }); tandaPotong(doc, x, y); });
+          teks(doc, 'Halaman belakang ' + (i / 10 + 1) + ' (cetak bolak-balik, balik pada sisi panjang)', 105, 293, { pt: 6, warna: WARNA.redup, rata: 'center' });
+        }
+      } else {
+        doc = new jsPDF({ unit: 'mm', format: [W, H], orientation: 'landscape', compress: true });
+        d.siswa.forEach((s, i) => {
+          if (i) doc.addPage([W, H], 'landscape');
+          depan(doc, 0, 0, { siswa: s, foto: foto[s.nis], latar: latar.depan, teksPutih: putih });
+          doc.addPage([W, H], 'landscape');
+          belakang(doc, 0, 0, { siswa: s, latar: latar.belakang });
+        });
+      }
+      const nama = 'Kartu_Pelajar_' + (kelas.length > 3 ? kelas.length + '_kelas' : kelas.join('_')) + (a4 ? '_A4' : '_ukuran_kartu') + '.pdf';
+      doc.save(nama);
+      const tanpaFoto = $('kt-foto').checked ? d.siswa.filter((s) => !foto[s.nis]).length : 0;
+      status(d.siswa.length + ' kartu tersimpan sebagai ' + nama + '.' + (tanpaFoto ? ' ' + tanpaFoto + ' siswa belum punya foto (kotak FOTO kosong).' : '') + (K.galatFoto ? ' Sebagian foto gagal diambil: ' + K.galatFoto : ''));
+      T.toast('PDF kartu pelajar diunduh.', 'hadir');
+    } catch (e) { status(e.message); }
+    finally { K.menyusun = false; $('kt-unduh').disabled = false; }
+  }
+
+  async function unduhTemplate() {
+    try {
+      await siapkanPustaka();
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit: 'mm', format: [W, H], orientation: 'landscape', compress: true });
+      depan(doc, 0, 0, { panduan: true });
+      doc.addPage([W, H], 'landscape'); belakang(doc, 0, 0, { panduan: true });
+      doc.addPage([W, H], 'landscape'); depan(doc, 0, 0, { polos: true });
+      doc.addPage([W, H], 'landscape'); belakang(doc, 0, 0, {});
+      doc.addPage('a4', 'portrait');
+      const p = [
+        'Panduan template kartu pelajar SMKT',
+        '',
+        'Ukuran kartu 85,6 x 54 mm (ID-1, sama dengan kartu ATM). Halaman 1-2 menandai area data dengan garis putus-putus;',
+        'halaman 3-4 adalah latar polos yang siap diedit di Canva.',
+        '',
+        'Cara memakai desain Canva:',
+        '1. Di Canva: Buat desain > Impor file, pilih PDF ini. Edit halaman 3 (depan) dan 4 (belakang).',
+        '2. Biarkan area FOTO, NAMA, NIS/NISN, KELAS, dan QR (lihat halaman 1) tetap polos. Aplikasi mengisinya otomatis.',
+        '   Area QR akan diberi kotak putih; jangan menaruh hiasan penting di sana.',
+        '3. Unduh dari Canva sebagai PNG atau JPG, ukuran minimal 1012 x 638 piksel (300 dpi), tanpa garis potong.',
+        '4. Di aplikasi SMKT, menu Kartu pelajar > Latar desain Canva: unggah latar depan dan belakang.',
+        '5. Centang "Pakai latar desain Canva", lalu unduh PDF kartu. Pilih "Teks putih" bila latar depan berwarna gelap.',
+        '',
+        'Isi QR adalah NIS siswa, sama dengan yang dibaca Gerbang dan Kios. Jangan mengganti QR dengan buatan Canva.'
+      ];
+      p.forEach((t, i) => teks(doc, t, 18, 24 + i * 7, { pt: i ? 10 : 15, tebal: !i, lebar: 175 }));
+      doc.save('Template_Kartu_Pelajar_SMKT.pdf');
+      status('Template tersimpan: Template_Kartu_Pelajar_SMKT.pdf (5 halaman).');
+    } catch (e) { status(e.message); }
+  }
+
+  async function unduhCsv() {
+    const kelas = Array.from(K.pilih);
+    try {
+      const d = await T.api('kartu.data', { kelas: kelas });
+      const sel = (v) => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+      const csv = ['Nama,NIS,NISN,Kelas'].concat(d.siswa.map((s) => [s.nama, s.nis, s.nisn, s.kelas].map(sel).join(','))).join('\r\n');
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
+      a.download = 'Data_Kartu_Pelajar' + (kelas.length ? '_' + (kelas.length > 3 ? kelas.length + '_kelas' : kelas.join('_')) : '') + '.csv';
+      document.body.appendChild(a); a.click(); a.remove();
+      status(d.siswa.length + ' baris data diunduh untuk Canva Bulk Create.');
+    } catch (e) { status(e.message); }
+  }
+
+  /** Latar diperkecil ke 1500 piksel lebar agar unggahan ringan. */
+  async function unggahLatar(sisi, file) {
+    if (!file) return;
+    if (!/^image\/(png|jpeg)$/.test(file.type)) { status('Pilih gambar PNG atau JPG.'); return; }
+    status('Mengunggah latar ' + sisi + '…');
+    try {
+      const img = await muatGambar(URL.createObjectURL(file));
+      const lebar = Math.min(1500, img.width), tinggi = Math.round(lebar * H / W);
+      const c = document.createElement('canvas'); c.width = lebar; c.height = tinggi;
+      const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, lebar, tinggi);
+      x.drawImage(img, 0, 0, lebar, tinggi);
+      if (Math.abs(img.width / img.height - W / H) > 0.04) T.toast('Perbandingan gambar tidak 85,6:54, latar akan sedikit tertarik. Sebaiknya ekspor ulang dari template.', 'telat', 7000);
+      await T.api('kartu.latar', { sisi: sisi, gambar: c.toDataURL('image/jpeg', 0.9) });
+      K.awal.latar[sisi] = true; K.latar = null;
+      renderLatar();
+      status('Latar ' + sisi + ' tersimpan.');
+    } catch (e) { status(e.message); }
+  }
+  async function hapusLatar(sisi) {
+    try { await T.api('kartu.latar', { sisi: sisi, hapus: true }); K.awal.latar[sisi] = false; K.latar = null; renderLatar(); status('Latar ' + sisi + ' dihapus. Kartu kembali memakai desain bawaan.'); }
+    catch (e) { status(e.message); }
+  }
+
+  function renderLatar() {
+    const l = K.awal.latar;
+    ['depan', 'belakang'].forEach((s) => {
+      $('kt-latar-' + s + '-ket').textContent = l[s] ? 'Sudah diunggah' : 'Belum ada (memakai desain bawaan)';
+      $('kt-latar-' + s + '-hapus').hidden = !l[s];
+    });
+    const ada = l.depan || l.belakang;
+    $('kt-pakai-latar').disabled = !ada;
+    if (!ada) $('kt-pakai-latar').checked = false;
+  }
+
+  function renderKelas() {
+    const k = K.awal.kelas;
+    $('kt-kelas').innerHTML = k.map((x) => '<label class="centang-kecil"><input type="checkbox" value="' + T.esc(x.kelas) + '"' + (K.pilih.has(x.kelas) ? ' checked' : '') +
+      '><span>' + T.esc(x.kelas) + ' <small>(' + x.jumlah + ')</small></span></label>').join('');
+    const n = k.filter((x) => K.pilih.has(x.kelas)).reduce((a, x) => a + x.jumlah, 0);
+    $('kt-jumlah').textContent = K.pilih.size ? n + ' kartu dari ' + K.pilih.size + ' kelas' : 'Belum ada kelas dipilih';
+  }
+
+  let terpasang = false;
+  function pasang() {
+    if (terpasang) return; terpasang = true;
+    $('kt-kelas').addEventListener('change', (e) => { const v = e.target.value; if (e.target.checked) K.pilih.add(v); else K.pilih.delete(v); renderKelas(); });
+    $('kt-semua').addEventListener('click', () => { const semua = K.pilih.size === K.awal.kelas.length; K.pilih = new Set(semua ? [] : K.awal.kelas.map((x) => x.kelas)); renderKelas(); });
+    $('kt-unduh').addEventListener('click', unduhKartu);
+    $('kt-template').addEventListener('click', unduhTemplate);
+    $('kt-csv').addEventListener('click', unduhCsv);
+    ['depan', 'belakang'].forEach((s) => {
+      $('kt-latar-' + s).addEventListener('change', (e) => { unggahLatar(s, e.target.files[0]); e.target.value = ''; });
+      $('kt-latar-' + s + '-hapus').addEventListener('click', () => hapusLatar(s));
+    });
+  }
+
+  async function buka() {
+    pasang();
+    status('');
+    $('kt-ket').textContent = 'Memuat…';
+    try {
+      K.awal = await T.api('kartu.awal');
+      $('kt-ket').textContent = K.awal.kelas.reduce((a, x) => a + x.jumlah, 0) + ' siswa aktif di ' + K.awal.kelas.length + ' kelas. QR berisi NIS, sama dengan yang dibaca Gerbang dan Kios.';
+      $('kt-canva').hidden = !K.awal.canva;
+      if (K.awal.canva) $('kt-canva').href = K.awal.canva;
+      renderKelas(); renderLatar();
+      siapkanPustaka().catch(() => {});
+    } catch (e) { $('kt-ket').textContent = e.message; }
+  }
+
+  window.SMKTKartu = { buka: buka, _uji: { depan: depan, belakang: belakang, K: K } };
+})();

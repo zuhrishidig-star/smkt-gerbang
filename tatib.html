@@ -102,6 +102,43 @@
         </details>
       </section>
 
+      <!-- KARTU PELAJAR (Administrator) -->
+      <section id="p-kartu" class="panel" hidden>
+        <div class="blok">
+          <p class="keterangan" id="kt-ket">Memuat…</p>
+          <div class="kt-kepala"><span class="label">Kelas</span><button id="kt-semua" class="tautan" type="button">Pilih semua / kosongkan</button></div>
+          <div id="kt-kelas" class="daftar-centang kt-kelas"></div>
+          <p class="keterangan" id="kt-jumlah"></p>
+          <label class="label" for="kt-format">Format cetak</label>
+          <select id="kt-format" class="isian">
+            <option value="a4">Kertas A4, 10 kartu per lembar, bolak-balik (dipotong)</option>
+            <option value="kartu">Ukuran kartu 85,6 x 54 mm, untuk printer kartu PVC</option>
+          </select>
+          <label class="centang-kecil"><input type="checkbox" id="kt-foto" checked><span>Sertakan foto siswa</span></label>
+          <label class="centang-kecil"><input type="checkbox" id="kt-pakai-latar" disabled><span>Pakai latar desain Canva</span></label>
+          <label class="centang-kecil"><input type="checkbox" id="kt-teks-putih"><span>Teks putih (untuk latar depan yang gelap)</span></label>
+          <button id="kt-unduh" class="tombol tombol-utama" type="button">Unduh PDF kartu</button>
+          <p class="keterangan kt-status" id="kt-status" aria-live="polite"></p>
+        </div>
+        <div class="blok">
+          <h2 class="judul-blok">Template dan desain Canva</h2>
+          <p class="keterangan">Unduh template kosong, desain di Canva, lalu unggah hasilnya sebagai latar. Aplikasi mengisi foto, nama, NIS, kelas, dan QR di atasnya.</p>
+          <div class="kt-aksi">
+            <button id="kt-template" class="tombol tombol-garis" type="button">Unduh template kosong (PDF)</button>
+            <button id="kt-csv" class="tombol tombol-garis" type="button">Unduh data siswa (CSV)</button>
+            <a id="kt-canva" class="tombol tombol-garis" target="_blank" rel="noopener" hidden>Buka template di Canva</a>
+          </div>
+          <div class="kt-latar">
+            <div><span class="label">Latar depan</span><p class="keterangan" id="kt-latar-depan-ket"></p>
+              <label class="tombol tombol-garis kt-file">Unggah PNG/JPG<input type="file" id="kt-latar-depan" accept="image/png,image/jpeg" hidden></label>
+              <button id="kt-latar-depan-hapus" class="tautan merah" type="button" hidden>Hapus</button></div>
+            <div><span class="label">Latar belakang</span><p class="keterangan" id="kt-latar-belakang-ket"></p>
+              <label class="tombol tombol-garis kt-file">Unggah PNG/JPG<input type="file" id="kt-latar-belakang" accept="image/png,image/jpeg" hidden></label>
+              <button id="kt-latar-belakang-hapus" class="tautan merah" type="button" hidden>Hapus</button></div>
+          </div>
+        </div>
+      </section>
+
       <!-- VERIFIKASI FOTO SCAN -->
       <section id="p-verifikasi" class="panel" hidden>
         <div class="v-saring">
