@@ -422,7 +422,7 @@
   async function muatKartu() {
     window.SMKT_TATIB = { api: api, toast: toast, esc: esc };
     if (!window.SMKTKartu) {
-      await new Promise((ok, gagal) => { const sc = document.createElement('script'); sc.src = 'kartu.js'; sc.onload = ok; sc.onerror = () => gagal(new Error('Gagal memuat menu kartu')); document.head.appendChild(sc); })
+      await new Promise((ok, gagal) => { const sc = document.createElement('script'); sc.src = 'kartu.js?v=20261109b'; sc.onload = ok; sc.onerror = () => gagal(new Error('Gagal memuat menu kartu')); document.head.appendChild(sc); })
         .catch((e) => toast(e.message, 'alfa'));
     }
     if (window.SMKTKartu) window.SMKTKartu.buka();

@@ -10,7 +10,9 @@
   const K = { awal: null, pilih: new Set(), logo: '', latar: null, menyusun: false, tata: 'bawaan', huruf: false };
 
   const skrip = {};
+  const VERSI_ASET = '20261109b';
   function muatSkrip(src) {
+    src = src + (src.indexOf('?') > -1 ? '&' : '?') + 'v=' + VERSI_ASET;
     if (!skrip[src]) skrip[src] = new Promise((ok, gagal) => {
       const s = document.createElement('script'); s.src = src; s.onload = ok;
       s.onerror = () => { delete skrip[src]; gagal(new Error('Gagal memuat ' + src + '. Periksa sinyal lalu coba lagi.')); };
@@ -459,6 +461,7 @@
   function confirmGanti() { return true; }
   function renderTata() {
     $('kt-tata').value = K.tata;
+    $('kt-tata').hidden = true; const lb = document.querySelector('label[for="kt-tata"]'); if (lb) lb.hidden = true;
     $('kt-tata-ket').textContent = K.tata === 'kobalt'
       ? 'Kartu tegak 54 x 85,6 mm. Depan: nama, NIS, NISN, TTL, alamat, dan foto. Belakang: QR. Lembar A4 memuat 9 kartu.'
       : 'Kartu mendatar 85,6 x 54 mm dengan desain bawaan aplikasi. Lembar A4 memuat 10 kartu.';
@@ -510,7 +513,7 @@
       $('kt-ket').textContent = K.awal.kelas.reduce((a, x) => a + x.jumlah, 0) + ' siswa aktif di ' + K.awal.kelas.length + ' kelas. QR berisi NIS, sama dengan yang dibaca Gerbang dan Kios.';
       $('kt-canva').hidden = !K.awal.canva;
       if (K.awal.canva) $('kt-canva').href = K.awal.canva;
-      K.tata = K.awal.tata === 'kobalt' ? 'kobalt' : 'bawaan';
+      K.tata = 'kobalt';   // desain mendatar ditiadakan; semua kartu memakai Kobalt Emas (tegak)
       renderKelas(); renderLatar(); renderTata();
       if (K.tata === 'kobalt' && (K.awal.latar.depan || K.awal.latar.belakang)) $('kt-pakai-latar').checked = true;
       if (K.awal.kolomBaru && K.awal.kolomBaru.length) status('Kolom ' + K.awal.kolomBaru.join(', ') + ' ditambahkan di ujung kanan tab Siswa. Isi dari data Dapodik agar TTL dan alamat tercetak.');
