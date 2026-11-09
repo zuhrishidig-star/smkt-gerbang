@@ -237,7 +237,10 @@
       bukaUtama();
     } catch (e) { $('login-pesan').textContent = e.message; }
   }
-  function hapusSesi() { S.sesi = null; S.guru = null; S.ruang = ''; simpan.hapus('smkt_sesi'); simpan.hapus('smkt_ruang'); sesiTab.hapus('smkt_tatib_awal'); }
+  function hapusSesi() { S.sesi = null; S.guru = null; S.ruang = ''; simpan.hapus('smkt_sesi'); simpan.hapus('smkt_ruang'); simpan.hapus('smkt_tatib_awal'); simpan.hapus('smkt_tatib_beranda'); sesiTab.hapus('smkt_tatib_awal'); }
+  // Data terakhir disimpan di perangkat agar aplikasi langsung tampil, lalu diperbarui diam-diam dari server.
+  const UMUR_SIMPANAN = 12 * 3600 * 1000;
+  function simpananCocok(o) { return o && o.sesi === S.sesi && (o.ruang || '') === S.ruang && o.data && Date.now() - (o.waktu || 0) < UMUR_SIMPANAN; }
   async function keluar() {
     tutupMenu();
     if (!confirm('Keluar dari aplikasi? Data siswa di HP ini akan dihapus.')) return;
@@ -255,8 +258,8 @@
   async function bukaUtama() {
     $('layar-login').hidden = true;
     $('layar-utama').hidden = false;
-    const cache = sesiTab.get('smkt_tatib_awal');
-    if (cache && cache.sesi === S.sesi && cache.data && (cache.data.ruangAktif || '') === S.ruang) {
+    const cache = simpan.get('smkt_tatib_awal', null);
+    if (simpananCocok(cache)) {
       terapkanAwal(cache.data);
       buka(halamanDariHash());
       muatAwal(true);
@@ -268,7 +271,7 @@
     if (!diam) { $('memuat').hidden = false; $('memuat').textContent = 'Memuat data…'; }
     try {
       const d = await api('tatib.awal');
-      sesiTab.set('smkt_tatib_awal', { sesi: S.sesi, data: d });
+      try { simpan.set('smkt_tatib_awal', { sesi: S.sesi, ruang: d.ruangAktif || '', waktu: Date.now(), data: d }); } catch (e) { /* penyimpanan penuh */ }
       terapkanAwal(d);
       const st = simpan.get('smkt_sesi', null);
       if (st) { st.guru = Object.assign({}, st.guru, d.guru); simpan.set('smkt_sesi', st); }
@@ -386,7 +389,7 @@
     if (!kode || kode === S.ruang) return;
     S.ruang = kode;
     simpan.set('smkt_ruang', kode);
-    sesiTab.hapus('smkt_tatib_awal'); sesiTab.hapus('smkt_tatib_tab');
+    sesiTab.hapus('smkt_tatib_awal'); sesiTab.hapus('smkt_tatib_tab'); simpan.hapus('smkt_tatib_beranda');
     history.replaceState(null, '', location.pathname + location.search);
     location.reload();
   }
@@ -564,6 +567,11 @@
     $('sambut-peran').innerHTML = ruangKini ? '<li>Bekerja sebagai ' + esc(ruangKini.nama) + '</li>' :
       (S.guru.peran || []).map((p) => '<li>' + esc(p === 'Wali Kelas' && S.guru.kelasWali ? 'Wali ' + S.guru.kelasWali : p) + '</li>').join('');
     wadahBeranda();
+    if (!B.data) {
+      const lama = simpan.get('smkt_tatib_beranda', null);
+      const hari = (w) => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jakarta' }).format(new Date(w));
+      if (simpananCocok(lama) && hari(lama.waktu) === hari(Date.now())) B.data = lama.data;   // hanya data hari ini
+    }
     if (!B.data) $('b-lain').innerHTML = '<p class="memuat">Memuat ringkasan hari ini…</p>';
     else renderBeranda();
     if (DS.data) renderDasbor();
@@ -571,6 +579,7 @@
     jadwalDasbor();
     try {
       B.data = await api('tatib.beranda');
+      try { simpan.set('smkt_tatib_beranda', { sesi: S.sesi, ruang: S.ruang, waktu: Date.now(), data: B.data }); } catch (e) { /* penyimpanan penuh */ }
       aturLencana(B.data.menunggu);
       if (S.tab === 'beranda') renderBeranda();
     } catch (e) {
@@ -2504,7 +2513,7 @@
     $('menu-perbarui').addEventListener('click', async () => {
       tutupMenu();
       const sb = S.siap.beranda;
-      S.siap = { beranda: sb }; B.data = null; DS.data = null; S.foto.clear(); FS.clear(); sesiTab.hapus('smkt_tatib_awal');
+      S.siap = { beranda: sb }; B.data = null; DS.data = null; S.foto.clear(); FS.clear(); sesiTab.hapus('smkt_tatib_awal'); simpan.hapus('smkt_tatib_awal'); simpan.hapus('smkt_tatib_beranda');
       if (!E.antre.size) E.data = null;
       await muatAwal(false); toast('Data diperbarui.', 'hadir');
     });
