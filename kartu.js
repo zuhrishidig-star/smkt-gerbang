@@ -199,11 +199,45 @@
     doc.close();
     if (mode === 'isi') doc.fill(); else { doc.clip(); doc.discardPath(); }
   }
+  /** Latar pengganti mirip template Kobalt Emas, dipakai bila latar Canva belum diunggah. */
+  function latarKobalt(doc, ox, oy, sisi) {
+    const L = KOBALT, abu = '#AFBED4', putih = '#FFFFFF';
+    doc.setFillColor('#061A4A'); doc.rect(ox, oy, L.w, L.h, 'F');
+    doc.setFillColor('#0B3C9E'); doc.triangle(ox + L.w, oy + 22, ox + L.w, oy + 62, ox + 6, oy + 62, 'F');
+    doc.setFillColor('#1257C8'); doc.triangle(ox + L.w, oy + 30, ox + L.w, oy + 58, ox + 24, oy + 58, 'F');
+    doc.setFillColor('#041334'); doc.rect(ox, oy + 61, L.w, L.h - 61, 'F');
+    const y0 = sisi === 'depan' ? 0 : 4;
+    if (K.logo) doc.addImage(K.logo, 'PNG', ox + 2.5, oy + 2 + y0, 9.5, 9.5, 'logoSek', 'FAST');
+    teks(doc, 'SMP NEGERI 1', ox + 12.8, oy + 5.4 + y0, { pt: 9, tebal: true, warna: putih, huruf: 'OpenSans' });
+    teks(doc, 'WONOSARI', ox + 12.8, oy + 10.4 + y0, { pt: 15, tebal: true, warna: putih, huruf: 'OpenSans' });
+    teks(doc, 'KABUPATEN MALANG', ox + 12.8, oy + 13 + y0, { pt: 3.6, tebal: true, warna: abu, huruf: 'OpenSans' });
+    if (sisi === 'depan') {
+      teks(doc, 'KARTU PELAJAR', ox + L.w / 2, oy + 18.9, { pt: 8.6, tebal: true, warna: putih, rata: 'center', huruf: 'OpenSans', spasi: 0.3 });
+      doc.setFillColor(putih); doc.rect(ox + 11.5, oy + 20.3, 31, 0.5, 'F');
+      const lbl = (t, x, y) => teks(doc, t, ox + x, oy + y, { pt: 3.9, warna: abu, huruf: 'OpenSans', spasi: 0.25 });
+      lbl('NAMA PESERTA DIDIK', 2.83, 23.6); lbl('NIS', 2.83, 32.8); lbl('NISN', 12.45, 32.8); lbl('TTL', 2.83, 38.1); lbl('Alamat', 2.83, 46.0);
+      teks(doc, 'TATA TERTIB PEMAKAIAN KARTU', ox + L.w / 2, oy + 66, { pt: 5.6, tebal: true, warna: putih, rata: 'center', huruf: 'OpenSans' });
+      doc.setDrawColor(putih); doc.setLineWidth(0.3); doc.roundedRect(ox + 6.3, oy + 67.4, 41.4, 12.4, 1.2, 1.2, 'S');
+      ['Kartu wajib dipakai di lingkungan sekolah.', 'Tidak boleh dipinjamkan kepada orang lain.', 'Jika hilang, segera lapor ke wali kelas.', 'Menjaga kartu agar tidak rusak atau kotor.']
+        .forEach((t, i) => teks(doc, '•  ' + t, ox + 8, oy + 70.2 + i * 2.5, { pt: 4.2, tebal: true, warna: putih, huruf: 'OpenSans' }));
+    } else {
+      doc.setFillColor('#3A5A8C'); doc.rect(ox + 8, oy + 18.6, 38, 0.2, 'F');
+      teks(doc, 'QR ABSENSI', ox + L.w / 2, oy + 23, { pt: 8, warna: putih, rata: 'center', huruf: 'OpenSans', spasi: 0.2 });
+      teks(doc, 'Pindai untuk mencatat kehadiran', ox + L.w / 2, oy + 25.3, { pt: 4.1, warna: putih, rata: 'center', huruf: 'OpenSans' });
+      doc.setFillColor('#F4F4F4'); doc.roundedRect(ox + 2.5, oy + 66.5, 23, 17, 1.2, 1.2, 'F');
+      const ks = (K.awal && K.awal.kepsek) || { nama: 'Moh. Munif S.Pd, M.M.Pd.', nip: '196911171995121003' };
+      teks(doc, 'Kepala Sekolah', ox + 14, oy + 69.5, { pt: 4.4, warna: '#000000', rata: 'center', huruf: 'OpenSans' });
+      teks(doc, ks.nama, ox + 14, oy + 80.4, { pt: 4.4, warna: '#000000', rata: 'center', huruf: 'OpenSans', lebar: 22 });
+      teks(doc, 'NIP. ' + (ks.nip || '-'), ox + 14, oy + 82.3, { pt: 3.4, warna: '#000000', rata: 'center', huruf: 'OpenSans' });
+      doc.setDrawColor(putih); doc.setLineWidth(0.3); doc.roundedRect(ox + 28, oy + 66.5, 23.5, 15, 1.2, 1.2, 'S');
+      teks(doc, 'Kartu ini adalah milik resmi sekolah dan hanya digunakan oleh pemegang yang tertera.', ox + 29.5, oy + 69.5, { pt: 4.4, warna: putih, huruf: 'OpenSans', lebar: 21 });
+    }
+  }
   function kobaltDepan(doc, ox, oy, o) {
     const s = o.siswa || { nama: 'NAMA PESERTA DIDIK', nis: '0000', nisn: '0000', tempatLahir: 'Malang', tanggalLahir: '2013-01-01', alamat: 'Alamat siswa' };
     const L = KOBALT, putih = o.tinta || '#FFFFFF';
     if (o.latar) doc.addImage(o.latar, ox, oy, L.w, L.h, 'latarD', 'FAST');
-    else { doc.setFillColor('#0A1F5C'); doc.rect(ox, oy, L.w, L.h, 'F'); }
+    else latarKobalt(doc, ox, oy, 'depan');
     // Foto berbingkai segi lima seperti template
     doc.setFillColor(L.foto.isi); bentukFoto(doc, ox, oy, 'isi');
     if (o.foto) {
@@ -234,7 +268,7 @@
   function kobaltBelakang(doc, ox, oy, o) {
     const L = KOBALT;
     if (o.latar) doc.addImage(o.latar, ox, oy, L.w, L.h, 'latarB', 'FAST');
-    else { doc.setFillColor('#0A1F5C'); doc.rect(ox, oy, L.w, L.h, 'F'); }
+    else latarKobalt(doc, ox, oy, 'belakang');
     const k = L.qr.kotak;
     doc.setFillColor('#FFFFFF'); doc.roundedRect(ox + k.x, oy + k.y, k.s, k.s, 1.6, 1.6, 'F');
     qr(doc, (o.siswa || { nis: '0000' }).nis, ox + L.qr.x, oy + L.qr.y, L.qr.s);
@@ -297,7 +331,6 @@
       const a4 = $('kt-format').value === 'a4';
       const tl = tataLetak();
       if (K.tata === 'kobalt') {
-        if (!latar.depan || !latar.belakang) throw new Error('Tata letak Kobalt Emas memakai latar dari Canva. Unggah latar depan dan belakang dulu, lalu centang "Pakai latar desain Canva".');
         await siapkanHuruf();
       }
       status('Menyusun PDF ' + d.siswa.length + ' kartu…');
@@ -432,6 +465,7 @@
     $('kt-template').hidden = K.tata === 'kobalt';
     $('kt-panduan-kobalt').hidden = K.tata !== 'kobalt';
     $('kt-teks-putih').closest('label').hidden = K.tata === 'kobalt';
+    $('kt-format').options[0].textContent = 'Kertas A4, ' + (K.tata === 'kobalt' ? 9 : 10) + ' kartu per lembar, bolak-balik (dipotong)';
   }
   function renderLatar() {
     const l = K.awal.latar;
