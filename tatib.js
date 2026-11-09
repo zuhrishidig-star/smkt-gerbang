@@ -29,7 +29,7 @@
 
   const MENU = [
     { id: 'beranda', label: 'Beranda', ikon: 'beranda', judul: 'Beranda', boleh: () => true },
-    { id: 'lapor', label: 'Lapor', ikon: 'lapor', judul: 'Lapor pelanggaran', boleh: () => true },
+    { id: 'lapor', label: 'Lapor', ikon: 'lapor', judul: 'Lapor pelanggaran', boleh: (a) => a.catat !== false },
     { id: 'kotak', label: 'Kotak Masuk', ikon: 'kotak', judul: 'Kotak Masuk', boleh: (a) => a.tindakLanjut, ket: 'Kasus yang diteruskan kepada Anda' },
     { id: 'verifikasi', label: 'Verifikasi', ikon: 'foto', judul: 'Verifikasi foto scan', boleh: (a) => a.verifikasi, ket: 'Cocokkan foto scan gerbang dengan foto siswa' },
     { id: 'siswa', label: 'Siswa', ikon: 'siswa', judul: 'Riwayat siswa', boleh: (a) => a.riwayat, ket: 'Poin, kehadiran, dan pembinaan per siswa' },
@@ -38,11 +38,37 @@
     { id: 'pulih', label: 'Pulih', ikon: 'pulih', judul: 'Pulih', boleh: (a) => a.pemulihan, ket: 'Program fisik dan pembinaan lain' },
     { id: 'absen', label: 'Absen', ikon: 'absen', judul: 'Absen', boleh: (a) => a.izin, ket: 'Catat izin atau sakit siswa' },
     { id: 'ekskul', label: 'Ekskul', ikon: 'ekskul', judul: 'Absensi ekskul', boleh: (a) => a.ekskul, ket: 'Kehadiran anggota ekstrakurikuler yang Anda bina' },
+    { id: 'akun', label: 'Akun guru', ikon: 'siswa', judul: 'Kelola akun guru', boleh: (a) => a.akun, ket: 'Email, peran, dan kelas wali setiap guru' },
   ];
+  // Menu per ruang kerja. Hak sebenarnya tetap diperiksa server untuk ruang yang dipilih.
+  const RUANG_MENU = {
+    wali: ['beranda', 'lapor', 'kotak', 'verifikasi', 'siswa', 'waspada', 'pembinaan', 'absen'],
+    bk: ['beranda', 'lapor', 'kotak', 'siswa', 'waspada', 'pembinaan', 'pulih', 'absen'],
+    tatib: ['beranda', 'lapor', 'kotak', 'verifikasi', 'siswa', 'waspada', 'pembinaan', 'pulih', 'absen'],
+    wakasek: ['beranda', 'lapor', 'kotak', 'verifikasi', 'siswa', 'waspada', 'pembinaan'],
+    kepsek: ['beranda', 'siswa', 'waspada', 'pembinaan'],
+    piket: ['beranda', 'lapor', 'absen'],
+    olahraga: ['beranda', 'lapor', 'pulih'],
+    ekskul: ['ekskul', 'lapor'],
+    admin: ['akun'],
+    mapel: ['beranda', 'lapor'],
+  };
+  const KET_RUANG = {
+    wali: 'Siswa kelas Anda: keterlambatan, kasus, verifikasi foto, dan pembinaan.',
+    bk: 'Kasus yang diteruskan ke BK dan bimbingan konseling siswa jenjang Anda.',
+    tatib: 'Kasus berat, Waspada, surat Lapis, masa pembinaan, dan kios gerbang.',
+    wakasek: 'Kasus tangga pimpinan dan pemantauan kedisiplinan sekolah.',
+    kepsek: 'Ringkasan dan pemantauan sekolah. Ruang ini tidak untuk melapor atau menindak.',
+    piket: 'Gerbang, siswa terlambat hari ini, serta izin dan dispensasi.',
+    olahraga: 'Program fisik yang ditugaskan kepada Anda.',
+    ekskul: 'Absensi dan dokumentasi ekskul yang Anda bina.',
+    admin: 'Menambah email guru dan mengatur aksesnya.',
+    mapel: 'Melapor pelanggaran yang Anda temukan.',
+  };
 
   const $ = (id) => document.getElementById(id);
   const S = {
-    sesi: null, guru: null, akses: {},
+    sesi: null, guru: null, akses: {}, ruang: '', daftarRuang: [],
     siswa: new Map(), master: new Map(), panduan: {}, eskalasi: [], tangga: [], templat: {}, sekolah: '', batasMasuk: '',
     tab: 'beranda', siap: {}, menu: [], menunggu: 0, wa: { aktif: false },
     kamera: null, scanCb: null, scanTerus: false, scanTerakhir: { teks: '', waktu: 0 }, foto: new Map(),
@@ -151,7 +177,7 @@
   /* ---------------- API ---------------- */
   async function api(aksi, data) {
     if (!CFG.API_URL) throw new Error('API_URL di config.js belum diisi.');
-    const isi = Object.assign({ aksi: aksi, sesi: S.sesi }, data || {});
+    const isi = Object.assign({ aksi: aksi, sesi: S.sesi }, S.ruang ? { ruang: S.ruang } : {}, data || {});
     let res;
     try {
       res = await fetch(CFG.API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(isi), redirect: 'follow' });
@@ -211,7 +237,7 @@
       bukaUtama();
     } catch (e) { $('login-pesan').textContent = e.message; }
   }
-  function hapusSesi() { S.sesi = null; S.guru = null; simpan.hapus('smkt_sesi'); sesiTab.hapus('smkt_tatib_awal'); }
+  function hapusSesi() { S.sesi = null; S.guru = null; S.ruang = ''; simpan.hapus('smkt_sesi'); simpan.hapus('smkt_ruang'); sesiTab.hapus('smkt_tatib_awal'); }
   async function keluar() {
     tutupMenu();
     if (!confirm('Keluar dari aplikasi? Data siswa di HP ini akan dihapus.')) return;
@@ -230,7 +256,7 @@
     $('layar-login').hidden = true;
     $('layar-utama').hidden = false;
     const cache = sesiTab.get('smkt_tatib_awal');
-    if (cache && cache.sesi === S.sesi && cache.data) {
+    if (cache && cache.sesi === S.sesi && cache.data && (cache.data.ruangAktif || '') === S.ruang) {
       terapkanAwal(cache.data);
       buka(halamanDariHash());
       muatAwal(true);
@@ -256,12 +282,18 @@
   }
   function terapkanAwal(d) {
     S.guru = d.guru; S.akses = d.akses || {};
+    S.daftarRuang = d.ruang || [];
+    if ((d.ruangAktif || '') !== S.ruang) { S.ruang = d.ruangAktif || ''; simpan.set('smkt_ruang', S.ruang); }
     S.siswa = new Map((d.siswa || []).map((s) => [s.nis, s]));
     S.master = new Map((d.master || []).map((m) => [m.id, m]));
     S.panduan = d.panduan || {}; S.eskalasi = d.eskalasi || []; S.tangga = d.tangga || [];
     S.templat = d.templatWA || {}; S.sekolah = d.sekolah || CFG.NAMA_SEKOLAH || ''; S.batasMasuk = d.batasMasuk || '';
     S.wa = d.waOtomatis || { aktif: false };
-    S.menu = MENU.filter((m) => m.boleh(S.akses));
+    const izinRuang = RUANG_MENU[S.ruang];
+    S.menu = MENU.filter((m) => m.boleh(S.akses) && (!izinRuang || izinRuang.indexOf(m.id) > -1));
+    if (izinRuang) S.menu.sort((a, b) => izinRuang.indexOf(a.id) - izinRuang.indexOf(b.id));
+    renderRuang();
+    $('tombol-lapor-besar').hidden = S.akses.catat === false;
     $('menu-gerbang').hidden = !S.guru.bolehGerbang;
     $('menu-ujiwa').hidden = !(S.wa.aktif && punya(['Tim Tatib', 'Wakasek', 'Kepala Sekolah']));
     $('menu-kios').hidden = !S.akses.kios;
@@ -287,8 +319,9 @@
     $('sisi-nav').innerHTML = S.menu.map((m) => '<a href="#' + m.id + '" data-tab="' + m.id + '">' + ikon(m.ikon) + '<span>' + m.label + '</span>' +
       (m.id === 'kotak' ? '<span class="badge" data-lencana hidden></span>' : '') + '</a>').join('');
     const g = S.guru || {};
+    const rk = S.daftarRuang.filter((r) => r.kode === S.ruang)[0];
     $('sisi-akun').innerHTML = '<div class="nama">' + esc(namaPendek(g.nama)) + '</div><div class="peran">' +
-      esc((g.peran || []).map((p) => (p === 'Wali Kelas' && g.kelasWali ? 'Wali ' + g.kelasWali : p)).join(', ')) + '</div>' +
+      esc(rk ? rk.nama : (g.peran || []).map((p) => (p === 'Wali Kelas' && g.kelasWali ? 'Wali ' + g.kelasWali : p)).join(', ')) + '</div>' +
       (g.bolehGerbang ? '<a href="./">' + ikon('gerbang') + 'Buka Gerbang</a>' : '') +
       (S.akses.kios ? '<button type="button" data-aksi="kios">' + ikon('tablet') + 'Kios gerbang</button>' : '') +
       (S.wa.aktif && punya(['Tim Tatib', 'Wakasek', 'Kepala Sekolah']) ? '<button type="button" data-aksi="ujiwa">' + ikon('wa') + 'Kirim WA uji</button>' : '') +
@@ -320,7 +353,7 @@
       if (aktif) x.setAttribute('aria-current', 'page'); else x.removeAttribute('aria-current');
     });
     document.querySelectorAll('.panel').forEach((p) => { p.hidden = p.id !== 'p-' + nama; });
-    ({ beranda: muatBeranda, lapor: initLapor, kotak: muatTL, verifikasi: muatVerifikasi, siswa: initRiwayat, waspada: muatZona, pembinaan: muatProgram, pulih: muatPulih, absen: initIzin, ekskul: muatEkskul })[nama]();
+    ({ akun: muatAkun, beranda: muatBeranda, lapor: initLapor, kotak: muatTL, verifikasi: muatVerifikasi, siswa: initRiwayat, waspada: muatZona, pembinaan: muatProgram, pulih: muatPulih, absen: initIzin, ekskul: muatEkskul })[nama]();
     window.scrollTo(0, 0);
   }
 
@@ -330,6 +363,168 @@
     $('menu').hidden = false; $('tombol-menu').setAttribute('aria-expanded', 'true');
   }
   function tutupMenu() { $('menu').hidden = true; $('tombol-menu').setAttribute('aria-expanded', 'false'); }
+
+
+  /* ---------------- Ruang kerja per peran ---------------- */
+  function renderRuang() {
+    const daftar = S.daftarRuang, kini = daftar.filter((r) => r.kode === S.ruang)[0];
+    const ganda = daftar.length > 1;
+    const tb = $('ruang-tombol');
+    tb.hidden = !kini || !ganda;
+    tb.disabled = !ganda;
+    tb.innerHTML = kini ? '<span class="ruang-label">Sebagai</span><strong>' + esc(kini.nama) + '</strong>' + (ganda ? '<span class="ruang-panah" aria-hidden="true">▾</span>' : '') : '';
+    tb.setAttribute('aria-label', kini ? 'Ruang kerja: ' + kini.nama + (ganda ? '. Ganti ruang kerja' : '') : 'Ruang kerja');
+    const isi = daftar.map((r) => '<button type="button" role="menuitemradio" aria-checked="' + (r.kode === S.ruang) + '" data-ruang="' + esc(r.kode) + '">' +
+      '<strong>' + esc(r.nama) + '</strong><small>' + esc(KET_RUANG[r.kode] || '') + '</small></button>').join('');
+    $('ruang-daftar').innerHTML = isi;
+    $('sisi-ruang').hidden = !ganda;
+    $('sisi-ruang').innerHTML = ganda ? '<span class="sisi-ruang-judul">Bekerja sebagai</span>' + daftar.map((r) =>
+      '<button type="button" data-ruang="' + esc(r.kode) + '" aria-pressed="' + (r.kode === S.ruang) + '">' + esc(r.nama) + '</button>').join('') : '';
+  }
+  function gantiRuang(kode) {
+    $('ruang-menu').hidden = true;
+    if (!kode || kode === S.ruang) return;
+    S.ruang = kode;
+    simpan.set('smkt_ruang', kode);
+    sesiTab.hapus('smkt_tatib_awal'); sesiTab.hapus('smkt_tatib_tab');
+    history.replaceState(null, '', location.pathname + location.search);
+    location.reload();
+  }
+  function pasangRuang() {
+    $('ruang-tombol').addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (S.daftarRuang.length < 2) return;
+      const m = $('ruang-menu'); m.hidden = !m.hidden;
+      $('ruang-tombol').setAttribute('aria-expanded', String(!m.hidden));
+      if (!m.hidden) { tutupMenu(); const b = m.querySelector('[aria-checked="true"]') || m.querySelector('button'); if (b) b.focus(); }
+    });
+    [$('ruang-daftar'), $('sisi-ruang')].forEach((el) => el.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-ruang]'); if (b) gantiRuang(b.dataset.ruang);
+    }));
+    document.addEventListener('click', (e) => { if (!$('ruang-menu').hidden && !e.target.closest('#ruang-menu')) $('ruang-menu').hidden = true; });
+  }
+
+  /* =================================================================
+   *  KELOLA AKUN GURU (Administrator)
+   * ================================================================= */
+  const AK = { data: null, saring: 'semua', cari: '', edit: null, menyimpan: false };
+  const PERAN_KET = {
+    'Guru Mapel': 'Melapor pelanggaran', 'Guru Wali Kelas': 'Pilih kelasnya', 'Guru Tata Tertib': 'Kasus berat, surat, masa pembinaan',
+    'Koordinator Tatib': 'Semua menu Tatib', 'Guru BK': 'Pilih jenjang binaan', 'Wakil Kepala Sekolah': 'Kasus tangga pimpinan',
+    'Kepala Sekolah': 'Memantau saja', 'Pembina Ekstrakurikuler': 'Pilih ekskulnya', 'Piket': 'Gerbang, izin, kios',
+    'Guru Olahraga': 'Program fisik', 'Staf Kependidikan': 'Melapor pelanggaran', 'Administrator': 'Mengelola akun guru'
+  };
+  async function muatAkun() {
+    if (!S.siap.akun) {
+      S.siap.akun = true;
+      $('ak-cari').addEventListener('input', (e) => { AK.cari = e.target.value.trim().toLowerCase(); renderAkun(); });
+      $('ak-saring').addEventListener('click', (e) => {
+        const b = e.target.closest('button[data-saring]'); if (!b) return;
+        AK.saring = b.dataset.saring;
+        $('ak-saring').querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+        renderAkun();
+      });
+      $('ak-daftar').addEventListener('click', (e) => { const b = e.target.closest('[data-baris]'); if (b) bukaFormAkun(Number(b.dataset.baris)); });
+      $('ak-tambah').addEventListener('click', () => bukaFormAkun(0));
+      $('ak-batal').addEventListener('click', tutupFormAkun);
+      $('ak-simpan').addEventListener('click', simpanAkun);
+      $('ak-peran').addEventListener('change', renderSyaratAkun);
+      $('ak-riwayat-wadah').addEventListener('toggle', () => { if ($('ak-riwayat-wadah').open) muatRiwayatAkun(); });
+    }
+    $('ak-ket').textContent = 'Memuat daftar guru…';
+    try { AK.data = await api('akun.daftar'); renderAkun(); }
+    catch (e) { $('ak-ket').textContent = e.message; }
+  }
+  function renderAkun() {
+    const d = AK.data; if (!d) return;
+    const semua = d.guru;
+    const tanpaEmail = semua.filter((g) => !g.email).length, nonaktif = semua.filter((g) => !g.aktif).length;
+    $('ak-ket').textContent = semua.length + ' guru terdaftar' + (tanpaEmail ? ', ' + tanpaEmail + ' belum punya email sehingga belum bisa login' : '') +
+      (nonaktif ? ', ' + nonaktif + ' nonaktif' : '') + '.';
+    $('ak-n-email').textContent = tanpaEmail; $('ak-n-nonaktif').textContent = nonaktif;
+    const daftar = semua.filter((g) => (AK.saring === 'semua' && g.aktif) || (AK.saring === 'email' && !g.email) || (AK.saring === 'nonaktif' && !g.aktif))
+      .filter((g) => !AK.cari || (g.nama + ' ' + g.email + ' ' + g.kelasWali + ' ' + g.peran.join(' ')).toLowerCase().indexOf(AK.cari) > -1);
+    $('ak-daftar').innerHTML = daftar.length ? daftar.map((g) => '<li><button type="button" class="ak-baris' + (g.aktif ? '' : ' nonaktif') + '" data-baris="' + g.baris + '">' +
+      '<span class="ak-nama">' + esc(g.nama) + (g.email === d.saya ? ' <span class="tag">Anda</span>' : '') + '</span>' +
+      '<span class="ak-email' + (g.email ? '' : ' kosong') + '">' + esc(g.email || 'Belum ada email, belum bisa login') + '</span>' +
+      '<span class="ak-peran">' + g.peran.map((p) => '<span class="chip-peran' + (p === 'Administrator' ? ' admin' : '') + '">' +
+        esc(p === 'Guru Wali Kelas' && g.kelasWali ? 'Wali ' + g.kelasWali : p === 'Guru BK' && g.bkJenjang.length ? 'BK kelas ' + g.bkJenjang.join(', ') : p) + '</span>').join('') +
+      (g.aktif ? '' : '<span class="chip-peran mati">Nonaktif</span>') + '</span></button></li>').join('')
+      : '<li class="kosong">' + (AK.cari ? 'Tidak ada guru yang cocok dengan pencarian.' : 'Tidak ada guru di daftar ini.') + '</li>';
+  }
+  function bukaFormAkun(baris) {
+    const d = AK.data; if (!d) return;
+    const g = baris ? d.guru.filter((x) => x.baris === baris)[0] : null;
+    if (baris && !g) return;
+    AK.edit = g ? Object.assign({}, g) : { baris: 0, email: '', nama: '', nip: '', wa: '', peran: ['Guru Mapel'], kelasWali: '', bkJenjang: [], ekskul: [], aktif: true };
+    const e = AK.edit;
+    $('ak-judul').textContent = g ? 'Atur akses ' + namaPendek(g.nama) : 'Tambah guru';
+    $('ak-email').value = e.email; $('ak-nama').value = e.nama; $('ak-nip').value = e.nip; $('ak-wa').value = e.wa;
+    $('ak-aktif').checked = e.aktif;
+    $('ak-aktif-wadah').hidden = !g;
+    const pemilik = {};
+    d.guru.forEach((x) => { if (x.aktif && x.kelasWali && x.peran.indexOf('Guru Wali Kelas') > -1 && x.baris !== e.baris) pemilik[x.kelasWali] = namaPendek(x.nama); });
+    $('ak-peran').innerHTML = d.pilihan.peran.map((p) => '<label class="opsi-peran"><input type="checkbox" value="' + esc(p) + '"' + (e.peran.indexOf(p) > -1 ? ' checked' : '') + '>' +
+      '<span><strong>' + esc(p) + '</strong><small>' + esc(PERAN_KET[p] || '') + '</small></span></label>').join('');
+    $('ak-kelas').innerHTML = '<option value="">Pilih kelas</option>' + d.pilihan.kelas.map((k) => '<option value="' + k + '"' + (k === e.kelasWali ? ' selected' : '') +
+      (pemilik[k] ? ' disabled' : '') + '>' + k + (pemilik[k] ? ' (wali: ' + esc(pemilik[k]) + ')' : '') + '</option>').join('');
+    $('ak-jenjang').innerHTML = d.pilihan.jenjang.map((j) => '<label class="centang-kecil"><input type="checkbox" value="' + j + '"' + (e.bkJenjang.indexOf(j) > -1 ? ' checked' : '') + '> Kelas ' + j + '</label>').join('');
+    $('ak-ekskul').innerHTML = d.pilihan.ekskul.length ? d.pilihan.ekskul.map((x) => '<label class="centang-kecil"><input type="checkbox" value="' + esc(x) + '"' + (e.ekskul.indexOf(x) > -1 ? ' checked' : '') + '> ' + esc(x) + '</label>').join('')
+      : '<p class="keterangan">Belum ada ekskul di tab Ekskul.</p>';
+    $('ak-pesan').textContent = '';
+    $('ak-simpan').disabled = false; $('ak-simpan').textContent = g ? 'Simpan perubahan' : 'Tambah guru';
+    renderSyaratAkun();
+    $('modal-akun').hidden = false;
+    $('ak-' + (g ? 'email' : 'nama')).focus();
+  }
+  function peranTerpilih() { return Array.from($('ak-peran').querySelectorAll('input:checked')).map((x) => x.value); }
+  function renderSyaratAkun() {
+    const p = peranTerpilih();
+    $('ak-kelas-wadah').hidden = p.indexOf('Guru Wali Kelas') === -1;
+    $('ak-jenjang-wadah').hidden = p.indexOf('Guru BK') === -1;
+    $('ak-ekskul-wadah').hidden = p.indexOf('Pembina Ekstrakurikuler') === -1;
+    const saya = AK.edit && AK.edit.email && AK.edit.email === AK.data.saya;
+    $('ak-diri').hidden = !saya;
+  }
+  function tutupFormAkun() { $('modal-akun').hidden = true; AK.edit = null; }
+  async function simpanAkun() {
+    if (AK.menyimpan || !AK.edit) return;
+    const galat = (x) => { $('ak-pesan').textContent = x; };
+    const e = AK.edit, peran = peranTerpilih();
+    const isi = {
+      baris: e.baris, emailLama: e.email, namaLama: e.nama,
+      email: $('ak-email').value.trim(), nama: $('ak-nama').value.trim(), nip: $('ak-nip').value.trim(), wa: $('ak-wa').value.trim(),
+      peran: peran, kelasWali: $('ak-kelas').value,
+      bkJenjang: Array.from($('ak-jenjang').querySelectorAll('input:checked')).map((x) => Number(x.value)),
+      ekskul: Array.from($('ak-ekskul').querySelectorAll('input:checked')).map((x) => x.value),
+      aktif: $('ak-aktif').checked
+    };
+    if (isi.nama.length < 3) { $('ak-nama').focus(); return galat('Tulis nama lengkap guru.'); }
+    if (isi.email && !/^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+$/.test(isi.email)) { $('ak-email').focus(); return galat('Periksa penulisan email.'); }
+    if (!peran.length) return galat('Pilih minimal satu peran.');
+    if (peran.indexOf('Guru Wali Kelas') > -1 && !isi.kelasWali) { $('ak-kelas').focus(); return galat('Pilih kelas untuk Guru Wali Kelas.'); }
+    if (peran.indexOf('Pembina Ekstrakurikuler') > -1 && !isi.ekskul.length) return galat('Pilih ekskul yang dibina.');
+    AK.menyimpan = true;
+    const b = $('ak-simpan'); b.disabled = true; b.textContent = 'Menyimpan…';
+    try {
+      const d = await api('akun.simpan', isi);
+      tutupFormAkun();
+      toast(d.aksi + ': ' + namaPendek(d.guru.nama) + '. Berlaku saat guru itu membuka atau memperbarui aplikasi.', 'hadir', 6000);
+      await muatAkun();
+      if ($('ak-riwayat-wadah').open) muatRiwayatAkun();
+    } catch (er) { galat(er.message); b.disabled = false; b.textContent = e.baris ? 'Simpan perubahan' : 'Tambah guru'; }
+    AK.menyimpan = false;
+  }
+  async function muatRiwayatAkun() {
+    $('ak-riwayat').innerHTML = '<li class="memuat">Memuat…</li>';
+    try {
+      const d = await api('akun.riwayat');
+      $('ak-riwayat').innerHTML = d.riwayat.length ? d.riwayat.map((r) => '<li><strong>' + esc(r.aksi) + '</strong>: ' + esc(r.target) +
+        '<span class="meta">' + esc(r.waktu) + ' oleh ' + esc(namaPendek(r.admin)) + '</span>' +
+        (r.sebelum ? '<span class="meta">Sebelum: ' + esc(r.sebelum) + '</span>' : '') + '<span class="meta">Sesudah: ' + esc(r.sesudah) + '</span></li>').join('')
+        : '<li class="kosong">Belum ada perubahan akses yang tercatat.</li>';
+    } catch (e) { $('ak-riwayat').innerHTML = '<li class="kosong">' + esc(e.message) + '</li>'; }
+  }
 
   /* ---------------- Foto siswa (satu per satu, hanya di memori) ---------------- */
   function fotoHtml(s) { return '<span class="foto-siswa" data-foto="' + esc(s.nis) + '">' + esc(inisial(s.nama)) + '</span>'; }
@@ -365,7 +560,9 @@
     $('sambut-salam').textContent = sapaan();
     $('sambut-nama').textContent = namaPendek(S.guru.nama);
     $('sambut-tanggal').textContent = new Intl.DateTimeFormat('id-ID', { timeZone: 'Asia/Jakarta', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date());
-    $('sambut-peran').innerHTML = (S.guru.peran || []).map((p) => '<li>' + esc(p === 'Wali Kelas' && S.guru.kelasWali ? 'Wali ' + S.guru.kelasWali : p) + '</li>').join('');
+    const ruangKini = S.daftarRuang.filter((r) => r.kode === S.ruang)[0];
+    $('sambut-peran').innerHTML = ruangKini ? '<li>Bekerja sebagai ' + esc(ruangKini.nama) + '</li>' :
+      (S.guru.peran || []).map((p) => '<li>' + esc(p === 'Wali Kelas' && S.guru.kelasWali ? 'Wali ' + S.guru.kelasWali : p) + '</li>').join('');
     wadahBeranda();
     if (!B.data) $('b-lain').innerHTML = '<p class="memuat">Memuat ringkasan hari ini…</p>';
     else renderBeranda();
@@ -2300,6 +2497,7 @@
 
   /* ---------------- Mulai ---------------- */
   function pasangKejadian() {
+    pasangRuang();
     $('tombol-menu').innerHTML = ikon('menu');
     $('tombol-lapor-besar').innerHTML = ikon('lapor') + 'Lapor pelanggaran';
     $('tombol-menu').addEventListener('click', (e) => { e.stopPropagation(); ($('menu').hidden ? bukaMenu() : tutupMenu()); });
@@ -2336,7 +2534,7 @@
     window.addEventListener('hashchange', () => { if (!$('layar-utama').hidden && S.menu.length) buka(halamanDariHash()); });
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
-      if (!$('modal-scan').hidden) tutupScan(); else if (!$('modal-foto').hidden) $('modal-foto').hidden = true; else if (!$('modal-titip').hidden) tutupTitip(); else if (!$('modal-pbn').hidden) tutupPernyataan(); else if (!$('modal-prg').hidden) tutupFormProgram();
+      if (!$('modal-scan').hidden) tutupScan(); else if (!$('modal-foto').hidden) $('modal-foto').hidden = true; else if (!$('modal-titip').hidden) tutupTitip(); else if (!$('modal-pbn').hidden) tutupPernyataan(); else if (!$('modal-prg').hidden) tutupFormProgram(); else if (!$('modal-akun').hidden) tutupFormAkun(); else if (!$('ruang-menu').hidden) $('ruang-menu').hidden = true;
       else if (!$('lembar-kios').hidden) $('lembar-kios').hidden = true; else if (!$('lembar-lainnya').hidden) $('lembar-lainnya').hidden = true; else if (!$('menu').hidden) tutupMenu();
     });
     document.addEventListener('click', (e) => { if (!$('menu').hidden && !e.target.closest('#menu') && !e.target.closest('#tombol-menu')) tutupMenu(); });
@@ -2346,6 +2544,7 @@
     pasangKejadian();
     if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
     const sesi = simpan.get('smkt_sesi', null);
+    S.ruang = String(simpan.get('smkt_ruang', '') || '');
     if (sesi && sesi.kedaluwarsa > Date.now() && sesi.sesi && sesi.sesi !== 'demo') { S.sesi = sesi.sesi; S.guru = sesi.guru; bukaUtama(); }
     else tampilLogin();
   }

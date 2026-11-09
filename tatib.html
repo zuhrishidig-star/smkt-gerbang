@@ -35,6 +35,7 @@
         <img src="icons/logo-128.png" alt="" width="44" height="44">
         <div><strong>Tata Tertib</strong><span id="sisi-sekolah"></span></div>
       </div>
+      <div class="sisi-ruang" id="sisi-ruang" hidden></div>
       <nav class="sisi-nav" id="sisi-nav" aria-label="Halaman"></nav>
       <div class="sisi-akun" id="sisi-akun"></div>
     </aside>
@@ -46,8 +47,14 @@
         <span class="tt-merek">Tata Tertib</span>
         <strong id="judul-halaman">Beranda</strong>
       </div>
+      <button id="ruang-tombol" class="ruang-tombol" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="ruang-menu" hidden></button>
       <button id="tombol-menu" class="tombol-ikon" type="button" aria-label="Menu akun" aria-expanded="false" aria-controls="menu"></button>
     </header>
+
+    <div id="ruang-menu" class="menu ruang-menu" role="menu" aria-label="Pilih ruang kerja" hidden>
+      <p class="menu-info">Bekerja sebagai</p>
+      <div id="ruang-daftar"></div>
+    </div>
 
     <div id="menu" class="menu tt-menu" hidden>
       <p class="menu-info" id="menu-info"></p>
@@ -71,6 +78,28 @@
         </div>
         <a href="#lapor" class="tombol-lapor" id="tombol-lapor-besar"><span class="ik" data-ikon="lapor"></span>Lapor pelanggaran</a>
         <div id="b-isi"></div>
+      </section>
+
+      <!-- KELOLA AKUN GURU -->
+      <section id="p-akun" class="panel" hidden>
+        <div class="blok">
+          <div class="ak-kepala">
+            <p class="keterangan" id="ak-ket">Memuat…</p>
+            <button id="ak-tambah" class="tombol tombol-utama" type="button">Tambah guru</button>
+          </div>
+          <label class="label" for="ak-cari">Cari</label>
+          <input id="ak-cari" class="isian" type="search" placeholder="Nama, email, kelas, atau peran" autocomplete="off">
+          <div class="segmen ak-saring" id="ak-saring" role="group" aria-label="Saring akun">
+            <button type="button" data-saring="semua" aria-pressed="true">Aktif</button>
+            <button type="button" data-saring="email" aria-pressed="false">Belum ada email <span id="ak-n-email"></span></button>
+            <button type="button" data-saring="nonaktif" aria-pressed="false">Nonaktif <span id="ak-n-nonaktif"></span></button>
+          </div>
+          <ul class="ak-daftar" id="ak-daftar"></ul>
+        </div>
+        <details class="blok ak-riwayat" id="ak-riwayat-wadah">
+          <summary>Riwayat perubahan akses</summary>
+          <ul class="baris-ringkas" id="ak-riwayat"></ul>
+        </details>
       </section>
 
       <!-- VERIFIKASI FOTO SCAN -->
@@ -397,6 +426,43 @@
       <div class="modal-aksi">
         <button id="pf-batal" class="tombol tombol-garis" type="button">Batal</button>
         <button id="pf-simpan" class="tombol tombol-utama" type="button">Tetapkan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Atur akun guru -->
+  <div id="modal-akun" class="modal modal-lebar" hidden role="dialog" aria-modal="true" aria-labelledby="ak-judul">
+    <div class="modal-isi">
+      <h2 id="ak-judul" class="judul-blok">Atur akses</h2>
+      <label class="label" for="ak-nama">Nama lengkap dengan gelar</label>
+      <input id="ak-nama" class="isian" type="text" maxlength="120" autocomplete="off">
+      <label class="label" for="ak-email">Email Google untuk login</label>
+      <input id="ak-email" class="isian" type="email" maxlength="120" autocomplete="off" placeholder="nama@gmail.com atau email belajar.id">
+      <div class="dua-kolom">
+        <div><label class="label" for="ak-nip">NIP <span class="redup">(opsional)</span></label><input id="ak-nip" class="isian" type="text" inputmode="numeric" maxlength="20"></div>
+        <div><label class="label" for="ak-wa">No. WA <span class="redup">(opsional)</span></label><input id="ak-wa" class="isian" type="tel" maxlength="16" placeholder="08…"></div>
+      </div>
+      <span class="label">Peran <span class="redup">(boleh lebih dari satu)</span></span>
+      <div class="ak-peran" id="ak-peran"></div>
+      <div id="ak-kelas-wadah" hidden>
+        <label class="label" for="ak-kelas">Kelas wali</label>
+        <select id="ak-kelas" class="isian"></select>
+        <p class="keterangan">Kelas yang sudah punya wali tidak bisa dipilih.</p>
+      </div>
+      <div id="ak-jenjang-wadah" hidden>
+        <span class="label">Jenjang binaan Guru BK</span>
+        <div class="ak-pilih" id="ak-jenjang"></div>
+      </div>
+      <div id="ak-ekskul-wadah" hidden>
+        <span class="label">Ekskul yang dibina</span>
+        <div class="ak-pilih" id="ak-ekskul"></div>
+      </div>
+      <label class="centang ak-aktif" id="ak-aktif-wadah"><input type="checkbox" id="ak-aktif"> Akun aktif <span class="redup">(matikan bila guru pindah atau tidak bertugas; riwayatnya tetap tersimpan)</span></label>
+      <p class="keterangan" id="ak-diri" hidden>Ini akun Anda. Peran Administrator dan status aktif Anda tidak bisa dicabut sendiri.</p>
+      <p class="pesan-galat" id="ak-pesan" role="alert"></p>
+      <div class="modal-aksi">
+        <button id="ak-batal" class="tombol tombol-garis" type="button">Batal</button>
+        <button id="ak-simpan" class="tombol tombol-utama" type="button">Simpan perubahan</button>
       </div>
     </div>
   </div>
