@@ -10,7 +10,7 @@
   const K = { awal: null, pilih: new Set(), logo: '', latar: null, menyusun: false, tata: 'bawaan', huruf: false };
 
   const skrip = {};
-  const VERSI_ASET = '20261109c';
+  const VERSI_ASET = '20261109d';
   function muatSkrip(src) {
     src = src + (src.indexOf('?') > -1 ? '&' : '?') + 'v=' + VERSI_ASET;
     if (!skrip[src]) skrip[src] = new Promise((ok, gagal) => {
@@ -166,7 +166,7 @@
 
   /* ---------- Tata letak "Kobalt Emas" (desain Canva tegak 54 x 85,6 mm) ----------
    * Posisi diukur dari template Canva sekolah. Latar depan/belakang = ekspor Canva
-   * tanpa nama, NIS, NISN, TTL, alamat, foto (depan) dan tanpa QR (belakang). */
+   * tanpa nama, NIS, NISN, TTL, alamat, foto (depan) dan tanpa QR serta nama di bawahnya (belakang). */
   const KOBALT = {
     w: 54, h: 85.6,
     foto: { x: 28.83, y: 32.0, w: 22.16, bawahLurus: 57.4, ujung: 61.25, r: 0.9, isi: '#4C9DD4' },
@@ -174,7 +174,9 @@
     nis: { x: 2.83, y: 35.30, pt: 6.5, spasi: 0.07 }, nisn: { x: 12.45, y: 35.30 },
     ttl: { x: 2.83, y: 40.70, jarak: 2.61, pt: 6.5, spasi: 0.07, lebar: 25 },
     alamat: { x: 2.83, y: 48.43, jarak: 2.29, pt: 6.0, spasi: 0.06, lebar: 26.0, baris: 3 },
-    qr: { kotak: { x: 9.57, y: 26.48, s: 37.36 }, x: 12.5, y: 29.41, s: 31.5 }
+    qr: { kotak: { x: 9.49, y: 26.40, s: 37.53 }, x: 12.61, y: 29.52, s: 31.29 },
+    // Nama siswa di bawah QR (desain Canva terbaru): Open Sans Bold hitam, rata tengah dalam kotak putih
+    namaQr: { tengah: 28.42, y: 62.26, pt: 4.8, ptMin: 3.6, spasi: 0.2, lebar: 35.0, jarak: 1.6 }
   };
   const BULAN = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
   function tglPanjang(v) {
@@ -273,7 +275,25 @@
     else latarKobalt(doc, ox, oy, 'belakang');
     const k = L.qr.kotak;
     doc.setFillColor('#FFFFFF'); doc.roundedRect(ox + k.x, oy + k.y, k.s, k.s, 1.6, 1.6, 'F');
-    qr(doc, (o.siswa || { nis: '0000' }).nis, ox + L.qr.x, oy + L.qr.y, L.qr.s);
+    const s = o.siswa || { nis: '0000', nama: 'NAMA PESERTA DIDIK' };
+    qr(doc, s.nis, ox + L.qr.x, oy + L.qr.y, L.qr.s);
+    namaBawahQr(doc, ox, oy, String(s.nama || '').toUpperCase());
+  }
+  /** Nama di bawah QR: satu baris, mengecil bila panjang; bila tetap tidak muat, dua baris. */
+  function namaBawahQr(doc, ox, oy, nama) {
+    const N = KOBALT.namaQr;
+    if (!nama) return;
+    doc.setFont('OpenSans', 'bold');
+    const lebarTeks = (t, pt) => { doc.setFontSize(pt); return doc.getTextWidth(t) + Math.max(0, t.length - 1) * N.spasi; };
+    let pt = N.pt;
+    while (pt > N.ptMin && lebarTeks(nama, pt) > N.lebar) pt -= 0.2;
+    let baris = [nama];
+    if (lebarTeks(nama, pt) > N.lebar) { doc.setFontSize(pt); baris = bungkus(doc, nama, N.lebar, N.spasi).slice(0, 2); }
+    const y0 = oy + N.y - (baris.length - 1) * 0.7; // dua baris: turun sedikit agar tidak menempel QR
+    baris.forEach((b, i) => {
+      const w = lebarTeks(b, pt);
+      teks(doc, b, ox + N.tengah - w / 2, y0 + i * N.jarak, { pt: pt, tebal: true, warna: '#000000', huruf: 'OpenSans', spasi: N.spasi });
+    });
   }
 
   /** Ukuran dan penggambar untuk tata letak yang dipilih. */
