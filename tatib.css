@@ -740,3 +740,15 @@ textarea.isian { min-height: 0; resize: vertical; }
 @media (min-width: 1440px) {
   .per-kelas { grid-template-columns: 1fr 1fr 1fr; }
 }
+
+/* v1.8: pelatih ekskul */
+.pelatih-baris { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.pelatih-ttd { display: inline-flex; align-items: center; gap: 10px; }
+.pelatih-baris .tautan { font-size: .85rem; }
+.tag-ttd { font-size: .78rem; font-weight: 700; color: var(--hadir); }
+#es-atur-pelatih { margin-top: 6px; }
+.pl-daftar { list-style: none; margin: 8px 0; padding: 0; display: grid; gap: 6px; }
+.pl-daftar li { display: flex; align-items: center; justify-content: space-between; gap: 8px; background: var(--putih); border: 1px solid var(--garis); border-radius: 12px; padding: 8px 12px; }
+.pl-daftar li.kosong { justify-content: center; color: var(--teks-redup); background: transparent; border-style: dashed; }
+.pl-tambah { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
+.pl-tambah .tombol { margin: 0; }

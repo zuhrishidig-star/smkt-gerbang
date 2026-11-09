@@ -295,14 +295,15 @@
               <h2 class="judul-blok">Pertemuan ini</h2>
               <div class="eks-sesi-grid">
                 <fieldset><legend class="label">Pembina yang hadir</legend><div id="es-pembina" class="daftar-centang"></div></fieldset>
-                <fieldset><legend class="label">Pelatih yang hadir</legend><div id="es-pelatih" class="daftar-centang"></div></fieldset>
+                <fieldset><legend class="label">Pelatih yang hadir</legend><div id="es-pelatih" class="daftar-centang"></div>
+                  <button id="es-atur-pelatih" type="button" class="tautan">Atur nama pelatih</button></fieldset>
               </div>
               <span class="label">Foto kegiatan <span class="redup">(bukti pembinaan, maks. 6)</span></span>
               <div class="eks-foto" id="es-foto"></div>
               <label class="tombol tombol-garis tombol-foto" for="es-foto-input"><span class="ik ik-kamera"></span><span id="es-foto-label">Ambil foto kegiatan</span></label>
               <input type="file" id="es-foto-input" class="input-foto" accept="image/*" multiple>
               <label class="label" for="es-catatan">Catatan latihan <span class="redup">(opsional)</span></label>
-              <input id="es-catatan" class="isian" type="text" maxlength="300" placeholder="Materi latihan hari ini">
+              <input id="es-catatan" class="isian" type="text" maxlength="300" placeholder="Materi latihan hari ini (tercetak di daftar hadir)">
               <button id="es-simpan" class="tombol tombol-utama" type="button">Simpan pertemuan</button>
               <p class="status-simpan" id="es-status" aria-live="polite"></p>
             </div>
@@ -463,6 +464,38 @@
       <div class="modal-aksi">
         <button id="ak-batal" class="tombol tombol-garis" type="button">Batal</button>
         <button id="ak-simpan" class="tombol tombol-utama" type="button">Simpan perubahan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tanda tangan pelatih ekskul -->
+  <div id="modal-ttdp" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="ttdp-judul">
+    <div class="modal-isi">
+      <h2 id="ttdp-judul" class="judul-blok">Tanda tangan pelatih</h2>
+      <p class="keterangan" id="ttdp-ket"></p>
+      <div class="ttd"><canvas id="ttdp-kanvas" aria-labelledby="ttdp-judul"></canvas><button type="button" class="tautan" id="ttdp-ulang">Ulangi</button></div>
+      <p class="pesan-galat" id="ttdp-pesan" aria-live="polite"></p>
+      <div class="modal-aksi">
+        <button id="ttdp-batal" class="tombol tombol-garis" type="button">Batal</button>
+        <button id="ttdp-simpan" class="tombol tombol-utama" type="button">Simpan tanda tangan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nama pelatih ekskul -->
+  <div id="modal-pelatih" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="pl-judul">
+    <div class="modal-isi">
+      <h2 id="pl-judul" class="judul-blok">Nama pelatih</h2>
+      <p class="keterangan">Nama ini muncul sebagai pilihan saat mencatat pertemuan dan tercetak otomatis di daftar hadir. Tulis lengkap dengan gelar atau pangkat.</p>
+      <ul class="pl-daftar" id="pl-daftar"></ul>
+      <div class="pl-tambah">
+        <input id="pl-baru" class="isian" type="text" maxlength="80" placeholder="Contoh: Serda Andi Wijaya" autocomplete="off">
+        <button id="pl-tambah" class="tombol tombol-garis" type="button">Tambah</button>
+      </div>
+      <p class="pesan-galat" id="pl-pesan" aria-live="polite"></p>
+      <div class="modal-aksi">
+        <button id="pl-batal" class="tombol tombol-garis" type="button">Batal</button>
+        <button id="pl-simpan" class="tombol tombol-utama" type="button">Simpan daftar pelatih</button>
       </div>
     </div>
   </div>

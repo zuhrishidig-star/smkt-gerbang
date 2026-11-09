@@ -2433,8 +2433,14 @@
     const hadirP = ES.sesi ? s.pembinaHadir : [saya];
     $('es-pembina').innerHTML = pembina.length ? pembina.map((g) => '<label class="centang-kecil"><input type="checkbox" value="' + esc(g.email) + '"' + (hadirP.indexOf(g.email) > -1 ? ' checked' : '') + '>' +
       '<span>' + esc(namaPendek(g.nama)) + (g.email === saya ? ' <small>(Anda)</small>' : '') + '</span></label>').join('') : '<p class="keterangan">Belum ada pembina terdaftar.</p>';
-    $('es-pelatih').innerHTML = (e.pelatih || []).length ? e.pelatih.map((n) => '<label class="centang-kecil"><input type="checkbox" value="' + esc(n) + '"' + (s.pelatihHadir.indexOf(n) > -1 ? ' checked' : '') + '><span>' + esc(n) + '</span></label>').join('')
-      : '<p class="keterangan">Belum ada nama pelatih. Tim Tatib menuliskannya di kolom Pelatih tab Ekskul.</p>';
+    const sudahTtd = s.ttdPelatih || [];
+    $('es-pelatih').innerHTML = (e.pelatih || []).length ? e.pelatih.map((n) => {
+      const hadir = s.pelatihHadir.indexOf(n) > -1, ttd = sudahTtd.indexOf(n) > -1;
+      return '<div class="pelatih-baris"><label class="centang-kecil"><input type="checkbox" value="' + esc(n) + '"' + (hadir ? ' checked' : '') + '><span>' + esc(n) + '</span></label>' +
+        (hadir ? '<span class="pelatih-ttd">' + (ttd ? '<span class="tag-ttd">Sudah tanda tangan</span><button type="button" class="tautan" data-ttdp="' + esc(n) + '">Ulangi</button>'
+          : '<button type="button" class="tautan" data-ttdp="' + esc(n) + '">Tanda tangan</button>') + '</span>' : '') + '</div>';
+    }).join('')
+      : '<p class="keterangan">Belum ada nama pelatih. Ketuk Atur nama pelatih untuk menambahkannya.</p>';
     $('es-catatan').value = s.catatan || '';
     $('es-foto').innerHTML = s.foto.map((id) => '<figure data-id="' + esc(id) + '">' + (ES.foto.get(id) ? '<img alt="Foto kegiatan" src="' + ES.foto.get(id) + '">' : '<span class="ganti">Memuat…</span>') +
       '<button type="button" class="tautan merah" data-hapus-foto="' + esc(id) + '">Hapus</button></figure>').join('');
@@ -2466,8 +2472,79 @@
     } catch (er) { $('es-status').textContent = 'Belum tersimpan: ' + er.message; toast(er.message, 'galat', 5000); }
     finally { ES.menyimpan = false; $('es-simpan').disabled = false; }
   }
+  /* Tanda tangan pelatih di layar, satu per pertemuan */
+  const TP = { nama: '', pad: null };
+  function bukaTtdPelatih(nama) {
+    TP.nama = nama;
+    $('ttdp-judul').textContent = 'Tanda tangan ' + nama;
+    $('ttdp-ket').textContent = 'Pelatih ' + E.aktif + ', pertemuan ' + tglManis(E.tanggal, true) + '. Tanda tangan ini tercetak di daftar hadir bulanan.';
+    $('ttdp-pesan').textContent = '';
+    $('modal-ttdp').hidden = false;
+    if (!TP.pad) TP.pad = padTtd($('ttdp-kanvas'));
+    requestAnimationFrame(() => TP.pad.ukur());
+  }
+  function tutupTtdPelatih() { $('modal-ttdp').hidden = true; TP.nama = ''; }
+  async function simpanTtdPelatih() {
+    if (TP.pad.kosong()) { $('ttdp-pesan').textContent = 'Minta pelatih menandatangani kotak di atas dulu.'; return; }
+    const nama = TP.nama, png = TP.pad.png();
+    $('ttdp-simpan').disabled = true;
+    try {
+      const t = {}; t[nama] = png;
+      await simpanSesiE({ ttdPelatih: t });
+      tutupTtdPelatih();
+    } finally { $('ttdp-simpan').disabled = false; }
+  }
+  /* Daftar nama pelatih, diisi pembina */
+  const PL = { daftar: [] };
+  function renderPelatihE() {
+    $('pl-daftar').innerHTML = PL.daftar.length ? PL.daftar.map((n, i) => '<li><span>' + esc(n) + '</span><button type="button" class="tautan merah" data-hapus-pl="' + i + '">Hapus</button></li>').join('')
+      : '<li class="kosong">Belum ada pelatih.</li>';
+  }
+  function bukaPelatihE() {
+    const e = eAktif(); if (!e) return;
+    PL.daftar = (e.pelatih || []).slice();
+    $('pl-judul').textContent = 'Nama pelatih ' + e.nama;
+    $('pl-baru').value = ''; $('pl-pesan').textContent = '';
+    renderPelatihE();
+    $('modal-pelatih').hidden = false;
+    $('pl-baru').focus();
+  }
+  function tambahPelatihE() {
+    const n = $('pl-baru').value.replace(/[,;=|]/g, ' ').replace(/\s+/g, ' ').trim();
+    if (n.length < 3) { $('pl-pesan').textContent = 'Tulis nama pelatih minimal 3 huruf.'; return; }
+    if (PL.daftar.some((x) => x.toLowerCase() === n.toLowerCase())) { $('pl-pesan').textContent = n + ' sudah ada di daftar.'; return; }
+    PL.daftar.push(n); $('pl-baru').value = ''; $('pl-pesan').textContent = ''; renderPelatihE(); $('pl-baru').focus();
+  }
+  async function simpanPelatihE() {
+    if ($('pl-baru').value.trim()) tambahPelatihE();
+    $('pl-simpan').disabled = true; $('pl-pesan').textContent = '';
+    try {
+      const d = await api('ekskul.pelatih', { ekskul: E.aktif, pelatih: PL.daftar });
+      const e = eAktif(); if (e) e.pelatih = d.pelatih;
+      $('modal-pelatih').hidden = true;
+      renderSesiE();
+      toast('Daftar pelatih tersimpan.', 'hadir');
+    } catch (er) { $('pl-pesan').textContent = er.message; }
+    finally { $('pl-simpan').disabled = false; }
+  }
   function pasangSesiE() {
     $('es-simpan').addEventListener('click', () => simpanSesiE());
+    $('es-pelatih').addEventListener('click', (ev) => {
+      const b = ev.target.closest('button[data-ttdp]'); if (!b) return;
+      bukaTtdPelatih(b.dataset.ttdp);
+    });
+    $('es-atur-pelatih').addEventListener('click', bukaPelatihE);
+    $('ttdp-ulang').addEventListener('click', () => TP.pad && TP.pad.bersih());
+    $('ttdp-batal').addEventListener('click', tutupTtdPelatih);
+    $('ttdp-simpan').addEventListener('click', simpanTtdPelatih);
+    $('pl-tambah').addEventListener('click', tambahPelatihE);
+    $('pl-baru').addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { ev.preventDefault(); tambahPelatihE(); } });
+    $('pl-daftar').addEventListener('click', (ev) => {
+      const b = ev.target.closest('button[data-hapus-pl]'); if (!b) return;
+      PL.daftar.splice(Number(b.dataset.hapusPl), 1); renderPelatihE();
+    });
+    $('pl-batal').addEventListener('click', () => { $('modal-pelatih').hidden = true; });
+    $('pl-simpan').addEventListener('click', simpanPelatihE);
     $('es-foto-input').addEventListener('change', async (ev) => {
       const files = Array.from(ev.target.files || []).slice(0, 3); ev.target.value = '';
       if (!files.length) return;
@@ -2497,7 +2574,7 @@
     if (!d.sesi || !d.sesi.length) return '';
     let h = '<h3 class="sub-judul">Pembina dan pelatih per pertemuan</h3><ul class="baris-ringkas">' + d.sesi.map((s) =>
       '<li><strong>' + esc(tglManis(s.tgl, true)) + '</strong><span class="meta">Pembina: ' + esc(s.pembina.map(namaPendek).join(', ') || '-') +
-      '. Pelatih: ' + esc(s.pelatih.join(', ') || '-') + '. ' + s.foto + ' foto.</span></li>').join('') + '</ul>';
+      '. Pelatih: ' + esc(s.pelatih.map((n) => n + ((s.ttd || []).indexOf(n) > -1 ? ' (TTD)' : '')).join(', ') || '-') + '. ' + (s.materi ? 'Materi: ' + esc(s.materi) + '. ' : '') + s.foto + ' foto.</span></li>').join('') + '</ul>';
     h += '<div class="aksi-riwayat"><button type="button" class="tombol tombol-garis" data-aksi="lampiran">' + ikon('surat') + (d.lampiran ? 'Buat ulang lampiran PDF' : 'Buat lampiran PDF') + '</button></div>';
     h += '<div id="e-lampiran">' + (d.lampiran && d.lampiran.url ? '<div class="surat-siap">Lampiran tersimpan ' + esc(d.lampiran.dibuat) + ': <a href="' + esc(d.lampiran.url) + '" target="_blank" rel="noopener">Lihat di Drive</a></div>' : '') + '</div>';
     h += '<p class="keterangan">Lampiran bulan lalu dibuat otomatis setiap tanggal 1 pukul 06.00.</p>';
@@ -2543,7 +2620,7 @@
     window.addEventListener('hashchange', () => { if (!$('layar-utama').hidden && S.menu.length) buka(halamanDariHash()); });
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
-      if (!$('modal-scan').hidden) tutupScan(); else if (!$('modal-foto').hidden) $('modal-foto').hidden = true; else if (!$('modal-titip').hidden) tutupTitip(); else if (!$('modal-pbn').hidden) tutupPernyataan(); else if (!$('modal-prg').hidden) tutupFormProgram(); else if (!$('modal-akun').hidden) tutupFormAkun(); else if (!$('ruang-menu').hidden) $('ruang-menu').hidden = true;
+      if (!$('modal-scan').hidden) tutupScan(); else if (!$('modal-foto').hidden) $('modal-foto').hidden = true; else if (!$('modal-titip').hidden) tutupTitip(); else if (!$('modal-pbn').hidden) tutupPernyataan(); else if (!$('modal-prg').hidden) tutupFormProgram(); else if (!$('modal-akun').hidden) tutupFormAkun(); else if (!$('modal-ttdp').hidden) tutupTtdPelatih(); else if (!$('modal-pelatih').hidden) $('modal-pelatih').hidden = true; else if (!$('ruang-menu').hidden) $('ruang-menu').hidden = true;
       else if (!$('lembar-kios').hidden) $('lembar-kios').hidden = true; else if (!$('lembar-lainnya').hidden) $('lembar-lainnya').hidden = true; else if (!$('menu').hidden) tutupMenu();
     });
     document.addEventListener('click', (e) => { if (!$('menu').hidden && !e.target.closest('#menu') && !e.target.closest('#tombol-menu')) tutupMenu(); });
