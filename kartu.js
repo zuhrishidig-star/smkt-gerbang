@@ -7,7 +7,7 @@
   const $ = (id) => document.getElementById(id);
   const W = 85.6, H = 54;
   const WARNA = { dongker: '#0B3558', biru: '#0B6AAA', langit: '#0090DA', gunung: '#7AC02B', lencana: '#FFE600', tinta: '#0B2238', redup: '#5B6B7E', latar: '#EEF5FA' };
-  const K = { awal: null, pilih: new Set(), logo: '', latar: null, menyusun: false };
+  const K = { awal: null, pilih: new Set(), logo: '', latar: null, menyusun: false, tata: 'bawaan', huruf: false };
 
   const skrip = {};
   function muatSkrip(src) {
@@ -21,6 +21,16 @@
   async function siapkanPustaka() {
     await Promise.all([muatSkrip('vendor/jspdf.umd.min.js'), muatSkrip('vendor/qrcode.js')]);
     if (!K.logo) K.logo = await keDataUrl('icons/logo-256.png');
+  }
+  async function siapkanHuruf() {
+    await muatSkrip('vendor/font-kartu.js');
+  }
+  /** Daftarkan huruf Kobalt Emas pada satu dokumen jsPDF. */
+  function pasangHuruf(doc) {
+    const F = window.SMKT_FONT_KARTU;
+    doc.addFileToVFS('OpenSans-Bold.ttf', F.OpenSansBold); doc.addFont('OpenSans-Bold.ttf', 'OpenSans', 'bold');
+    doc.addFileToVFS('OpenSans-Regular.ttf', F.OpenSans); doc.addFont('OpenSans-Regular.ttf', 'OpenSans', 'normal');
+    doc.addFileToVFS('Poppins-Regular.ttf', F.Poppins); doc.addFont('Poppins-Regular.ttf', 'Poppins', 'normal');
   }
   async function keDataUrl(url) {
     const b = await (await fetch(url)).blob();
@@ -59,8 +69,11 @@
   }
   function teks(doc, isi, x, y, o) {
     o = o || {};
-    doc.setFont('helvetica', o.tebal ? 'bold' : 'normal'); doc.setFontSize(o.pt || 7); doc.setTextColor(o.warna || WARNA.tinta);
-    doc.text(isi, x, y, { align: o.rata || 'left', maxWidth: o.lebar, baseline: 'alphabetic' });
+    doc.setFont(o.huruf || 'helvetica', o.tebal ? 'bold' : 'normal'); doc.setFontSize(o.pt || 7); doc.setTextColor(o.warna || WARNA.tinta);
+    const opsi = { align: o.rata || 'left', maxWidth: o.lebar, baseline: 'alphabetic' };
+    if (o.spasi) opsi.charSpace = o.spasi;
+    if (o.jarak) opsi.lineHeightFactor = o.jarak / (o.pt * 0.3528);
+    doc.text(isi, x, y, opsi);
   }
   function garisPanduan(doc, x, y, w, h, label) {
     doc.setDrawColor('#E5007E'); doc.setLineWidth(0.25); doc.setLineDashPattern([1, 0.8], 0);
@@ -149,9 +162,95 @@
     if (o.panduan) garisPanduan(doc, ox + 57, oy + 10, 27, 26, 'TTD KEPALA SEKOLAH (opsional)');
   }
 
-  function tandaPotong(doc, x, y) {
+  /* ---------- Tata letak "Kobalt Emas" (desain Canva tegak 54 x 85,6 mm) ----------
+   * Posisi diukur dari template Canva sekolah. Latar depan/belakang = ekspor Canva
+   * tanpa nama, NIS, NISN, TTL, alamat, foto (depan) dan tanpa QR (belakang). */
+  const KOBALT = {
+    w: 54, h: 85.6,
+    foto: { x: 28.83, y: 32.0, w: 22.16, bawahLurus: 57.4, ujung: 61.25, r: 0.9, isi: '#4C9DD4' },
+    nama: { x: 2.83, y: 26.78, jarak: 2.75, pt: 8.2, pt2: 7.2, spasi: 0.16, lebar: 47 },
+    nis: { x: 2.83, y: 35.30, pt: 6.5, spasi: 0.07 }, nisn: { x: 12.45, y: 35.30 },
+    ttl: { x: 2.83, y: 40.70, jarak: 2.61, pt: 6.5, spasi: 0.07, lebar: 25 },
+    alamat: { x: 2.83, y: 48.43, jarak: 2.29, pt: 6.0, spasi: 0.06, lebar: 26.0, baris: 3 },
+    qr: { kotak: { x: 9.57, y: 26.48, s: 37.36 }, x: 12.5, y: 29.41, s: 31.5 }
+  };
+  const BULAN = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+  function tglPanjang(v) {
+    const m = String(v || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
+    return m ? Number(m[3]) + ' ' + BULAN[Number(m[2]) - 1] + ' ' + m[1] : String(v || '');
+  }
+  /** Bungkus kata dengan memperhitungkan jarak antarhuruf (charSpace). */
+  function bungkus(doc, isi, lebar, spasi) {
+    const ukur = (t) => doc.getTextWidth(t) + t.length * spasi;
+    const out = []; let baris = '';
+    String(isi || '').split(/\s+/).filter(Boolean).forEach((k) => {
+      const coba = baris ? baris + ' ' + k : k;
+      if (!baris || ukur(coba) <= lebar) baris = coba; else { out.push(baris); baris = k; }
+    });
+    if (baris) out.push(baris);
+    return out;
+  }
+  function bentukFoto(doc, ox, oy, mode) {
+    const f = KOBALT.foto, x = ox + f.x, y = oy + f.y, w = f.w, r = f.r, k = 0.55 * r;
+    doc.moveTo(x + r, y); doc.lineTo(x + w - r, y);
+    doc.curveTo(x + w - r + k, y, x + w, y + r - k, x + w, y + r);
+    doc.lineTo(x + w, oy + f.bawahLurus); doc.lineTo(x + w / 2, oy + f.ujung); doc.lineTo(x, oy + f.bawahLurus);
+    doc.lineTo(x, y + r); doc.curveTo(x, y + r - k, x + r - k, y, x + r, y);
+    doc.close();
+    if (mode === 'isi') doc.fill(); else { doc.clip(); doc.discardPath(); }
+  }
+  function kobaltDepan(doc, ox, oy, o) {
+    const s = o.siswa || { nama: 'NAMA PESERTA DIDIK', nis: '0000', nisn: '0000', tempatLahir: 'Malang', tanggalLahir: '2013-01-01', alamat: 'Alamat siswa' };
+    const L = KOBALT, putih = o.tinta || '#FFFFFF';
+    if (o.latar) doc.addImage(o.latar, ox, oy, L.w, L.h, 'latarD', 'FAST');
+    else { doc.setFillColor('#0A1F5C'); doc.rect(ox, oy, L.w, L.h, 'F'); }
+    // Foto berbingkai segi lima seperti template
+    doc.setFillColor(L.foto.isi); bentukFoto(doc, ox, oy, 'isi');
+    if (o.foto) {
+      doc.saveGraphicsState(); bentukFoto(doc, ox, oy, 'klip');
+      doc.addImage(o.foto, 'JPEG', ox + L.foto.x, oy + L.foto.y, L.foto.w, L.foto.w * 4 / 3, undefined, 'FAST');
+      doc.restoreGraphicsState();
+    } else {
+      teks(doc, 'FOTO', ox + L.foto.x + L.foto.w / 2, oy + 45, { pt: 6, warna: putih, rata: 'center', huruf: 'Poppins' });
+    }
+    // Nama: huruf kapital, maksimal 2 baris (mengecil bila perlu)
+    let pt = L.nama.pt, baris;
+    doc.setFont('OpenSans', 'bold');
+    for (;;) {
+      doc.setFontSize(pt);
+      baris = bungkus(doc, String(s.nama || '').toUpperCase(), L.nama.lebar, L.nama.spasi);
+      if (baris.length <= 2 || pt <= 6) break;
+      pt -= 0.5;
+    }
+    baris.slice(0, 2).forEach((b, i) => teks(doc, b, ox + L.nama.x, oy + L.nama.y + i * L.nama.jarak, { pt: pt, tebal: true, warna: putih, huruf: 'OpenSans', spasi: L.nama.spasi }));
+    teks(doc, s.nis || '-', ox + L.nis.x, oy + L.nis.y, { pt: L.nis.pt, warna: putih, huruf: 'OpenSans', spasi: L.nis.spasi });
+    teks(doc, s.nisn || '-', ox + L.nisn.x, oy + L.nisn.y, { pt: L.nis.pt, warna: putih, huruf: 'OpenSans', spasi: L.nis.spasi });
+    const ttl = s.tempatLahir || s.tanggalLahir ? [(s.tempatLahir || '-') + ',', tglPanjang(s.tanggalLahir) || '-'] : ['-'];
+    ttl.forEach((b, i) => teks(doc, b, ox + L.ttl.x, oy + L.ttl.y + i * L.ttl.jarak, { pt: L.ttl.pt, warna: putih, huruf: 'Poppins', spasi: L.ttl.spasi }));
+    doc.setFont('Poppins', 'normal').setFontSize(L.alamat.pt);
+    const al = bungkus(doc, String(s.alamat || '-'), L.alamat.lebar, L.alamat.spasi).slice(0, L.alamat.baris);
+    al.forEach((b, i) => teks(doc, b, ox + L.alamat.x, oy + L.alamat.y + i * L.alamat.jarak, { pt: L.alamat.pt, warna: putih, huruf: 'Poppins', spasi: L.alamat.spasi }));
+  }
+  function kobaltBelakang(doc, ox, oy, o) {
+    const L = KOBALT;
+    if (o.latar) doc.addImage(o.latar, ox, oy, L.w, L.h, 'latarB', 'FAST');
+    else { doc.setFillColor('#0A1F5C'); doc.rect(ox, oy, L.w, L.h, 'F'); }
+    const k = L.qr.kotak;
+    doc.setFillColor('#FFFFFF'); doc.roundedRect(ox + k.x, oy + k.y, k.s, k.s, 1.6, 1.6, 'F');
+    qr(doc, (o.siswa || { nis: '0000' }).nis, ox + L.qr.x, oy + L.qr.y, L.qr.s);
+  }
+
+  /** Ukuran dan penggambar untuk tata letak yang dipilih. */
+  function tataLetak() {
+    return K.tata === 'kobalt'
+      ? { w: KOBALT.w, h: KOBALT.h, tegak: true, depan: kobaltDepan, belakang: kobaltBelakang, kolom: 3, baris: 3 }
+      : { w: W, h: H, tegak: false, depan: depan, belakang: belakang, kolom: 2, baris: 5 };
+  }
+
+  function tandaPotong(doc, x, y, w, h) {
+    w = w || W; h = h || H;
     doc.setDrawColor('#9AA7B4'); doc.setLineWidth(0.1);
-    [[x, y], [x + W, y], [x, y + H], [x + W, y + H]].forEach(([a, b]) => {
+    [[x, y], [x + w, y], [x, y + h], [x + w, y + h]].forEach(([a, b]) => {
       doc.line(a - 3, b, a - 0.8, b); doc.line(a + 0.8, b, a + 3, b);
       doc.line(a, b - 3, a, b - 0.8); doc.line(a, b + 0.8, a, b + 3);
     });
@@ -196,30 +295,41 @@
       const latar = await latarDipakai();
       const putih = $('kt-teks-putih').checked;
       const a4 = $('kt-format').value === 'a4';
+      const tl = tataLetak();
+      if (K.tata === 'kobalt') {
+        if (!latar.depan || !latar.belakang) throw new Error('Tata letak Kobalt Emas memakai latar dari Canva. Unggah latar depan dan belakang dulu, lalu centang "Pakai latar desain Canva".');
+        await siapkanHuruf();
+      }
       status('Menyusun PDF ' + d.siswa.length + ' kartu…');
       await new Promise((r) => setTimeout(r, 30));
       const { jsPDF } = window.jspdf;
+      const orientasi = tl.tegak ? 'portrait' : 'landscape';
       let doc;
+      const opsiD = (s) => ({ siswa: s, foto: foto[s.nis], latar: latar.depan, teksPutih: putih });
+      const opsiB = (s) => ({ siswa: s, latar: latar.belakang });
       if (a4) {
         doc = new jsPDF({ unit: 'mm', format: 'a4', compress: true });
-        const mx = (210 - 2 * W) / 2, my = (297 - 5 * H) / 2;
-        for (let i = 0; i < d.siswa.length; i += 10) {
-          const isi = d.siswa.slice(i, i + 10);
+        if (K.tata === 'kobalt') pasangHuruf(doc);
+        const per = tl.kolom * tl.baris;
+        const mx = (210 - tl.kolom * tl.w) / 2, my = (297 - tl.baris * tl.h) / 2;
+        for (let i = 0; i < d.siswa.length; i += per) {
+          const isi = d.siswa.slice(i, i + per);
           if (i) doc.addPage();
-          isi.forEach((s, j) => { const x = mx + (j % 2) * W, y = my + Math.floor(j / 2) * H; depan(doc, x, y, { siswa: s, foto: foto[s.nis], latar: latar.depan, teksPutih: putih }); tandaPotong(doc, x, y); });
-          teks(doc, 'Halaman depan ' + (i / 10 + 1) + '  ·  ' + kelas.join(', '), 105, 293, { pt: 6, warna: WARNA.redup, rata: 'center' });
+          isi.forEach((s, j) => { const x = mx + (j % tl.kolom) * tl.w, y = my + Math.floor(j / tl.kolom) * tl.h; tl.depan(doc, x, y, opsiD(s)); tandaPotong(doc, x, y, tl.w, tl.h); });
+          teks(doc, 'Halaman depan ' + (i / per + 1) + '  ·  ' + kelas.join(', '), 105, 293, { pt: 6, warna: WARNA.redup, rata: 'center' });
           doc.addPage();
           // Halaman belakang dicerminkan kiri-kanan untuk cetak bolak-balik (balik sisi panjang).
-          isi.forEach((s, j) => { const x = mx + (1 - (j % 2)) * W, y = my + Math.floor(j / 2) * H; belakang(doc, x, y, { siswa: s, latar: latar.belakang }); tandaPotong(doc, x, y); });
-          teks(doc, 'Halaman belakang ' + (i / 10 + 1) + ' (cetak bolak-balik, balik pada sisi panjang)', 105, 293, { pt: 6, warna: WARNA.redup, rata: 'center' });
+          isi.forEach((s, j) => { const x = mx + (tl.kolom - 1 - (j % tl.kolom)) * tl.w, y = my + Math.floor(j / tl.kolom) * tl.h; tl.belakang(doc, x, y, opsiB(s)); tandaPotong(doc, x, y, tl.w, tl.h); });
+          teks(doc, 'Halaman belakang ' + (i / per + 1) + ' (cetak bolak-balik, balik pada sisi panjang)', 105, 293, { pt: 6, warna: WARNA.redup, rata: 'center' });
         }
       } else {
-        doc = new jsPDF({ unit: 'mm', format: [W, H], orientation: 'landscape', compress: true });
+        doc = new jsPDF({ unit: 'mm', format: [tl.w, tl.h], orientation: orientasi, compress: true });
+        if (K.tata === 'kobalt') pasangHuruf(doc);
         d.siswa.forEach((s, i) => {
-          if (i) doc.addPage([W, H], 'landscape');
-          depan(doc, 0, 0, { siswa: s, foto: foto[s.nis], latar: latar.depan, teksPutih: putih });
-          doc.addPage([W, H], 'landscape');
-          belakang(doc, 0, 0, { siswa: s, latar: latar.belakang });
+          if (i) doc.addPage([tl.w, tl.h], orientasi);
+          tl.depan(doc, 0, 0, opsiD(s));
+          doc.addPage([tl.w, tl.h], orientasi);
+          tl.belakang(doc, 0, 0, opsiB(s));
         });
       }
       const nama = 'Kartu_Pelajar_' + (kelas.length > 3 ? kelas.length + '_kelas' : kelas.join('_')) + (a4 ? '_A4' : '_ukuran_kartu') + '.pdf';
@@ -268,7 +378,7 @@
     try {
       const d = await T.api('kartu.data', { kelas: kelas });
       const sel = (v) => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
-      const csv = ['Nama,NIS,NISN,Kelas'].concat(d.siswa.map((s) => [s.nama, s.nis, s.nisn, s.kelas].map(sel).join(','))).join('\r\n');
+      const csv = ['Nama,NIS,NISN,Kelas,Tempat_Lahir,Tanggal_Lahir,Alamat'].concat(d.siswa.map((s) => [s.nama, s.nis, s.nisn, s.kelas, s.tempatLahir, tglPanjang(s.tanggalLahir), s.alamat].map(sel).join(','))).join('\r\n');
       const a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
       a.download = 'Data_Kartu_Pelajar' + (kelas.length ? '_' + (kelas.length > 3 ? kelas.length + '_kelas' : kelas.join('_')) : '') + '.csv';
@@ -284,14 +394,17 @@
     status('Mengunggah latar ' + sisi + '…');
     try {
       const img = await muatGambar(URL.createObjectURL(file));
-      const lebar = Math.min(1500, img.width), tinggi = Math.round(lebar * H / W);
+      const tl = tataLetak();
+      if ((img.height > img.width) !== tl.tegak) throw new Error('Gambar ' + (img.height > img.width ? 'tegak' : 'mendatar') + ', sedangkan tata letak terpilih ' + (tl.tegak ? 'tegak' : 'mendatar') + '. Ganti tata letak dulu atau unggah gambar yang sesuai.');
+      if (Math.max(img.width, img.height) < 900) T.toast('Resolusi latar rendah (' + img.width + 'x' + img.height + ' piksel). Untuk cetak tajam, unduh dari Canva dengan ukuran 3x atau sebagai PNG ukuran besar.', 'telat', 8000);
+      const lebar = Math.min(tl.tegak ? 1100 : 1500, img.width), tinggi = Math.round(lebar * tl.h / tl.w);
       const c = document.createElement('canvas'); c.width = lebar; c.height = tinggi;
       const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, lebar, tinggi);
       x.drawImage(img, 0, 0, lebar, tinggi);
-      if (Math.abs(img.width / img.height - W / H) > 0.04) T.toast('Perbandingan gambar tidak 85,6:54, latar akan sedikit tertarik. Sebaiknya ekspor ulang dari template.', 'telat', 7000);
+      if (Math.abs(img.width / img.height - tl.w / tl.h) > 0.04) T.toast('Perbandingan gambar tidak sesuai ukuran kartu, latar akan sedikit tertarik. Sebaiknya ekspor ulang dari Canva.', 'telat', 7000);
       await T.api('kartu.latar', { sisi: sisi, gambar: c.toDataURL('image/jpeg', 0.9) });
       K.awal.latar[sisi] = true; K.latar = null;
-      renderLatar();
+      renderLatar(); $('kt-pakai-latar').checked = true;
       status('Latar ' + sisi + ' tersimpan.');
     } catch (e) { status(e.message); }
   }
@@ -300,6 +413,26 @@
     catch (e) { status(e.message); }
   }
 
+  async function gantiTata() {
+    const v = $('kt-tata').value;
+    const ada = K.awal.latar.depan || K.awal.latar.belakang;
+    if (ada && !confirmGanti(v)) { $('kt-tata').value = K.tata; return; }
+    try {
+      await T.api('kartu.latar', { tata: v });
+      K.tata = v; K.awal.tata = v; renderTata();
+      status('Tata letak: ' + $('kt-tata').selectedOptions[0].textContent + '.' + (v === 'kobalt' ? ' Unggah latar depan dan belakang hasil ekspor Canva.' : ''));
+    } catch (e) { $('kt-tata').value = K.tata; status(e.message); }
+  }
+  function confirmGanti() { return true; }
+  function renderTata() {
+    $('kt-tata').value = K.tata;
+    $('kt-tata-ket').textContent = K.tata === 'kobalt'
+      ? 'Kartu tegak 54 x 85,6 mm. Depan: nama, NIS, NISN, TTL, alamat, dan foto. Belakang: QR. Lembar A4 memuat 9 kartu.'
+      : 'Kartu mendatar 85,6 x 54 mm dengan desain bawaan aplikasi. Lembar A4 memuat 10 kartu.';
+    $('kt-template').hidden = K.tata === 'kobalt';
+    $('kt-panduan-kobalt').hidden = K.tata !== 'kobalt';
+    $('kt-teks-putih').closest('label').hidden = K.tata === 'kobalt';
+  }
   function renderLatar() {
     const l = K.awal.latar;
     ['depan', 'belakang'].forEach((s) => {
@@ -325,6 +458,7 @@
     $('kt-kelas').addEventListener('change', (e) => { const v = e.target.value; if (e.target.checked) K.pilih.add(v); else K.pilih.delete(v); renderKelas(); });
     $('kt-semua').addEventListener('click', () => { const semua = K.pilih.size === K.awal.kelas.length; K.pilih = new Set(semua ? [] : K.awal.kelas.map((x) => x.kelas)); renderKelas(); });
     $('kt-unduh').addEventListener('click', unduhKartu);
+    $('kt-tata').addEventListener('change', gantiTata);
     $('kt-template').addEventListener('click', unduhTemplate);
     $('kt-csv').addEventListener('click', unduhCsv);
     ['depan', 'belakang'].forEach((s) => {
@@ -342,10 +476,13 @@
       $('kt-ket').textContent = K.awal.kelas.reduce((a, x) => a + x.jumlah, 0) + ' siswa aktif di ' + K.awal.kelas.length + ' kelas. QR berisi NIS, sama dengan yang dibaca Gerbang dan Kios.';
       $('kt-canva').hidden = !K.awal.canva;
       if (K.awal.canva) $('kt-canva').href = K.awal.canva;
-      renderKelas(); renderLatar();
+      K.tata = K.awal.tata === 'kobalt' ? 'kobalt' : 'bawaan';
+      renderKelas(); renderLatar(); renderTata();
+      if (K.tata === 'kobalt' && (K.awal.latar.depan || K.awal.latar.belakang)) $('kt-pakai-latar').checked = true;
+      if (K.awal.kolomBaru && K.awal.kolomBaru.length) status('Kolom ' + K.awal.kolomBaru.join(', ') + ' ditambahkan di ujung kanan tab Siswa. Isi dari data Dapodik agar TTL dan alamat tercetak.');
       siapkanPustaka().catch(() => {});
     } catch (e) { $('kt-ket').textContent = e.message; }
   }
 
-  window.SMKTKartu = { buka: buka, _uji: { depan: depan, belakang: belakang, K: K } };
+  window.SMKTKartu = { buka: buka, _uji: { depan: depan, belakang: belakang, kobaltDepan: kobaltDepan, kobaltBelakang: kobaltBelakang, pasangHuruf: pasangHuruf, siapkanHuruf: siapkanHuruf, siapkanPustaka: siapkanPustaka, K: K, KOBALT: KOBALT } };
 })();

@@ -109,6 +109,12 @@
           <div class="kt-kepala"><span class="label">Kelas</span><button id="kt-semua" class="tautan" type="button">Pilih semua / kosongkan</button></div>
           <div id="kt-kelas" class="daftar-centang kt-kelas"></div>
           <p class="keterangan" id="kt-jumlah"></p>
+          <label class="label" for="kt-tata">Desain kartu</label>
+          <select id="kt-tata" class="isian">
+            <option value="bawaan">Desain bawaan aplikasi (mendatar)</option>
+            <option value="kobalt">Kobalt Emas, dari Canva (tegak)</option>
+          </select>
+          <p class="keterangan" id="kt-tata-ket"></p>
           <label class="label" for="kt-format">Format cetak</label>
           <select id="kt-format" class="isian">
             <option value="a4">Kertas A4, 10 kartu per lembar, bolak-balik (dipotong)</option>
@@ -127,6 +133,16 @@
             <button id="kt-template" class="tombol tombol-garis" type="button">Unduh template kosong (PDF)</button>
             <button id="kt-csv" class="tombol tombol-garis" type="button">Unduh data siswa (CSV)</button>
             <a id="kt-canva" class="tombol tombol-garis" target="_blank" rel="noopener" hidden>Buka template di Canva</a>
+          </div>
+          <div id="kt-panduan-kobalt" class="kt-panduan" hidden>
+            <p><strong>Menyiapkan latar dari Canva (sekali saja):</strong></p>
+            <ol>
+              <li>Buka template Kobalt Emas di Canva, lalu <em>File &gt; Buat salinan</em>.</li>
+              <li>Di salinan, hapus isi yang berbeda tiap siswa: <strong>nama, angka NIS dan NISN, isi TTL, isi alamat, dan foto</strong> (halaman 1) serta <strong>gambar QR</strong> (halaman 2). Tulisan judul seperti NIS, TTL, Alamat, dan kotak putih QR tetap dibiarkan.</li>
+              <li><em>Bagikan &gt; Unduh</em>, pilih PNG, ukuran sebesar mungkin, semua halaman.</li>
+              <li>Unggah halaman 1 sebagai latar depan dan halaman 2 sebagai latar belakang di bawah ini.</li>
+            </ol>
+            <p>Tempat lahir, tanggal lahir, dan alamat diambil dari kolom <strong>Tempat_Lahir</strong>, <strong>Tanggal_Lahir</strong>, dan <strong>Alamat</strong> di tab Siswa.</p>
           </div>
           <div class="kt-latar">
             <div><span class="label">Latar depan</span><p class="keterangan" id="kt-latar-depan-ket"></p>
