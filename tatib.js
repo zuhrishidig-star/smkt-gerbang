@@ -56,7 +56,7 @@
   const KET_RUANG = {
     wali: 'Siswa kelas Anda: keterlambatan, kasus, verifikasi foto, dan pembinaan.',
     bk: 'Kasus yang diteruskan ke BK dan bimbingan konseling siswa jenjang Anda.',
-    tatib: 'Kasus berat, Waspada, surat Lapis, masa pembinaan, dan kios gerbang.',
+    tatib: 'Kasus berat, Waspada, Surat Peringatan (SP), masa pembinaan, dan kios gerbang.',
     wakasek: 'Kasus tangga pimpinan dan pemantauan kedisiplinan sekolah.',
     kepsek: 'Ringkasan dan pemantauan sekolah. Ruang ini tidak untuk melapor atau menindak.',
     piket: 'Gerbang, siswa terlambat hari ini, serta izin dan dispensasi.',
@@ -1477,7 +1477,7 @@
       '<li>' + esc(r.kategori) + ': <strong>' + esc(r.status) + '</strong>' + (r.potongan ? ' <span class="tag hijau">−' + r.potongan + ' poin</span>' : '') +
       '<span class="meta">' + esc(r.tanggal) + (r.catatan ? ', ' + esc(r.catatan) : '') + '</span></li>').join('') + '</ul>';
     if (d.surat.length) h += '<h3 class="sub-judul">Surat pernyataan</h3><ul class="baris-ringkas">' + d.surat.map((x) =>
-      '<li>Lapis ' + x.lapis + ', ' + esc(x.tanggal) + '<span class="meta">' + esc(x.id) + ', ' + x.poin + ' poin saat dicetak, tanda tangan: ' + esc(x.ttd || '-') + '</span></li>').join('') + '</ul>';
+      '<li>SP-' + x.lapis + ', ' + esc(x.tanggal) + '<span class="meta">' + (x.nomor ? 'Nomor ' + esc(x.nomor) + ', ' : '') + esc(x.id) + ', ' + x.poin + ' poin saat dicetak, tanda tangan: ' + esc(x.ttd || '-') + '</span></li>').join('') + '</ul>';
     if (d.catatanHadir.length) h += '<h3 class="sub-judul">Catatan kehadiran</h3><ul class="baris-ringkas">' + d.catatanHadir.map((x) =>
       '<li><strong>' + esc(x.status) + '</strong>, ' + esc(x.tanggal) + (x.jam ? ', ' + esc(String(x.jam).slice(0, 5)) : '') + (x.ket ? '<span class="meta">' + esc(x.ket) + '</span>' : '') + '</li>').join('') + '</ul>';
     h += '<div class="aksi-riwayat">';
@@ -1507,16 +1507,16 @@
       let h = '<li class="kasus lv' + s.level + '" data-nis="' + esc(s.nis) + '"><div class="kasus-kepala">' + fotoHtml(s) +
         '<span><span class="nm">' + esc(s.nama) + '</span><span class="kl">' + esc(s.kelas) + '</span></span><span></span></div>' + meterHtml(s.poin, s.level) +
         '<div class="tugas"><strong>' + esc(L.pj || 'Tindakan') + '</strong>' + esc(L.tindakan) + '</div>' +
-        '<p class="meta">Surat terakhir: ' + (s.lapisTerakhir ? 'Lapis ' + s.lapisTerakhir : 'belum ada') + (berikut ? ' <span class="tag merah">perlu Surat Lapis ' + berikut + '</span>' : '') + '</p>';
+        '<p class="meta">Surat terakhir: ' + (s.lapisTerakhir ? 'SP-' + s.lapisTerakhir : 'belum ada') + (berikut ? ' <span class="tag merah">perlu SP-' + berikut + '</span>' : '') + '</p>';
       const pdf = Z.pdf[s.nis];
-      if (pdf) h += '<div class="surat-siap">Surat Lapis ' + pdf.lapis + ' siap: <a href="' + pdf.url + '" target="_blank" rel="noopener">Buka PDF</a><a href="' + pdf.url + '" download="' + esc(pdf.nama) + '">Unduh</a>' +
+      if (pdf) h += '<div class="surat-siap">SP-' + pdf.lapis + (pdf.nomor ? ' (Nomor ' + esc(pdf.nomor) + ')' : '') + ' siap: <a href="' + pdf.url + '" target="_blank" rel="noopener">Buka PDF</a><a href="' + pdf.url + '" download="' + esc(pdf.nama) + '">Unduh</a>' +
         (pdf.drive ? '<a href="' + esc(pdf.drive) + '" target="_blank" rel="noopener">Lihat di Drive</a>' : '') + '</div>';
       const bk = Z.berkas[s.nis];
       if (bk) h += bk.memuat ? '<p class="meta">Menyusun berkas bukti (rekap, foto, pernyataan)…</p>' : bk.galat ? '<p class="pesan-galat">Berkas bukti gagal: ' + esc(bk.galat) + '</p>'
-        : tautanPdf('Berkas bukti' + (bk.lapis ? ' SP Lapis ' + bk.lapis : '') + ' siap', bk);
+        : tautanPdf('Berkas bukti' + (bk.lapis ? ' SP-' + bk.lapis : '') + ' siap', bk);
       h += '<div class="aksi">';
-      if (Z.bolehSurat && berikut) h += '<button type="button" class="tombol tombol-utama" data-aksi="surat" data-lapis="' + berikut + '">Buat Surat Lapis ' + berikut + '</button>';
-      else if (Z.bolehSurat && s.lapisPerlu) h += '<button type="button" class="tombol tombol-garis" data-aksi="surat" data-lapis="' + s.lapisPerlu + '">Cetak ulang Lapis ' + s.lapisPerlu + '</button>';
+      if (Z.bolehSurat && berikut) h += '<button type="button" class="tombol tombol-utama" data-aksi="surat" data-lapis="' + berikut + '">Buat SP-' + berikut + '</button>';
+      else if (Z.bolehSurat && s.lapisPerlu) h += '<button type="button" class="tombol tombol-garis" data-aksi="surat" data-lapis="' + s.lapisPerlu + '">Cetak ulang SP-' + s.lapisPerlu + '</button>';
       if (S.akses.berkas) h += '<button type="button" class="tombol tombol-garis" data-aksi="berkas">Berkas bukti</button>';
       return h + '<button type="button" class="tautan" data-aksi="riwayat">Riwayat siswa</button></div></li>';
     }).join('');
@@ -1534,9 +1534,9 @@
         const bin = atob(d.pdf), isi = new Uint8Array(bin.length);
         for (let i = 0; i < bin.length; i++) isi[i] = bin.charCodeAt(i);
         if (Z.pdf[nis]) URL.revokeObjectURL(Z.pdf[nis].url);
-        Z.pdf[nis] = { lapis: lapis, url: URL.createObjectURL(new Blob([isi], { type: 'application/pdf' })), nama: d.namaFile, drive: d.url };
+        Z.pdf[nis] = { lapis: lapis, nomor: d.nomor || '', url: URL.createObjectURL(new Blob([isi], { type: 'application/pdf' })), nama: d.namaFile, drive: d.url };
         const s = Z.siswa.filter((x) => x.nis === nis)[0]; if (s) s.lapisTerakhir = Math.max(s.lapisTerakhir, lapis);
-        toast('Surat Lapis ' + lapis + ' dibuat. Berkas buktinya sedang disusun.', 'hadir', 5000);
+        toast('SP-' + lapis + ' dibuat' + (d.nomor ? ', nomor ' + d.nomor : '') + '. Berkas buktinya sedang disusun.', 'hadir', 5000);
         Z.berkas[nis] = { memuat: true }; renderZona();
         try { Z.berkas[nis] = await buatBerkas(nis, lapis, d.idSurat); } catch (er) { Z.berkas[nis] = { galat: er.message }; }
         renderZona();
