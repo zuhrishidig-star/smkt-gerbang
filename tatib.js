@@ -424,7 +424,7 @@
   async function muatBintang() {
     window.SMKT_TATIB = { api: api, toast: toast, esc: esc };
     if (!window.SMKTBintang) {
-      await new Promise((ok, gagal) => { const sc = document.createElement('script'); sc.src = 'bintang.js?v=20261110a'; sc.onload = ok; sc.onerror = () => gagal(new Error('Gagal memuat menu Bintang Pagi')); document.head.appendChild(sc); })
+      await new Promise((ok, gagal) => { const sc = document.createElement('script'); sc.src = 'bintang.js?v=20261110c'; sc.onload = ok; sc.onerror = () => gagal(new Error('Gagal memuat menu Bintang Pagi')); document.head.appendChild(sc); })
         .catch((e) => toast(e.message, 'alfa'));
     }
     if (window.SMKTBintang) window.SMKTBintang.buka();
@@ -432,7 +432,7 @@
   async function muatKartu() {
     window.SMKT_TATIB = { api: api, toast: toast, esc: esc };
     if (!window.SMKTKartu) {
-      await new Promise((ok, gagal) => { const sc = document.createElement('script'); sc.src = 'kartu.js?v=20261109d'; sc.onload = ok; sc.onerror = () => gagal(new Error('Gagal memuat menu kartu')); document.head.appendChild(sc); })
+      await new Promise((ok, gagal) => { const sc = document.createElement('script'); sc.src = 'kartu.js?v=20261110a'; sc.onload = ok; sc.onerror = () => gagal(new Error('Gagal memuat menu kartu')); document.head.appendChild(sc); })
         .catch((e) => toast(e.message, 'alfa'));
     }
     if (window.SMKTKartu) window.SMKTKartu.buka();
@@ -1075,6 +1075,7 @@
       renderPenanganan();
     });
     $('c-tindakan').addEventListener('input', aturTombolSimpan);
+    $('c-ket').addEventListener('input', aturTombolSimpan);
     $('c-simpan').addEventListener('click', simpanLapor);
     C.foto = pasangInputFoto('c-foto-input', 'c-foto-pratinjau', 'c-foto-hapus', 'c-foto-label');
     $('p-lapor').addEventListener('click', (e) => {
@@ -1082,9 +1083,41 @@
       if (!a) return;
       if (a.dataset.aksi === 'ganti-siswa' || a.dataset.aksi === 'siswa-lain') resetLapor(true);
       if (a.dataset.aksi === 'ganti-plg') bukaDaftarPlg();
+      if (a.dataset.aksi === 'tarik-lapor' && C.hasil) {
+        const d = C.hasil, plg = d.pelanggaran || C.plg || {};
+        bukaKoreksi({ id: d.idLog, jalur: 'tarik', judul: d.siswa.nama + ': ' + (plg.nama || '') + ', +' + d.poin + ' poin',
+          sesudah: (r) => { $('c-hasil').innerHTML = '<h2>Laporan ditarik</h2><p>Laporan untuk ' + esc(d.siswa.nama) + ' tidak lagi dihitung. Total poin sekarang <strong>' + r.total + '</strong>.</p>' +
+            '<p class="redup">Bila orang tua atau wali kelas sudah menerima pesan WhatsApp tentang laporan ini, mohon kabari bahwa laporannya ditarik.</p>' +
+            '<div class="aksi"><button type="button" class="tombol tombol-utama" data-aksi="siswa-lain">Lapor siswa lain</button></div>'; C.hasil = null; } });
+      }
       if (a.dataset.aksi === 'lagi-siswa-ini') { const s = C.siswa; resetLapor(false); pilihSiswaLapor(s); }
     });
     resetLapor(false);
+  }
+  /* ---------- Koreksi laporan (ditarik pelapor / tidak terbukti) ---------- */
+  const KOR = { id: '', sesudah: null };
+  function bukaKoreksi(o) {
+    KOR.id = o.id; KOR.sesudah = o.sesudah || null;
+    const tarik = o.jalur === 'tarik';
+    $('kor-judul').textContent = tarik ? 'Tarik laporan' : 'Koreksi: tidak terbukti';
+    $('kor-ket').textContent = tarik
+      ? 'Untuk laporan yang salah input (salah siswa atau salah jenis). Poinnya menjadi 0 dan tidak lagi dihitung.'
+      : 'Untuk laporan yang setelah klarifikasi tidak terbukti. Poinnya menjadi 0 dan tidak lagi dihitung. Catatan aslinya tetap tersimpan sebagai jejak.';
+    $('kor-item').textContent = o.judul || '';
+    $('kor-alasan').value = ''; $('kor-pesan').textContent = '';
+    $('modal-koreksi').hidden = false; $('kor-alasan').focus();
+  }
+  async function simpanKoreksi() {
+    const alasan = $('kor-alasan').value.trim();
+    if (alasan.length < 10) { $('kor-pesan').textContent = 'Tulis alasan dengan jelas, minimal 10 huruf.'; return; }
+    $('kor-simpan').disabled = true; $('kor-pesan').textContent = '';
+    try {
+      const r = await api('tatib.koreksi', { idLog: KOR.id, alasan: alasan });
+      $('modal-koreksi').hidden = true;
+      toast('Laporan dikoreksi: ' + r.koreksi + '. Total poin sekarang ' + r.total + '.' + (r.otomatis ? ' Status kehadiran tidak ikut berubah.' : ''), 'hadir', 6000);
+      if (KOR.sesudah) KOR.sesudah(r);
+    } catch (e) { $('kor-pesan').textContent = e.message; }
+    finally { $('kor-simpan').disabled = false; }
   }
   function resetLapor(fokus) {
     Object.assign(C, { siswa: null, ringkas: null, plg: null, kategori: '', idCatat: null, penanganan: 'sendiri', ke: '', hasil: null });
@@ -1251,12 +1284,16 @@
     if (!C.plg) return;
     const k = keputusanLapor(), b = $('c-simpan');
     b.textContent = C.menyimpan ? 'Menyimpan…' : k.terus ? 'Simpan dan teruskan ke ' + k.ke : 'Simpan, selesai ditangani';
-    b.disabled = C.menyimpan || (!k.terus && !$('c-tindakan').value.trim());
+    const kurangFakta = k.melawan && $('c-ket').value.trim().length < 10;
+    b.disabled = C.menyimpan || (!k.terus && !$('c-tindakan').value.trim()) || kurangFakta;
+    $('c-melawan-ket').hidden = !k.melawan;
+    $('c-ket-opsional').textContent = k.melawan ? '(wajib: ucapan atau tindakan siswa)' : '(opsional)';
   }
   async function simpanLapor() {
     if (C.menyimpan || !C.siswa || !C.plg) return;
     const k = keputusanLapor(), tindakan = $('c-tindakan').value.trim();
     if (!k.terus && !tindakan) { $('c-tindakan').focus(); return; }
+    if (k.melawan && $('c-ket').value.trim().length < 10) { $('c-ket').focus(); return; }
     C.menyimpan = true; aturTombolSimpan();
     try {
       const d = await api('tatib.catat', { nis: C.siswa.nis, idPlg: C.plg.id, melawan: k.melawan, keterangan: $('c-ket').value.trim(), tindakan: tindakan,
@@ -1305,7 +1342,8 @@
     }
     if (d.naikLevel && d.langkahLevel) h += '<p class="naik">Naik ke Level ' + d.level + ': ' + esc(d.langkahLevel.tindakan) + '</p>';
     h += '<div class="aksi"><button type="button" class="tombol tombol-utama" data-aksi="siswa-lain">Lapor siswa lain</button>' +
-      '<button type="button" class="tombol tombol-garis" data-aksi="lagi-siswa-ini">Pelanggaran lain untuk ' + esc(d.siswa.nama.split(' ')[0]) + '</button></div>';
+      '<button type="button" class="tombol tombol-garis" data-aksi="lagi-siswa-ini">Pelanggaran lain untuk ' + esc(d.siswa.nama.split(' ')[0]) + '</button></div>' +
+      (d.idLog ? '<p class="redup" style="margin-top:12px">Salah siswa atau salah jenis pelanggaran? <button type="button" class="tautan" data-aksi="tarik-lapor">Tarik laporan ini</button> (hanya hari ini, sebelum ditindaklanjuti).</p>' : '');
     const el = $('c-hasil'); el.className = 'blok hasil'; el.innerHTML = h; el.hidden = false;
     if (C.ringkas) { C.ringkas.poin = d.total; C.ringkas.level = d.level; renderKartuLapor(); }
     el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1444,6 +1482,7 @@
       const aksi = a.dataset.aksi;
       if (aksi === 'lapor-siswa') { const s = S.siswa.get(a.dataset.nis); buka('lapor'); resetLapor(false); pilihSiswaLapor(s); return; }
       if (aksi === 'foto-bukti') { lihatFotoBukti(a.dataset.id, a.dataset.judul); return; }
+      if (aksi === 'koreksi') { const nis = a.dataset.nis; bukaKoreksi({ id: a.dataset.id, jalur: a.dataset.jalur, judul: a.dataset.judul, sesudah: () => bukaRiwayat(nis, true) }); return; }
       if (aksi === 'pdf-pbn') { pdfPernyataan(a, a.dataset.id); return; }
       if (aksi === 'pernyataan') { const nis = a.dataset.nis; bukaPernyataan(nis, { sesudah: () => bukaRiwayat(nis, true) }); return; }
       if (aksi === 'program') { bukaFormProgram({ nis: a.dataset.nis }); return; }
@@ -1484,8 +1523,15 @@
       (p.bukti ? ' <button type="button" class="chip-bukti" data-aksi="foto-bukti" data-id="' + esc(p.idLog) + '" data-judul="' + esc(p.pelanggaran + ', ' + p.tanggal) + '">' + ikon('kamera') + 'Foto bukti</button>' : '') +
       '<span class="meta">' + esc(p.tanggal) + ', ' + esc(p.kategori || '-') + ', dilaporkan ' + esc(namaPendek(p.pelapor) || '-') + '. ' +
       (p.tangga >= 2 ? 'Tangga ' + p.tangga + ' (' + esc(LABEL_TANGGA[p.tangga]) + '), ' + (p.status === 'Menunggu' ? 'menunggu' : 'selesai') : 'Ditangani guru yang menemukan') + '.</span>' +
-      (p.tindakan ? '<span class="meta" style="white-space:pre-wrap">' + esc(p.tindakan) + '</span>' : '') + '</li>').join('') + '</ol>'
+      (p.tindakan ? '<span class="meta" style="white-space:pre-wrap">' + esc(p.tindakan) + '</span>' : '') +
+      (p.bolehKoreksi ? '<span class="meta"><button type="button" class="tautan" data-aksi="koreksi" data-id="' + esc(p.idLog) + '" data-jalur="' + esc(p.bolehKoreksi) + '" data-nis="' + esc(s.nis) +
+        '" data-judul="' + esc(p.pelanggaran + ', ' + p.tanggal + ', +' + p.poin + ' poin') + '">' + (p.bolehKoreksi === 'tarik' ? 'Tarik laporan ini (salah input)' : 'Koreksi: tidak terbukti') + '</button></span>' : '') + '</li>').join('') + '</ol>'
       : '<p class="kosong">Belum ada pelanggaran pada periode ini.</p>';
+    const kr = d.dikoreksi || [];
+    if (kr.length) h += '<h3 class="sub-judul">Laporan yang dikoreksi (' + kr.length + ')</h3><ul class="baris-ringkas">' + kr.map((p) =>
+      '<li><s>' + esc(p.pelanggaran) + '</s> <span class="tag">' + esc(p.koreksi) + '</span>' +
+      '<span class="meta">' + esc(p.tanggal) + ', semula +' + p.poinAwal + ' poin, dilaporkan ' + esc(namaPendek(p.pelapor) || '-') + '. Tidak dihitung dalam poin.</span>' +
+      '<span class="meta">Dikoreksi ' + esc(namaPendek(p.dikoreksiOleh) || '-') + (p.waktuKoreksi ? ', ' + esc(p.waktuKoreksi) : '') + ': ' + esc(p.alasanKoreksi) + '</span></li>').join('') + '</ul>';
     const pb = d.pembinaan || [];
     h += '<h3 class="sub-judul">Pembinaan dan pernyataan siswa (' + pb.length + ')</h3>';
     h += pb.length ? '<ul class="baris-ringkas">' + pb.map((b) => '<li><strong>' + esc(b.jenis) + '</strong>, ' + esc(b.tanggal) +
@@ -2633,6 +2679,8 @@
     document.querySelectorAll('.ik-kamera').forEach((el) => { el.outerHTML = ikon('kamera'); });
     pasangPernyataan();
     $('foto-tutup').addEventListener('click', () => { $('modal-foto').hidden = true; });
+    $('kor-batal').addEventListener('click', () => { $('modal-koreksi').hidden = true; });
+    $('kor-simpan').addEventListener('click', simpanKoreksi);
     $('modal-foto').addEventListener('click', (e) => { if (e.target === $('modal-foto')) $('modal-foto').hidden = true; });
     $('scan-tutup').addEventListener('click', tutupScan);
     $('nav-bawah').addEventListener('click', (e) => { if (e.target.closest('#nav-lainnya')) $('lembar-lainnya').hidden = false; });
@@ -2640,7 +2688,7 @@
     window.addEventListener('hashchange', () => { if (!$('layar-utama').hidden && S.menu.length) buka(halamanDariHash()); });
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
-      if (!$('modal-scan').hidden) tutupScan(); else if (!$('modal-foto').hidden) $('modal-foto').hidden = true; else if (!$('modal-titip').hidden) tutupTitip(); else if (!$('modal-pbn').hidden) tutupPernyataan(); else if (!$('modal-prg').hidden) tutupFormProgram(); else if (!$('modal-akun').hidden) tutupFormAkun(); else if (!$('modal-ttdp').hidden) tutupTtdPelatih(); else if (!$('modal-pelatih').hidden) $('modal-pelatih').hidden = true; else if (!$('ruang-menu').hidden) $('ruang-menu').hidden = true;
+      if (!$('modal-scan').hidden) tutupScan(); else if (!$('modal-foto').hidden) $('modal-foto').hidden = true; else if (!$('modal-titip').hidden) tutupTitip(); else if (!$('modal-pbn').hidden) tutupPernyataan(); else if (!$('modal-prg').hidden) tutupFormProgram(); else if (!$('modal-akun').hidden) tutupFormAkun(); else if (!$('modal-ttdp').hidden) tutupTtdPelatih(); else if (!$('modal-pelatih').hidden) $('modal-pelatih').hidden = true; else if (!$('modal-koreksi').hidden) $('modal-koreksi').hidden = true; else if (!$('ruang-menu').hidden) $('ruang-menu').hidden = true;
       else if (!$('lembar-kios').hidden) $('lembar-kios').hidden = true; else if (!$('lembar-lainnya').hidden) $('lembar-lainnya').hidden = true; else if (!$('menu').hidden) tutupMenu();
     });
     document.addEventListener('click', (e) => { if (!$('menu').hidden && !e.target.closest('#menu') && !e.target.closest('#tombol-menu')) tutupMenu(); });

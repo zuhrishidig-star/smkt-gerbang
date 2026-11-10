@@ -224,8 +224,9 @@
         <div class="blok" id="c-tindak" hidden>
           <div id="c-panduan" class="panduan"></div>
           <label class="centang"><input type="checkbox" id="c-melawan"> <span>Siswa membangkang atau melawan saat ditegur <strong>(poin ×2)</strong></span></label>
+          <p class="keterangan" id="c-melawan-ket" hidden>Tulis di keterangan kejadian apa yang <strong>diucapkan atau dilakukan</strong> siswa. Bertanya, membantah tuduhan, menangis, atau perlu waktu menenangkan diri bukan membangkang.</p>
           <div id="c-penanganan"></div>
-          <label class="label" for="c-ket">Keterangan kejadian <span class="redup">(opsional)</span></label>
+          <label class="label" for="c-ket">Keterangan kejadian <span class="redup" id="c-ket-opsional">(opsional)</span></label>
           <textarea id="c-ket" class="isian" rows="2" maxlength="500" placeholder="Waktu, tempat, saksi"></textarea>
           <label class="label" for="c-tindakan">Tindakan yang sudah Anda lakukan</label>
           <textarea id="c-tindakan" class="isian" rows="2" maxlength="500"></textarea>
@@ -577,6 +578,22 @@
       <div class="modal-aksi">
         <button id="pl-batal" class="tombol tombol-garis" type="button">Batal</button>
         <button id="pl-simpan" class="tombol tombol-utama" type="button">Simpan daftar pelatih</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Koreksi laporan -->
+  <div id="modal-koreksi" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="kor-judul">
+    <div class="modal-isi">
+      <h2 id="kor-judul" class="judul-blok">Koreksi laporan</h2>
+      <p class="keterangan" id="kor-ket"></p>
+      <p id="kor-item" style="font-weight:700"></p>
+      <label class="label" for="kor-alasan">Alasan koreksi</label>
+      <textarea id="kor-alasan" class="isian" rows="3" maxlength="500" placeholder="Contoh: salah pilih siswa, yang dimaksud siswa lain dengan nama mirip"></textarea>
+      <p class="pesan-galat" id="kor-pesan" aria-live="polite"></p>
+      <div class="modal-aksi">
+        <button id="kor-batal" class="tombol tombol-garis" type="button">Batal</button>
+        <button id="kor-simpan" class="tombol tombol-utama" type="button">Simpan koreksi</button>
       </div>
     </div>
   </div>

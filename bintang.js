@@ -49,7 +49,8 @@
     $('bp-aturan').innerHTML = 'Dihitung <strong>datang pagi</strong> bila pindai QR gerbang sampai pukul <strong>' + esc(a.batas) +
       '</strong>. Predikat <strong>Bintang Pagi</strong> untuk siswa yang datang pagi pada sedikitnya <strong>' + esc(String(a.ambang)) +
       '%</strong> hari sekolah dalam sebulan, minimal ' + esc(String(a.minHari)) + ' hari terhitung. Sakit dan izin tidak dihitung; hadir manual (lupa kartu) dihitung hadir tetapi bukan pagi.' +
-      ' Datang lebih awal tidak menambah nilai.';
+      ' Pada hari sekolah kelasnya, siswa yang tidak memindai dihitung tidak pagi. Datang lebih awal tidak menambah nilai.' +
+      (a.hariBatal ? ' ' + a.hariBatal + ' tanggal dikecualikan di Config.' : '');
     const sel = $('bp-kelas');
     const pilih = d.kelasDipilih || '';
     sel.innerHTML = (d.semuaKelas ? '<option value="">Semua kelas</option>' : '') +
@@ -73,7 +74,11 @@
   function renderSiswa() {
     const d = B.data; if (!d) return;
     const esc = T().esc;
-    const daftar = d.siswa.filter((s) => B.saring === 'semua' || (B.saring === 'bintang' ? s.bintang : !s.cukup));
+    // Semua kelas sekaligus (ratusan siswa): daftar lengkap baru tampil setelah kelas dipilih.
+    const terlaluBanyak = d.semuaKelas && !d.kelasDipilih && B.saring !== 'bintang' && d.siswa.length > 80;
+    const daftar = terlaluBanyak ? [] : d.siswa.filter((s) => B.saring === 'semua' || (B.saring === 'bintang' ? s.bintang : !s.cukup));
+    $('bp-kosong').textContent = terlaluBanyak ? 'Pilih satu kelas di atas untuk melihat daftar siswanya, atau tekan saringan Bintang Pagi untuk melihat penerima dari semua kelas.'
+      : (B.saring === 'bintang' ? 'Belum ada siswa berpredikat Bintang Pagi pada bulan ini.' : 'Tidak ada siswa pada saringan ini.');
     const nB = d.siswa.filter((s) => s.bintang).length;
     $('bp-ringkas').textContent = nB + ' dari ' + d.siswa.length + ' siswa berpredikat Bintang Pagi.';
     $('bp-kosong').hidden = daftar.length > 0;
@@ -81,7 +86,7 @@
     $('bp-tabel-siswa').innerHTML = '<thead><tr><th scope="col">Siswa</th><th scope="col"><abbr title="Hari datang pagi / hari terhitung">Pagi</abbr></th>' +
       '<th scope="col">%</th><th scope="col"><abbr title="Hari pagi berturut-turut sampai hari terakhir (terpanjang bulan ini)">Runtun</abbr></th><th scope="col">Status</th></tr></thead><tbody>' +
       daftar.map((s) => '<tr><th scope="row">' + esc(s.nama) + '<br><small class="keterangan">' + esc(s.kelas) + '</small></th>' +
-        '<td>' + s.pagi + ' / ' + s.hari + '</td><td class="persen">' + (s.hari ? persen(s.persen) : '–') + '</td>' +
+        '<td>' + s.pagi + ' / ' + s.hari + (s.tanpaPindai ? '<br><small class="keterangan">' + s.tanpaPindai + ' hari tanpa pindai</small>' : '') + '</td><td class="persen">' + (s.hari ? persen(s.persen) : '–') + '</td>' +
         '<td>' + s.runtun + (s.terpanjang > s.runtun ? ' <small class="keterangan">(' + s.terpanjang + ')</small>' : '') + '</td>' +
         '<td>' + (s.bintang ? '<span class="chip bp-bintang">Bintang Pagi</span>' : (!s.cukup ? '<span class="chip info">Belum cukup data</span>' : '')) + '</td></tr>').join('') + '</tbody>';
   }
@@ -89,8 +94,8 @@
   function unduhCsv() {
     const d = B.data; if (!d) return;
     const q = (v) => '"' + String(v === null || v === undefined ? '' : v).replace(/"/g, '""') + '"';
-    const baris = [['Bulan', 'NIS', 'Nama', 'Kelas', 'Hari_Terhitung', 'Hari_Pagi', 'Persen', 'Runtun_Terakhir', 'Runtun_Terpanjang', 'Status'].join(',')];
-    d.siswa.forEach((s) => baris.push([d.bulan, s.nis, s.nama, s.kelas, s.hari, s.pagi, String(s.persen).replace('.', ','), s.runtun, s.terpanjang,
+    const baris = [['Bulan', 'NIS', 'Nama', 'Kelas', 'Hari_Terhitung', 'Hari_Pagi', 'Hari_Tanpa_Pindai', 'Persen', 'Runtun_Terakhir', 'Runtun_Terpanjang', 'Status'].join(',')];
+    d.siswa.forEach((s) => baris.push([d.bulan, s.nis, s.nama, s.kelas, s.hari, s.pagi, s.tanpaPindai || 0, String(s.persen).replace('.', ','), s.runtun, s.terpanjang,
       s.bintang ? 'Bintang Pagi' : (!s.cukup ? 'Belum cukup data' : '')].map(q).join(',')));
     const blob = new Blob(['﻿' + baris.join('\r\n')], { type: 'text/csv;charset=utf-8' });
     const a = document.createElement('a');

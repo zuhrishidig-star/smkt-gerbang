@@ -37,26 +37,50 @@
     </div>
   </header>
   <main>
-    <p>Gerbang SMKT adalah aplikasi presensi internal SMP Negeri 1 Wonosari. Aplikasi ini dipakai guru piket dan Tim Tata Tertib untuk mencatat kedatangan dan kepulangan siswa di gerbang sekolah dengan memindai QR kartu pelajar.</p>
+    <p>SMKT adalah aplikasi internal SMP Negeri 1 Wonosari untuk presensi gerbang dan pembinaan tata tertib. Aplikasi ini dipakai guru dan tenaga kependidikan yang didaftarkan sekolah, sesuai perannya masing-masing.</p>
 
     <h2>Data login guru</h2>
-    <p>Saat login dengan akun Google, aplikasi hanya menerima nama dan alamat email. Email dicocokkan dengan daftar guru sekolah untuk menentukan siapa yang boleh memakai aplikasi. Token login dari Google diperiksa lalu dibuang; server hanya menyimpan sidik (hash) sesi yang berlaku 16 jam. Aplikasi tidak meminta akses ke Gmail, Drive, kontak, atau data Google lain milik guru.</p>
+    <p>Saat login dengan akun Google, aplikasi hanya menerima nama dan alamat email. Email dicocokkan dengan daftar guru sekolah untuk menentukan siapa yang boleh memakai aplikasi dan menu apa yang boleh dibuka. Token login dari Google diperiksa lalu dibuang; server hanya menyimpan sidik (hash) sesi yang berlaku 16 jam. Aplikasi tidak meminta akses ke Gmail, Drive, kontak, atau data Google lain milik guru.</p>
 
-    <h2>Data siswa</h2>
+    <h2>Data siswa yang diolah</h2>
     <ul>
-      <li>Data yang diolah: NIS, nama, kelas, foto wajah untuk pencocokan di gerbang, waktu datang dan pulang, serta catatan pelanggaran tata tertib.</li>
-      <li>Semua data disimpan di Google Spreadsheet dan folder Google Drive milik sekolah, bukan di server pihak lain.</li>
-      <li>Data hanya dipakai untuk pembinaan kedisiplinan siswa di SMP Negeri 1 Wonosari. Data tidak dijual, tidak dibagikan ke pihak luar, dan tidak dipakai untuk iklan.</li>
-      <li>Folder foto tidak dibagikan secara publik. Foto hanya dikirim ke HP guru yang sudah login.</li>
+      <li><strong>Identitas:</strong> NIS, NISN, nama, kelas, foto wajah, serta tempat lahir, tanggal lahir, dan alamat untuk kartu pelajar.</li>
+      <li><strong>Kehadiran:</strong> waktu datang dan pulang, izin, sakit, foto saat memindai kartu di kios gerbang, dan kehadiran ekstrakurikuler.</li>
+      <li><strong>Tata tertib:</strong> catatan pelanggaran dan poinnya, foto bukti bila ada, tindak lanjut, pernyataan dan tanda tangan pembinaan, masa pembinaan, dan Surat Peringatan.</li>
+      <li><strong>Kontak orang tua:</strong> nomor WhatsApp orang tua atau wali, untuk pemberitahuan dari sekolah.</li>
     </ul>
 
-    <h2>Penyimpanan di HP piket</h2>
+    <h2>Untuk apa dan siapa yang bisa melihat</h2>
+    <ul>
+      <li>Data hanya dipakai untuk presensi dan pembinaan kedisiplinan siswa di SMP Negeri 1 Wonosari. Data tidak dijual dan tidak dipakai untuk iklan.</li>
+      <li>Setiap guru hanya melihat data sesuai perannya. Riwayat lengkap seorang siswa hanya bisa dibuka wali kelasnya, guru BK, Tim Tata Tertib, dan pimpinan sekolah. Pembatasan ini diperiksa di server pada setiap permintaan.</li>
+      <li>Rekap <strong>Bintang Pagi</strong> (siswa yang konsisten datang pagi) dihitung otomatis dari data pindai gerbang. Aplikasi tidak menayangkan peringkat atau poin pelanggaran siswa kepada umum.</li>
+    </ul>
+
+    <h2>Tempat penyimpanan dan pihak layanan</h2>
+    <ul>
+      <li>Data disimpan di Google Spreadsheet dan folder Google Drive milik sekolah, dan diolah oleh Google Apps Script milik sekolah. Folder foto tidak dibagikan secara publik.</li>
+      <li>Halaman aplikasi dilayani dari GitHub Pages. Tidak ada data siswa yang disimpan di GitHub.</li>
+      <li>Bila sekolah mengaktifkan pemberitahuan WhatsApp otomatis, nomor orang tua dan isi pesan (nama siswa, kelas, dan keterangan keterlambatan atau pelanggaran) dikirim melalui layanan pengirim pesan WhatsApp yang dipakai sekolah.</li>
+    </ul>
+
+    <h2>Penyimpanan di HP guru</h2>
     <p>Agar foto langsung tampil saat kartu dipindai, nama dan foto siswa disimpan sementara di browser HP piket. Menu <strong>Keluar</strong> di aplikasi menghapus data dan foto itu dari HP. Scan yang belum terkirim karena sinyal hilang tetap disimpan sampai berhasil dikirim.</p>
 
-    <h2>Dasar hukum dan hak pemilik data</h2>
-    <p>Pengolahan data mengikuti Undang-Undang Nomor 27 Tahun 2022 tentang Pelindungan Data Pribadi. Siswa dan orang tua atau wali dapat meminta melihat, memperbaiki, atau menanyakan data yang tercatat dengan menghubungi Tim Tata Tertib SMP Negeri 1 Wonosari melalui sekolah.</p>
+    <h2>Lama penyimpanan</h2>
+    <ul>
+      <li>Foto pindai kehadiran tepat waktu dihapus otomatis setelah jangka waktu yang ditetapkan sekolah (saat ini 30 hari).</li>
+      <li>Foto pindai saat terlambat atau titip absen, serta foto bukti pelanggaran, disimpan sebagai bukti pembinaan.</li>
+      <li>Catatan kehadiran dan tata tertib disimpan selama diperlukan untuk pembinaan pada tahun ajaran berjalan dan arsip sekolah.</li>
+    </ul>
 
-    <p class="catatan">Berlaku sejak 3 November 2026. Perubahan kebijakan ini akan diumumkan di halaman ini. <a href="./">Kembali ke Gerbang SMKT</a></p>
+    <h2>Koreksi dan keberatan</h2>
+    <p>Siswa dan orang tua atau wali dapat meminta melihat, memperbaiki, atau menanyakan data yang tercatat melalui wali kelas, guru BK, atau Tim Tata Tertib. Laporan pelanggaran yang keliru atau tidak terbukti dikoreksi oleh penelaah yang bukan pelapornya: poinnya tidak lagi dihitung, dan jejak koreksinya tetap tersimpan.</p>
+
+    <h2>Dasar hukum</h2>
+    <p>Pengolahan data mengikuti Undang-Undang Nomor 27 Tahun 2022 tentang Pelindungan Data Pribadi.</p>
+
+    <p class="catatan">Berlaku sejak 3 November 2026, diperbarui 10 November 2026. Perubahan kebijakan ini akan diumumkan di halaman ini. <a href="./">Kembali ke Gerbang SMKT</a></p>
   </main>
 </body>
 </html>

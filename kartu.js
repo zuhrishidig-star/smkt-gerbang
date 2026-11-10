@@ -10,7 +10,7 @@
   const K = { awal: null, pilih: new Set(), logo: '', latar: null, menyusun: false, tata: 'bawaan', huruf: false };
 
   const skrip = {};
-  const VERSI_ASET = '20261109d';
+  const VERSI_ASET = '20261110a';
   function muatSkrip(src) {
     src = src + (src.indexOf('?') > -1 ? '&' : '?') + 'v=' + VERSI_ASET;
     if (!skrip[src]) skrip[src] = new Promise((ok, gagal) => {
@@ -516,7 +516,9 @@
     $('kt-kelas').innerHTML = k.map((x) => '<label class="centang-kecil"><input type="checkbox" value="' + T.esc(x.kelas) + '"' + (K.pilih.has(x.kelas) ? ' checked' : '') +
       '><span>' + T.esc(x.kelas) + ' <small>(' + x.jumlah + ')</small></span></label>').join('');
     const n = k.filter((x) => K.pilih.has(x.kelas)).reduce((a, x) => a + x.jumlah, 0);
-    $('kt-jumlah').textContent = K.pilih.size ? n + ' kartu dari ' + K.pilih.size + ' kelas' : 'Belum ada kelas dipilih';
+    $('kt-jumlah').textContent = K.pilih.size ? n + ' kartu dari ' + K.pilih.size + ' kelas' : 'Belum ada kelas dipilih. Centang kelas di atas, lalu tombol unduh akan aktif.';
+    $('kt-unduh').disabled = !K.pilih.size;
+    $('kt-unduh').textContent = K.pilih.size ? 'Unduh PDF kartu (' + n + ' kartu)' : 'Pilih kelas dulu';
   }
 
   let terpasang = false;
