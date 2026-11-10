@@ -102,6 +102,35 @@
         </details>
       </section>
 
+      <!-- BINTANG PAGI -->
+      <section id="p-bintang" class="panel" hidden>
+        <div class="blok">
+          <p class="keterangan" id="bp-aturan">Memuat…</p>
+          <div class="bp-saring">
+            <div><label class="label" for="bp-bulan">Bulan</label><input id="bp-bulan" class="isian" type="month"></div>
+            <div><label class="label" for="bp-kelas">Kelas</label><select id="bp-kelas" class="isian"></select></div>
+          </div>
+          <p class="keterangan" id="bp-status" aria-live="polite"></p>
+        </div>
+        <div class="blok" id="bp-kelas-blok" hidden>
+          <h2 class="judul-blok">Datang pagi per kelas</h2>
+          <p class="keterangan">Persentase hari siswa datang pagi, per bulan dan per minggu. Kelas dibandingkan dengan persentase, bukan menit tercepat.</p>
+          <div class="tabel-gulir"><table class="tabel-rekap" id="bp-tabel-kelas"></table></div>
+        </div>
+        <div class="blok">
+          <h2 class="judul-blok">Siswa</h2>
+          <p class="keterangan" id="bp-ringkas"></p>
+          <div class="saring" id="bp-saring" role="group" aria-label="Saring siswa">
+            <button type="button" data-saring="semua" aria-pressed="true">Semua</button>
+            <button type="button" data-saring="bintang" aria-pressed="false">Bintang Pagi</button>
+            <button type="button" data-saring="kurang" aria-pressed="false">Belum cukup data</button>
+          </div>
+          <p class="keterangan" id="bp-kosong" hidden>Tidak ada siswa pada saringan ini.</p>
+          <div class="tabel-gulir"><table class="tabel-rekap bp-siswa" id="bp-tabel-siswa"></table></div>
+          <button id="bp-csv" class="tombol tombol-garis" type="button">Unduh rekap (CSV)</button>
+        </div>
+      </section>
+
       <!-- KARTU PELAJAR (Administrator) -->
       <section id="p-kartu" class="panel" hidden>
         <div class="blok">

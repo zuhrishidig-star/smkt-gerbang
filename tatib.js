@@ -25,6 +25,7 @@
   IKON.kamera = '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" /> <circle cx="12" cy="13" r="3" />';
   IKON.tablet = '<rect width="16" height="20" x="4" y="2" rx="2" ry="2" /> <line x1="12" x2="12.01" y1="18" y2="18" />';
   IKON.kartu = '<rect width="20" height="14" x="2" y="5" rx="2" /> <circle cx="8" cy="11" r="2" /> <path d="M5 16c.6-1.6 1.7-2.4 3-2.4s2.4.8 3 2.4" /> <path d="M14 10h5" /> <path d="M14 14h3" />';
+  IKON.bintang = '<path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />';
   IKON.tambah = '<path d="M5 12h14" /> <path d="M12 5v14" />';
   IKON.pembinaan = '<path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5" /> <path d="M16 2v4" /> <path d="M8 2v4" /> <path d="M3 10h5" /> <path d="M17.5 17.5 16 16.3V14" /> <circle cx="16" cy="16" r="6" />';
 
@@ -40,19 +41,20 @@
     { id: 'absen', label: 'Absen', ikon: 'absen', judul: 'Absen', boleh: (a) => a.izin, ket: 'Catat izin atau sakit siswa' },
     { id: 'ekskul', label: 'Ekskul', ikon: 'ekskul', judul: 'Absensi ekskul', boleh: (a) => a.ekskul, ket: 'Kehadiran anggota ekstrakurikuler yang Anda bina' },
     { id: 'akun', label: 'Akun guru', ikon: 'siswa', judul: 'Kelola akun guru', boleh: (a) => a.akun, ket: 'Email, peran, dan kelas wali setiap guru' },
+    { id: 'bintang', label: 'Bintang Pagi', ikon: 'bintang', judul: 'Bintang Pagi', boleh: (a) => a.bintang, ket: 'Siswa yang konsisten datang pagi, per siswa dan per kelas' },
     { id: 'kartu', label: 'Kartu pelajar', ikon: 'kartu', judul: 'Kartu pelajar', boleh: (a) => a.akun, ket: 'Cetak kartu ber-QR depan dan belakang, template Canva' },
   ];
   // Menu per ruang kerja. Hak sebenarnya tetap diperiksa server untuk ruang yang dipilih.
   const RUANG_MENU = {
-    wali: ['beranda', 'lapor', 'kotak', 'verifikasi', 'siswa', 'waspada', 'pembinaan', 'absen'],
-    bk: ['beranda', 'lapor', 'kotak', 'siswa', 'waspada', 'pembinaan', 'pulih', 'absen'],
-    tatib: ['beranda', 'lapor', 'kotak', 'verifikasi', 'siswa', 'waspada', 'pembinaan', 'pulih', 'absen'],
-    wakasek: ['beranda', 'lapor', 'kotak', 'verifikasi', 'siswa', 'waspada', 'pembinaan'],
-    kepsek: ['beranda', 'siswa', 'waspada', 'pembinaan'],
+    wali: ['beranda', 'lapor', 'kotak', 'verifikasi', 'siswa', 'waspada', 'pembinaan', 'absen', 'bintang'],
+    bk: ['beranda', 'lapor', 'kotak', 'siswa', 'waspada', 'pembinaan', 'pulih', 'absen', 'bintang'],
+    tatib: ['beranda', 'lapor', 'kotak', 'verifikasi', 'siswa', 'waspada', 'pembinaan', 'pulih', 'absen', 'bintang'],
+    wakasek: ['beranda', 'lapor', 'kotak', 'verifikasi', 'siswa', 'waspada', 'pembinaan', 'bintang'],
+    kepsek: ['beranda', 'siswa', 'waspada', 'pembinaan', 'bintang'],
     piket: ['beranda', 'lapor', 'absen'],
     olahraga: ['beranda', 'lapor', 'pulih'],
     ekskul: ['ekskul', 'lapor'],
-    admin: ['akun', 'kartu'],
+    admin: ['akun', 'kartu', 'bintang'],
     mapel: ['beranda', 'lapor'],
   };
   const KET_RUANG = {
@@ -358,7 +360,7 @@
       if (aktif) x.setAttribute('aria-current', 'page'); else x.removeAttribute('aria-current');
     });
     document.querySelectorAll('.panel').forEach((p) => { p.hidden = p.id !== 'p-' + nama; });
-    ({ kartu: muatKartu, akun: muatAkun, beranda: muatBeranda, lapor: initLapor, kotak: muatTL, verifikasi: muatVerifikasi, siswa: initRiwayat, waspada: muatZona, pembinaan: muatProgram, pulih: muatPulih, absen: initIzin, ekskul: muatEkskul })[nama]();
+    ({ bintang: muatBintang, kartu: muatKartu, akun: muatAkun, beranda: muatBeranda, lapor: initLapor, kotak: muatTL, verifikasi: muatVerifikasi, siswa: initRiwayat, waspada: muatZona, pembinaan: muatProgram, pulih: muatPulih, absen: initIzin, ekskul: muatEkskul })[nama]();
     window.scrollTo(0, 0);
   }
 
@@ -419,6 +421,14 @@
     'Kepala Sekolah': 'Memantau saja', 'Pembina Ekstrakurikuler': 'Pilih ekskulnya', 'Piket': 'Gerbang, izin, kios',
     'Guru Olahraga': 'Program fisik', 'Staf Kependidikan': 'Melapor pelanggaran', 'Administrator': 'Mengelola akun guru'
   };
+  async function muatBintang() {
+    window.SMKT_TATIB = { api: api, toast: toast, esc: esc };
+    if (!window.SMKTBintang) {
+      await new Promise((ok, gagal) => { const sc = document.createElement('script'); sc.src = 'bintang.js?v=20261110a'; sc.onload = ok; sc.onerror = () => gagal(new Error('Gagal memuat menu Bintang Pagi')); document.head.appendChild(sc); })
+        .catch((e) => toast(e.message, 'alfa'));
+    }
+    if (window.SMKTBintang) window.SMKTBintang.buka();
+  }
   async function muatKartu() {
     window.SMKT_TATIB = { api: api, toast: toast, esc: esc };
     if (!window.SMKTKartu) {

@@ -767,3 +767,10 @@ textarea.isian { min-height: 0; resize: vertical; }
 .kt-panduan { background: var(--latar); border-radius: 12px; padding: 10px 14px; margin: 0 0 14px; font-size: .9rem; }
 .kt-panduan ol { margin: 6px 0; padding-left: 20px; }
 .kt-panduan li { margin: 3px 0; }
+
+/* ---------- Bintang Pagi ---------- */
+.bp-saring { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+.chip.bp-bintang { background: var(--emas-latar); color: var(--emas-tua); }
+.bp-siswa tbody th small { font-weight: 400; }
+#bp-csv { margin-top: 14px; }
+.bp-siswa td { white-space: nowrap; }
