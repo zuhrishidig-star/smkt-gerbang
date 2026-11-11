@@ -20,7 +20,7 @@
   const BATAS_ULANG = 3;
   /* Kelompok kejadian untuk memilih pelanggaran: guru memilih menurut apa yang dilihat, bukan menurut kode. */
   const TOPIK = [
-    { k: 'seragam', nm: 'Seragam dan penampilan', em: '👕', kunci: 'seragam baju celana rok sepatu kaos kaki sabuk ikat pinggang atribut id card kartu topi gelang cincin kalung perhiasan aksesoris kuku dandan make up bedak lipstik jeans levis cepol jedai sandal' },
+    { k: 'seragam', nm: 'Seragam dan penampilan', em: '👕', kunci: 'seragam baju celana rok sepatu kaos kaki sabuk ikat pinggang atribut id card kartu topi gelang cincin kalung perhiasan aksesoris mainan catok catokan alat kecantikan speaker kartu remi barang bawaan kuku dandan make up bedak lipstik jeans levis cepol jedai sandal' },
     { k: 'rambut', nm: 'Rambut, alis, tindik, tato', em: '💇', kunci: 'rambut gondrong panjang cukur potong cat semir warna pirang alis skin diskin tindik anting piercing tato tatto' },
     { k: 'hadir', nm: 'Terlambat, bolos, absen', em: '⏰', kunci: 'telat terlambat bolos minggat cabut kabur pagar lompat loncat alpa alpha absen tanpa keterangan titip absen presensi kartu teman' },
     { k: 'kelas', nm: 'Sikap di kelas dan pergaulan', em: '📚', kunci: 'tugas pr pekerjaan rumah ramai gaduh ganggu mengganggu nongkrong keluar kelas jendela kaki meja kursi membantah melawan nada keras jorok kotor misuh umpat ejek nama orang tua contek nyontek menyontek plagiat jiplak pacaran gandengan berduaan buku tatib' },
