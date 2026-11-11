@@ -89,21 +89,53 @@
     bk: ['beranda', 'lapor', 'kotak', 'siswa', 'waspada', 'pembinaan', 'pulih', 'absen', 'bintang'],
     tatib: ['beranda', 'lapor', 'kotak', 'verifikasi', 'siswa', 'waspada', 'pembinaan', 'pulih', 'absen', 'bintang'],
     wakasek: ['beranda', 'lapor', 'kotak', 'verifikasi', 'siswa', 'waspada', 'pembinaan', 'bintang'],
-    kepsek: ['beranda', 'siswa', 'waspada', 'pembinaan', 'bintang'],
-    piket: ['beranda', 'lapor', 'absen'],
+    kepsek: ['beranda', 'siswa', 'waspada', 'bintang'],
+    pantau: ['beranda', 'siswa', 'waspada', 'bintang'],
+    piket: ['beranda', 'absen', 'lapor'],
     olahraga: ['beranda', 'lapor', 'pulih'],
+    agama: ['beranda', 'lapor', 'pulih'],
     ekskul: ['ekskul', 'lapor'],
-    admin: ['akun', 'kartu', 'bintang'],
+    admin: ['akun', 'kartu'],
     mapel: ['beranda', 'lapor'],
   };
+  /** Nama menu yang disesuaikan per ruang kerja. */
+  const MENU_RUANG = {
+    bk: {
+      kotak: { label: 'Layanan BK', judul: 'Permintaan layanan BK', ket: 'Siswa yang dirujuk untuk layanan konseling' },
+      pulih: { label: 'Konseling', judul: 'Catatan layanan konseling', ket: 'Konseling individu, kelompok, dan tindak lanjut pengentasan' }
+    },
+    agama: { pulih: { label: 'Spiritual', judul: 'Pembinaan spiritual', ket: 'Sholat berjamaah, baca Yasin, BTQ untuk siswa binaan' } },
+    olahraga: { pulih: { label: 'Fisik', judul: 'Pembinaan fisik', ket: 'Program fisik untuk siswa binaan' } },
+    piket: { absen: { label: 'Izin', judul: 'Izin, sakit, pulang, UKS', ket: 'Izin tidak masuk, pulang awal dijemput, istirahat di UKS, dispensasi' } }
+  };
+  /** Istilah layanan BK: fokus pengentasan masalah, bukan penanganan kasus. */
+  const ISTILAH_BK = [
+    [/Tidak ada kasus yang menunggu\. Kasus baru muncul di sini saat siswa naik ke tangga Anda\./g, 'Tidak ada siswa yang menunggu layanan. Siswa yang dirujuk ke BK muncul di sini.'],
+    [/(\d+) kasus menunggu tindakan Anda\. Rekomendasinya ada di setiap kartu\./g, '$1 siswa menunggu layanan konseling. Saran layanannya ada di setiap kartu.'],
+    [/Kasus 30 hari terakhir yang ditangani tangga di atas Anda\. Cukup diketahui, tidak perlu tindakan\./g, 'Rujukan 30 hari terakhir yang ditangani pihak lain. Cukup diketahui, tidak perlu layanan.'],
+    [/Kasus yang sudah ditindaklanjuti dalam 60 hari terakhir\./g, 'Siswa yang sudah mendapat layanan dalam 60 hari terakhir.'],
+    [/Belum ada kasus selesai dalam 60 hari terakhir\./g, 'Belum ada layanan yang tuntas dalam 60 hari terakhir.'],
+    [/Yang perlu Anda lakukan/g, 'Saran layanan'],
+    [/>Tindak lanjuti</g, '>Beri layanan<'],
+    [/>Simpan tindak lanjut</g, '>Simpan layanan<'],
+    [/Tindakan yang sudah dilakukan/g, 'Layanan yang sudah diberikan'],
+    [/Contoh: siswa dipanggil, orang tua dihubungi lewat WA/g, 'Contoh: konseling individu, siswa menyusun rencana perbaikan diri, orang tua diajak konsultasi'],
+    [/<strong>Selesai<\/strong><small>Kasus ditutup di tangga ini\.<\/small>/g, '<strong>Terentaskan</strong><small>Masalah siswa sudah teratasi lewat layanan BK.</small>'],
+    [/<strong>Naikkan ke tangga lain<\/strong><small>Bila siswa perlu ditangani peran lain\.<\/small>/g, '<strong>Rujuk ke pihak lain</strong><small>Bila siswa perlu ditangani wali kelas, Tim Tatib, atau pimpinan.</small>'],
+    [/, ditangani /g, ', dilayani '],
+    [/Kejadian: /g, 'Permasalahan: ']
+  ];
+  const istilah = (teks) => (S.ruang === 'bk' ? ISTILAH_BK.reduce((t, x) => t.replace(x[0], x[1]), teks) : teks);
   const KET_RUANG = {
     wali: 'Siswa kelas Anda: keterlambatan, kasus, verifikasi foto, dan pembinaan.',
-    bk: 'Kasus yang diteruskan ke BK dan bimbingan konseling siswa jenjang Anda.',
+    bk: 'Layanan bimbingan dan konseling: pengentasan masalah siswa di jenjang Anda.',
     tatib: 'Kasus berat, Waspada, Surat Peringatan (SP), masa pembinaan, dan kios gerbang.',
-    wakasek: 'Kasus tangga pimpinan dan pemantauan kedisiplinan sekolah.',
+    wakasek: 'Waka Kesiswaan: kasus tangga pimpinan dan pemantauan kedisiplinan sekolah.',
     kepsek: 'Ringkasan dan pemantauan sekolah. Ruang ini tidak untuk melapor atau menindak.',
-    piket: 'Gerbang, siswa terlambat hari ini, serta izin dan dispensasi.',
+    pantau: 'Ringkasan kedisiplinan sekolah untuk dipantau, seperti Kepala Sekolah.',
+    piket: 'Tugas piket hari ini: absen manual, bantu kios, terlambat, izin pulang dan UKS.',
     olahraga: 'Program fisik yang ditugaskan kepada Anda.',
+    agama: 'Pembinaan spiritual siswa binaan: sholat berjamaah, baca Yasin, BTQ.',
     ekskul: 'Absensi dan dokumentasi ekskul yang Anda bina.',
     admin: 'Menambah email guru dan mengatur aksesnya.',
     mapel: 'Melapor pelanggaran yang Anda temukan.',
@@ -338,6 +370,12 @@
     const izinRuang = RUANG_MENU[S.ruang];
     S.menu = MENU.filter((m) => m.boleh(S.akses) && (!izinRuang || izinRuang.indexOf(m.id) > -1));
     if (izinRuang) S.menu.sort((a, b) => izinRuang.indexOf(a.id) - izinRuang.indexOf(b.id));
+    const ubahan = MENU_RUANG[S.ruang] || {};
+    S.menu = S.menu.map((m) => {
+      if (ubahan[m.id]) return Object.assign({}, m, ubahan[m.id]);
+      if (m.id === 'pembinaan' && !S.akses.aturProgram) return Object.assign({}, m, { judul: 'Siswa dalam pembinaan', ket: 'Hanya pantau: skorsing dan program khusus siswa' });
+      return m;
+    });
     renderRuang();
     $('tombol-lapor-besar').hidden = S.akses.catat === false;
     $('menu-gerbang').hidden = !S.guru.bolehGerbang;
@@ -399,7 +437,7 @@
       if (aktif) x.setAttribute('aria-current', 'page'); else x.removeAttribute('aria-current');
     });
     document.querySelectorAll('.panel').forEach((p) => { p.hidden = p.id !== 'p-' + nama; });
-    ({ bintang: muatBintang, kartu: muatKartu, akun: muatAkun, beranda: muatBeranda, lapor: initLapor, kotak: muatTL, verifikasi: muatVerifikasi, siswa: initRiwayat, waspada: muatZona, pembinaan: muatProgram, pulih: muatPulih, absen: initIzin, ekskul: muatEkskul })[nama]();
+    ({ bintang: muatBintang, kartu: muatKartu, akun: muatAkun, beranda: muatBeranda, lapor: initLapor, kotak: muatTL, verifikasi: muatVerifikasi, siswa: initRiwayat, waspada: muatZona, pembinaan: muatProgram, pulih: muatPulih, absen: bukaAbsen, ekskul: muatEkskul })[nama]();
     window.scrollTo(0, 0);
   }
 
@@ -455,10 +493,12 @@
    * ================================================================= */
   const AK = { data: null, saring: 'semua', cari: '', edit: null, menyimpan: false };
   const PERAN_KET = {
-    'Guru Mapel': 'Melapor pelanggaran', 'Guru Wali Kelas': 'Pilih kelasnya', 'Guru Tata Tertib': 'Kasus berat, surat, masa pembinaan',
-    'Koordinator Tatib': 'Semua menu Tatib', 'Guru BK': 'Pilih jenjang binaan', 'Wakil Kepala Sekolah': 'Kasus tangga pimpinan',
-    'Kepala Sekolah': 'Memantau saja', 'Pembina Ekstrakurikuler': 'Pilih ekskulnya', 'Piket': 'Gerbang, izin, kios',
-    'Guru Olahraga': 'Program fisik', 'Staf Kependidikan': 'Melapor pelanggaran', 'Administrator': 'Mengelola akun guru'
+    'Guru Mapel Umum': 'Melapor pelanggaran', 'Guru Mapel Olahraga': 'Melapor dan memvalidasi pembinaan fisik',
+    'Guru Mapel Agama': 'Melapor dan memvalidasi pembinaan spiritual', 'Guru Wali Kelas': 'Pilih kelasnya',
+    'Guru Tata Tertib': 'Kasus berat, surat, masa pembinaan', 'Koordinator Tatib': 'Semua menu Tatib', 'Guru BK': 'Pilih jenjang binaan',
+    'Waka Kesiswaan': 'Kasus tangga pimpinan, fungsi kesiswaan', 'Waka Kurikulum': 'Melihat ringkasan saja', 'Waka Sarpras': 'Melihat ringkasan saja',
+    'Waka Humas': 'Melihat ringkasan saja', 'Kepala Sekolah': 'Memantau saja', 'Pembina Ekstrakurikuler': 'Pilih ekskulnya',
+    'Staf Kependidikan': 'Melapor pelanggaran', 'Administrator': 'Mengelola akun guru dan kartu presensi'
   };
   async function muatBintang() {
     window.SMKT_TATIB = { api: api, toast: toast, esc: esc };
@@ -511,6 +551,7 @@
       '<span class="ak-email' + (g.email ? '' : ' kosong') + '">' + esc(g.email || 'Belum ada email, belum bisa login') + '</span>' +
       '<span class="ak-peran">' + g.peran.map((p) => '<span class="chip-peran' + (p === 'Administrator' ? ' admin' : '') + '">' +
         esc(p === 'Guru Wali Kelas' && g.kelasWali ? 'Wali ' + g.kelasWali : p === 'Guru BK' && g.bkJenjang.length ? 'BK kelas ' + g.bkJenjang.join(', ') : p) + '</span>').join('') +
+      ((g.hariPiket || []).length ? '<span class="chip-peran">Piket ' + esc(g.hariPiket.join(', ')) + '</span>' : '') +
       (g.aktif ? '' : '<span class="chip-peran mati">Nonaktif</span>') + '</span></button></li>').join('')
       : '<li class="kosong">' + (AK.cari ? 'Tidak ada guru yang cocok dengan pencarian.' : 'Tidak ada guru di daftar ini.') + '</li>';
   }
@@ -518,7 +559,7 @@
     const d = AK.data; if (!d) return;
     const g = baris ? d.guru.filter((x) => x.baris === baris)[0] : null;
     if (baris && !g) return;
-    AK.edit = g ? Object.assign({}, g) : { baris: 0, email: '', nama: '', nip: '', wa: '', peran: ['Guru Mapel'], kelasWali: '', bkJenjang: [], ekskul: [], aktif: true };
+    AK.edit = g ? Object.assign({}, g) : { baris: 0, email: '', nama: '', nip: '', wa: '', peran: ['Guru Mapel Umum'], kelasWali: '', bkJenjang: [], ekskul: [], hariPiket: [], aktif: true };
     const e = AK.edit;
     $('ak-judul').textContent = g ? 'Atur akses ' + namaPendek(g.nama) : 'Tambah guru';
     $('ak-email').value = e.email; $('ak-nama').value = e.nama; $('ak-nip').value = e.nip; $('ak-wa').value = e.wa;
@@ -533,6 +574,7 @@
     $('ak-jenjang').innerHTML = d.pilihan.jenjang.map((j) => '<label class="centang-kecil"><input type="checkbox" value="' + j + '"' + (e.bkJenjang.indexOf(j) > -1 ? ' checked' : '') + '> Kelas ' + j + '</label>').join('');
     $('ak-ekskul').innerHTML = d.pilihan.ekskul.length ? d.pilihan.ekskul.map((x) => '<label class="centang-kecil"><input type="checkbox" value="' + esc(x) + '"' + (e.ekskul.indexOf(x) > -1 ? ' checked' : '') + '> ' + esc(x) + '</label>').join('')
       : '<p class="keterangan">Belum ada ekskul di tab Ekskul.</p>';
+    $('ak-hari').innerHTML = (d.pilihan.hari || []).map((x) => '<label class="centang-kecil"><input type="checkbox" value="' + esc(x) + '"' + ((e.hariPiket || []).indexOf(x) > -1 ? ' checked' : '') + '> ' + esc(x) + '</label>').join('');
     $('ak-pesan').textContent = '';
     $('ak-simpan').disabled = false; $('ak-simpan').textContent = g ? 'Simpan perubahan' : 'Tambah guru';
     renderSyaratAkun();
@@ -559,6 +601,7 @@
       peran: peran, kelasWali: $('ak-kelas').value,
       bkJenjang: Array.from($('ak-jenjang').querySelectorAll('input:checked')).map((x) => Number(x.value)),
       ekskul: Array.from($('ak-ekskul').querySelectorAll('input:checked')).map((x) => x.value),
+      hariPiket: Array.from($('ak-hari').querySelectorAll('input:checked')).map((x) => x.value),
       aktif: $('ak-aktif').checked
     };
     if (isi.nama.length < 3) { $('ak-nama').focus(); return galat('Tulis nama lengkap guru.'); }
@@ -654,18 +697,39 @@
       '<span class="teks"><strong>' + esc(judul) + '</strong><small>' + esc(ket) + '</small></span>' +
       '<span class="angka' + (angka ? '' : ' nol') + '">' + angka + '</span>' + ikon('kanan') + '</a></li>';
   }
+  function berandaPiket(d) {
+    const iz = d.izinHarian || {};
+    return '<section class="b-piket"><h2 class="judul-bagian">Tugas piket hari ini</h2><div class="piket-aksi">' +
+      '<a class="piket-kartu utama" href="./?mode=Masuk">' + ikon('qr') + '<span><strong>Bantu kios: pindai QR</strong><small>Pakai HP ini sebagai pemindai kedua di gerbang agar antrean cepat terurai.</small></span></a>' +
+      '<a class="piket-kartu" href="./?mode=' + encodeURIComponent('Manual Lupa ID') + '">' + ikon('siswa') + '<span><strong>Absen manual tanpa kartu</strong><small>Siswa lupa atau kehilangan kartu: cari nama atau NIS, cocokkan foto, simpan.</small></span></a>' +
+      '<a class="piket-kartu" href="#absen">' + ikon('absen') + '<span><strong>Izin, pulang awal, UKS</strong><small>' +
+        (iz.jumlah ? iz.jumlah + ' catatan hari ini' + (iz.diUks ? ', ' + iz.diUks + ' siswa masih di UKS' : '') : 'Izin tidak masuk, dijemput orang tua, istirahat di UKS, dispensasi.') + '</small></span></a>' +
+      '</div></section>';
+  }
+  function berandaPembinaan(p) {
+    if (!p) return '';
+    return '<section class="b-pembinaan"><h2 class="judul-bagian">Dalam pembinaan hari ini<small>' + p.jumlah + ' siswa' + (p.skorsing ? ', ' + p.skorsing + ' skorsing' : '') + '</small></h2>' +
+      (p.jumlah ? '<ul class="daftar-pembinaan">' + p.siswa.map((x) => '<li><button type="button" class="tautan-baris" data-riwayat="' + esc(x.nis) + '"><span class="nm">' + esc(x.nama) + '</span>' +
+        '<span class="mt">' + esc(x.kelas) + ' · ' + esc(x.jenis) + (x.bentuk ? ': ' + esc(x.bentuk) : '') + (x.selesai ? ' · sampai ' + esc(x.selesai) : '') + '</span></button></li>').join('') +
+        (p.jumlah > p.siswa.length ? '<li class="keterangan">dan ' + (p.jumlah - p.siswa.length) + ' siswa lainnya</li>' : '') + '</ul>'
+        : '<p class="keterangan">Tidak ada siswa yang sedang skorsing atau menjalani program khusus hari ini.</p>') + '</section>';
+  }
   function renderBeranda() {
     const d = B.data;
-    let h = '<section class="b-aksi"><h2 class="judul-bagian">Perlu perhatian</h2><ul class="baris-aksi">';
+    let h = S.ruang === 'piket' ? berandaPiket(d) : '';
+    let ba = '';
     if (S.akses.tindakLanjut) {
-      h += barisAksi('#kotak', 'emas', 'kotak', 'Kotak Masuk', d.menunggu ? 'Kasus menunggu tindakan Anda' :
-        'Tidak ada kasus yang menunggu' + (d.tembusan ? ', ' + d.tembusan + ' tembusan minggu ini' : ''), d.menunggu);
+      ba += S.ruang === 'bk'
+        ? barisAksi('#kotak', 'emas', 'kotak', 'Layanan BK', d.menunggu ? 'Siswa menunggu layanan konseling' : 'Tidak ada siswa yang menunggu layanan', d.menunggu)
+        : barisAksi('#kotak', 'emas', 'kotak', 'Kotak Masuk', d.menunggu ? 'Kasus menunggu tindakan Anda' :
+          'Tidak ada kasus yang menunggu' + (d.tembusan ? ', ' + d.tembusan + ' tembusan minggu ini' : ''), d.menunggu);
     }
     if (d.waspada) {
-      h += barisAksi('#waspada', 'merah', 'waspada', 'Waspada', d.waspada.perluSurat ? d.waspada.perluSurat + ' siswa perlu surat pernyataan' : 'Siswa yang mencapai level tindakan', d.waspada.jumlah);
+      ba += barisAksi('#waspada', 'merah', 'waspada', 'Waspada', d.waspada.perluSurat ? d.waspada.perluSurat + ' siswa perlu surat pernyataan' : 'Siswa yang mencapai level tindakan', d.waspada.jumlah);
     }
-    h += barisAksi('#lapor', '', 'lapor', 'Laporan saya, 7 hari', d.laporanSaya ? d.sendiriSaya + ' selesai Anda tangani sendiri' : 'Belum ada laporan minggu ini', d.laporanSaya);
-    h += '</ul></section>';
+    if (S.akses.catat !== false) ba += barisAksi('#lapor', '', 'lapor', 'Laporan saya, 7 hari', d.laporanSaya ? d.sendiriSaya + ' selesai Anda tangani sendiri' : 'Belum ada laporan minggu ini', d.laporanSaya);
+    if (ba) h += '<section class="b-aksi"><h2 class="judul-bagian">Perlu perhatian</h2><ul class="baris-aksi">' + ba + '</ul></section>';
+    if (S.ruang === 'kepsek' || S.ruang === 'pantau') h += berandaPembinaan(d.pembinaan);
 
     if (d.terlambat) {
       h += '<section class="b-telat">';
@@ -717,6 +781,7 @@
       '<details><summary>Siapa melakukan apa</summary><dl>' + S.tangga.map((x) => '<div><dt>' + x.tangga + '. ' + esc(x.peran) + '</dt><dd>' + esc(x.tugas) +
         (x.kapan ? ' Masuk bila ' + esc(x.kapan.charAt(0).toLowerCase() + x.kapan.slice(1)) + '.' : '') + '</dd></div>').join('') + '</dl></details></div></section>';
     wadahBeranda().innerHTML = h;
+    wadahBeranda().querySelectorAll('[data-riwayat]').forEach((b) => b.addEventListener('click', () => bukaRiwayatDari(b.dataset.riwayat)));
   }
 
   /* =================================================================
@@ -1628,6 +1693,7 @@
   function initTL() {
     if (S.siap.kotak) return;
     S.siap.kotak = true;
+    if (S.ruang === 'bk') { const b = document.querySelector('#p-kotak .segmen button[data-status="Selesai"]'); if (b) b.textContent = 'Terentaskan'; }
     document.querySelectorAll('#p-kotak .segmen button').forEach((b) => b.addEventListener('click', () => {
       T.status = b.dataset.status;
       document.querySelectorAll('#p-kotak .segmen button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
@@ -1658,7 +1724,8 @@
     } else {
       $('tl-ket').textContent = n ? 'Kasus yang sudah ditindaklanjuti dalam 60 hari terakhir.' : 'Belum ada kasus selesai dalam 60 hari terakhir.';
     }
-    $('tl-daftar').innerHTML = T.item.map(kartuTL).join('');
+    $('tl-ket').textContent = istilah($('tl-ket').textContent);
+    $('tl-daftar').innerHTML = istilah(T.item.map(kartuTL).join(''));
   }
   function kartuTL(it) {
     const lain = PENERIMA.filter((x) => x !== it.ke && x !== 'Kepala Sekolah');
@@ -2130,11 +2197,13 @@
   /* =================================================================
    *  PULIH
    * ================================================================= */
-  const P = { item: [], potongan: 15, siswaLain: null };
+  const P = { item: [], potongan: 15, siswaLain: null, mode: '', kegiatan: [], bolehFisik: true, bolehSpiritual: false };
+  const NAMA_TEBUS = { 'Program Fisik': 'program fisik', 'Program Spiritual': 'program spiritual' };
   async function muatPulih() {
     if (!S.siap.pulih) {
       S.siap.pulih = true;
       $('pm-daftar').addEventListener('click', klikPulih);
+      $('pm-mode').addEventListener('click', (e) => { const b = e.target.closest('button[data-mode]'); if (b) { P.mode = b.dataset.mode; renderPulih(); } });
       if (S.akses.pembinaanLain) {
         $('pm-lain').hidden = false;
         pemilihSiswa($('pm-siswa-pilih'), { id: 'pm', label: 'Siswa', pilih: (s) => { P.siswaLain = s; pilihanTerpilih($('pm-siswa-pilih'), s, 'ganti-pm'); } });
@@ -2143,31 +2212,52 @@
       }
     }
     $('pm-ket').textContent = 'Memuat…';
-    try { const d = await api('tatib.pemulihan'); P.item = d.item || []; P.potongan = d.potongan || 15; renderPulih(); }
-    catch (e) { $('pm-ket').textContent = e.message; }
+    try {
+      const d = await api('tatib.pemulihan');
+      P.item = d.item || []; P.potongan = d.potongan || 15; P.kegiatan = d.kegiatanSpiritual || [];
+      P.bolehFisik = d.bolehFisik !== false; P.bolehSpiritual = !!d.bolehSpiritual;
+      if (!P.mode) P.mode = S.ruang === 'agama' || (!P.bolehFisik && P.bolehSpiritual) ? 'Program Spiritual' : 'Program Fisik';
+      renderPulih();
+    } catch (e) { $('pm-ket').textContent = e.message; }
   }
   function renderPulih() {
-    $('pm-ket').textContent = P.item.length ? 'Kasus yang bisa ditebus dengan program pembinaan fisik. Status Lulus mengurangi ' + P.potongan + ' poin, sekali untuk setiap kasus.'
-      : 'Belum ada kasus yang bisa ditebus dengan program fisik pada periode ini.';
+    const spiritual = P.mode === 'Program Spiritual', nama = NAMA_TEBUS[P.mode];
+    const dua = P.bolehFisik && P.bolehSpiritual;
+    $('pm-mode').hidden = !dua;
+    $('pm-mode').querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === P.mode)));
+    $('pm-ket').textContent = P.item.length
+      ? 'Kasus yang bisa ditebus dengan ' + nama + (spiritual ? ' (sholat berjamaah, baca Yasin Rabu-Jumat, atau BTQ)' : '') + '. Status Lulus mengurangi ' + P.potongan + ' poin, sekali untuk setiap kasus.'
+      : 'Belum ada kasus yang bisa ditebus dengan program restorasi pada periode ini.';
     const urut = P.item.slice().sort((a, b) => (a.sudahDipotong - b.sudahDipotong));
-    $('pm-daftar').innerHTML = urut.map((it) => '<li class="kasus ' + (it.sudahDipotong ? 'k-ringan' : 'k-sedang') + '" data-id="' + esc(it.idLog) + '">' +
-      '<div class="kasus-kepala">' + fotoHtml(it) + '<span><span class="nm">' + esc(it.nama) + '</span><span class="kl">' + esc(it.kelas) + '</span></span><span class="wkt">' + esc(it.tanggal) + '</span></div>' +
-      '<p class="plg">' + esc(it.pelanggaran) + ' <span class="tag">+' + it.poin + '</span></p>' +
-      '<p class="meta">Program fisik: ' + (it.sudahDipotong ? '<span class="tag hijau">Lulus, −' + P.potongan + ' poin</span>' : esc(it.statusTerakhir || 'belum dijadwalkan')) + '</p>' +
-      (it.sudahDipotong ? '' : '<div class="aksi">' + ['Dijadwalkan', 'Berjalan'].filter((x) => x !== it.statusTerakhir).map((x) => '<button type="button" class="tombol tombol-garis" data-status="' + x + '">' + x + '</button>').join('') +
-        '<button type="button" class="tombol tombol-utama" data-status="Lulus">Lulus (−' + P.potongan + ')</button><button type="button" class="tombol tombol-garis" data-status="Tidak Lulus">Tidak lulus</button></div>') + '</li>').join('');
+    const opsiKeg = (it) => '<label class="label" for="pk-' + esc(it.idLog) + '">Kegiatan</label><select class="isian pm-kegiatan" id="pk-' + esc(it.idLog) + '">' +
+      P.kegiatan.map((k) => '<option' + (k === it.kegiatanSpiritual ? ' selected' : '') + '>' + esc(k) + '</option>').join('') + '</select>';
+    $('pm-daftar').innerHTML = urut.map((it) => {
+      const st = spiritual ? it.statusSpiritual : it.statusFisik;
+      const lulusLain = it.sudahDipotong && it.lulusDengan !== P.mode;
+      return '<li class="kasus ' + (it.sudahDipotong ? 'k-ringan' : 'k-sedang') + '" data-id="' + esc(it.idLog) + '">' +
+        '<div class="kasus-kepala">' + fotoHtml(it) + '<span><span class="nm">' + esc(it.nama) + '</span><span class="kl">' + esc(it.kelas) + '</span></span><span class="wkt">' + esc(it.tanggal) + '</span></div>' +
+        '<p class="plg">' + esc(it.pelanggaran) + ' <span class="tag">+' + it.poin + '</span></p>' +
+        '<p class="meta">' + (spiritual ? 'Program spiritual' : 'Program fisik') + ': ' +
+          (it.sudahDipotong ? '<span class="tag hijau">' + (lulusLain ? 'Sudah lulus ' + esc(NAMA_TEBUS[it.lulusDengan] || '') : 'Lulus') + ', −' + P.potongan + ' poin</span>'
+            : esc((st || 'belum dijadwalkan') + (spiritual && it.kegiatanSpiritual ? ' · ' + it.kegiatanSpiritual : ''))) + '</p>' +
+        (it.sudahDipotong ? '' : (spiritual ? opsiKeg(it) : '') + '<div class="aksi">' + ['Dijadwalkan', 'Berjalan'].filter((x) => x !== st).map((x) => '<button type="button" class="tombol tombol-garis" data-status="' + x + '">' + x + '</button>').join('') +
+          '<button type="button" class="tombol tombol-utama" data-status="Lulus">Lulus (−' + P.potongan + ')</button><button type="button" class="tombol tombol-garis" data-status="Tidak Lulus">Tidak lulus</button></div>') + '</li>';
+    }).join('');
   }
   async function klikPulih(e) {
     const a = e.target.closest('button[data-status]');
     if (!a) return;
-    const it = P.item.filter((x) => x.idLog === a.closest('.kasus').dataset.id)[0];
+    const li = a.closest('.kasus');
+    const it = P.item.filter((x) => x.idLog === li.dataset.id)[0];
     if (!it) return;
-    const status = a.dataset.status;
-    if (status === 'Lulus' && !confirm(it.nama + ' lulus program fisik? Poinnya berkurang ' + P.potongan + '.')) return;
+    const status = a.dataset.status, kat = P.mode, nama = NAMA_TEBUS[kat];
+    const kegEl = li.querySelector('.pm-kegiatan'), kegiatan = kegEl ? kegEl.value : '';
+    if (status === 'Lulus' && !confirm(it.nama + ' lulus ' + nama + (kegiatan ? ' (' + kegiatan + ')' : '') + '? Poinnya berkurang ' + P.potongan + '.')) return;
     a.disabled = true;
     try {
-      await api('tatib.catatPemulihan', { nis: it.nis, kategori: 'Program Fisik', status: status, ref: it.idLog });
-      it.statusTerakhir = status; if (status === 'Lulus') it.sudahDipotong = true;
+      await api('tatib.catatPemulihan', { nis: it.nis, kategori: kat, status: status, ref: it.idLog, kegiatan: kegiatan });
+      if (kat === 'Program Spiritual') { it.statusSpiritual = status; it.kegiatanSpiritual = kegiatan; } else { it.statusFisik = status; it.statusTerakhir = status; }
+      if (status === 'Lulus') { it.sudahDipotong = true; it.lulusDengan = kat; }
       renderPulih(); toast(status === 'Lulus' ? 'Lulus. Poin ' + it.nama + ' berkurang ' + P.potongan + '.' : 'Status ' + status + ' tersimpan.', 'hadir');
     } catch (err) { a.disabled = false; toast(err.message, 'galat', 5000); }
   }
@@ -2197,6 +2287,7 @@
     const t = $('iz-tanggal'); t.value = hariIni(); t.max = hariIni(); t.min = hariIni(-HARI_IZIN_MUNDUR);
     $('iz-simpan').addEventListener('click', simpanIzin);
   }
+  function bukaAbsen() { initIzin(); initIzinHarian(); muatIzinHarian(); }
   async function simpanIzin() {
     const s = I.siswa;
     if (!s) { toast('Pilih siswa dulu.', 'galat'); return; }
@@ -2207,6 +2298,69 @@
       toast(d.status + ' tercatat untuk ' + d.nama + ' (' + d.tanggal + ')' + (d.menimpa ? ', menggantikan ' + d.menimpa : '') + '.', 'hadir', 4500);
       $('iz-ket-isi').value = ''; I.siswa = null; pilihanTerpilih($('iz-siswa-pilih'), null);
     } catch (e) { toast(e.message, 'galat', 5000); } finally { b.disabled = false; b.textContent = 'Simpan'; }
+  }
+
+  /* ---------------- Izin saat jam sekolah: pulang awal, UKS, dispensasi ---------------- */
+  const IH = { siswa: null, data: null };
+  function initIzinHarian() {
+    if (S.siap.izinHarian) return;
+    S.siap.izinHarian = true;
+    const semua = !!S.akses.izinSemuaKelas;
+    pemilihSiswa($('ih-siswa-pilih'), { id: 'ih', label: 'Siswa', tampilSemua: !semua, saring: semua ? null : (s) => s.kelas === S.guru.kelasWali,
+      pilih: (s) => { IH.siswa = s; pilihanTerpilih($('ih-siswa-pilih'), s, 'ganti-ih'); } });
+    $('ih-siswa-pilih').addEventListener('click', (e) => { if (e.target.closest('[data-aksi="ganti-ih"]')) { IH.siswa = null; pilihanTerpilih($('ih-siswa-pilih'), null); } });
+    document.querySelectorAll('input[name="ih-jenis"]').forEach((r) => r.addEventListener('change', aturFormIzinHarian));
+    $('ih-simpan').addEventListener('click', simpanIzinHarian);
+    $('ih-daftar').addEventListener('click', klikIzinHarian);
+    aturFormIzinHarian();
+  }
+  function jenisIzinHarian() { const r = document.querySelector('input[name="ih-jenis"]:checked'); return r ? r.value : 'Pulang awal'; }
+  function aturFormIzinHarian() {
+    const j = jenisIzinHarian();
+    $('ih-penjemput-wadah').hidden = j !== 'Pulang awal';
+    $('ih-ket-label').textContent = j === 'Pulang awal' ? 'Alasan pulang (boleh kosong)' : j === 'Istirahat di UKS' ? 'Keluhan siswa' : 'Kegiatan dispensasi';
+    $('ih-ket').placeholder = j === 'Pulang awal' ? 'Contoh: keperluan keluarga, sakit setelah istirahat' : j === 'Istirahat di UKS' ? 'Contoh: pusing, demam ringan' : 'Contoh: lomba O2SN di kecamatan';
+  }
+  async function muatIzinHarian() {
+    $('ih-daftar').innerHTML = '<li class="memuat">Memuat catatan hari ini…</li>';
+    try { IH.data = await api('tatib.izinHarian'); renderIzinHarian(); }
+    catch (e) { $('ih-daftar').innerHTML = '<li class="kosong">' + esc(e.message) + '</li>'; }
+  }
+  function renderIzinHarian() {
+    const d = IH.data; if (!d) return;
+    $('ih-judul-hari').textContent = 'Catatan hari ini, ' + d.tanggal;
+    $('ih-daftar').innerHTML = d.item.length ? d.item.map((x) => {
+      const aktif = x.status === 'Di UKS' || x.status === 'Di luar kelas';
+      return '<li class="ih-baris' + (aktif ? ' aktif' : '') + '" data-id="' + esc(x.idLog) + '"><div><span class="nm">' + esc(x.nama) + '</span> <span class="kl">' + esc(x.kelas) + '</span>' +
+        '<span class="mt">' + esc(x.jenis) + ' · ' + esc(x.jamMulai) + (x.jamSelesai && x.jamSelesai !== x.jamMulai ? '–' + esc(x.jamSelesai) : '') +
+        (x.keterangan ? ' · ' + esc(x.keterangan) : '') + (x.penjemput ? ' · dijemput ' + esc(x.penjemput) : '') + '</span>' +
+        '<span class="tag' + (aktif ? ' emas' : ' hijau') + '">' + esc(x.status) + '</span></div>' +
+        (aktif ? '<div class="aksi"><button type="button" class="tombol tombol-garis" data-hasil="Kembali ke kelas">Kembali ke kelas</button>' +
+          (x.jenis === 'Istirahat di UKS' ? '<button type="button" class="tombol tombol-garis" data-hasil="Dijemput pulang">Dijemput pulang</button>' : '') + '</div>' : '') + '</li>';
+    }).join('') : '<li class="kosong">Belum ada siswa yang pulang awal, ke UKS, atau dispensasi hari ini.</li>';
+  }
+  async function simpanIzinHarian() {
+    const s = IH.siswa;
+    if (!s) { toast('Pilih siswa dulu.', 'galat'); return; }
+    const b = $('ih-simpan'); b.disabled = true; b.textContent = 'Menyimpan…';
+    try {
+      const d = await api('tatib.catatIzinHarian', { nis: s.nis, jenis: jenisIzinHarian(), penjemput: $('ih-penjemput').value.trim(), keterangan: $('ih-ket').value.trim() });
+      toast(d.nama + ': ' + d.status.replace(/^\S+/, function (k) { return k.toLowerCase(); }) + ' (' + d.jam + ').', 'hadir', 4500);
+      $('ih-ket').value = ''; $('ih-penjemput').value = ''; IH.siswa = null; pilihanTerpilih($('ih-siswa-pilih'), null);
+      muatIzinHarian();
+    } catch (e) { toast(e.message, 'galat', 5000); } finally { b.disabled = false; b.textContent = 'Simpan catatan'; }
+  }
+  async function klikIzinHarian(e) {
+    const a = e.target.closest('button[data-hasil]'); if (!a) return;
+    const id = a.closest('[data-id]').dataset.id, hasil = a.dataset.hasil;
+    let penjemput = '';
+    if (hasil === 'Dijemput pulang') {
+      penjemput = (prompt('Nama dan hubungan penjemput, misalnya: Ibu Siti (ibu kandung)') || '').trim();
+      if (penjemput.length < 3) return;
+    }
+    a.disabled = true;
+    try { await api('tatib.selesaiIzinHarian', { idLog: id, hasil: hasil, penjemput: penjemput }); toast(hasil + ' tercatat.', 'hadir'); muatIzinHarian(); }
+    catch (er) { a.disabled = false; toast(er.message, 'galat', 5000); }
   }
 
   /* =================================================================
@@ -2491,6 +2645,7 @@
   function renderProgram() {
     const d = PR.data; if (!d) return;
     $('prg-baru').hidden = !d.bolehAtur;
+    $('prg-pantau').hidden = !!d.bolehAtur;
     const aktif = (p) => ['Berjalan', 'Belum mulai', 'Tuntas'].indexOf(p.tahap) > -1;
     const daftar = d.program.filter((p) => (PR.filter === 'aktif' ? aktif(p) : !aktif(p)));
     const nAktif = d.program.filter(aktif).length;

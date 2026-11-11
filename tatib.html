@@ -303,6 +303,7 @@
           </div>
           <button id="prg-baru" class="tombol tombol-utama" type="button" hidden>Tetapkan masa pembinaan</button>
         </div>
+        <p class="info-pantau" id="prg-pantau" hidden>Hanya untuk dipantau. Jadwal skorsing dan program khusus ditetapkan oleh Tim Tata Tertib.</p>
         <p class="keterangan" id="prg-ket"></p>
         <ol class="prg-daftar" id="prg-daftar"></ol>
 
@@ -334,6 +335,10 @@
 
       <!-- PULIH -->
       <section id="p-pulih" class="panel" hidden>
+        <div class="segmen" id="pm-mode" role="group" aria-label="Jenis program restorasi" hidden>
+          <button type="button" data-mode="Program Fisik" aria-pressed="true">Fisik</button>
+          <button type="button" data-mode="Program Spiritual" aria-pressed="false">Spiritual</button>
+        </div>
         <p class="keterangan" id="pm-ket"></p>
         <ol class="daftar-kartu" id="pm-daftar"></ol>
         <div class="blok" id="pm-lain" hidden>
@@ -357,7 +362,7 @@
       <!-- ABSEN -->
       <section id="p-absen" class="panel" hidden>
         <div class="blok">
-          <h2 class="judul-blok">Catat izin atau sakit</h2>
+          <h2 class="judul-blok">Tidak masuk sekolah: izin atau sakit</h2>
           <p class="keterangan" id="iz-ket"></p>
           <div id="iz-siswa-pilih"></div>
           <label class="label" for="iz-tanggal">Tanggal</label>
@@ -369,6 +374,25 @@
           <label class="label" for="iz-ket-isi">Keterangan</label>
           <textarea id="iz-ket-isi" class="isian" rows="2" maxlength="300" placeholder="Contoh: demam, surat dokter menyusul"></textarea>
           <button id="iz-simpan" class="tombol tombol-utama" type="button">Simpan</button>
+        </div>
+        <div class="blok">
+          <h2 class="judul-blok">Saat jam sekolah: pulang awal, UKS, dispensasi</h2>
+          <p class="keterangan">Untuk siswa yang sudah hadir lalu dijemput orang tua, beristirahat di UKS, atau keluar kelas untuk kegiatan sekolah.</p>
+          <div id="ih-siswa-pilih"></div>
+          <div class="opsi ih-jenis" role="radiogroup" aria-label="Jenis izin">
+            <label><input type="radio" name="ih-jenis" value="Pulang awal" checked><span><strong>Pulang awal</strong><small>Dijemput orang tua atau wali</small></span></label>
+            <label><input type="radio" name="ih-jenis" value="Istirahat di UKS"><span><strong>Istirahat di UKS</strong><small>Nanti ditandai kembali ke kelas atau dijemput</small></span></label>
+            <label><input type="radio" name="ih-jenis" value="Dispensasi kegiatan"><span><strong>Dispensasi kegiatan</strong><small>Lomba atau tugas sekolah di luar kelas</small></span></label>
+          </div>
+          <div id="ih-penjemput-wadah">
+            <label class="label" for="ih-penjemput">Penjemput</label>
+            <input id="ih-penjemput" class="isian" type="text" maxlength="120" placeholder="Nama dan hubungan, misalnya: Ibu Siti (ibu kandung)">
+          </div>
+          <label class="label" for="ih-ket" id="ih-ket-label">Keterangan</label>
+          <textarea id="ih-ket" class="isian" rows="2" maxlength="300"></textarea>
+          <button id="ih-simpan" class="tombol tombol-utama" type="button">Simpan catatan</button>
+          <h3 class="judul-bagian" id="ih-judul-hari">Catatan hari ini</h3>
+          <ul class="ih-daftar" id="ih-daftar"></ul>
         </div>
       </section>
 
@@ -562,6 +586,11 @@
       <div id="ak-ekskul-wadah" hidden>
         <span class="label">Ekskul yang dibina</span>
         <div class="ak-pilih" id="ak-ekskul"></div>
+      </div>
+      <div id="ak-hari-wadah">
+        <span class="label">Hari piket</span>
+        <p class="keterangan">Pada hari yang dicentang, guru ini mendapat ruang Petugas Piket di aplikasi. Kosongkan bila tidak bertugas piket.</p>
+        <div class="ak-pilih" id="ak-hari"></div>
       </div>
       <label class="centang ak-aktif" id="ak-aktif-wadah"><input type="checkbox" id="ak-aktif"> Akun aktif <span class="redup">(matikan bila guru pindah atau tidak bertugas; riwayatnya tetap tersimpan)</span></label>
       <p class="keterangan" id="ak-diri" hidden>Ini akun Anda. Peran Administrator dan status aktif Anda tidak bisa dicabut sendiri.</p>

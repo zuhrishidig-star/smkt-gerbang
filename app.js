@@ -198,7 +198,8 @@
     await muatSiswaLokal();
     renderRiwayat();
     perbaruiLencana();
-    pilihMode(sessionStorage.getItem('smkt_mode') || MODE.MASUK);
+    const modeUrl = new URLSearchParams(location.search).get('mode');   // dari dasbor piket
+    pilihMode(modeUrl || sessionStorage.getItem('smkt_mode') || MODE.MASUK);
     const terakhir = simpan.get('smkt_waktu_sinkron', 0);
     if (!S.siswa.size || Date.now() - terakhir > BATAS_SINKRON_MS) perbaruiData();
     kirimAntrean();

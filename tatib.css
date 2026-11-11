@@ -831,3 +831,30 @@ textarea.isian { min-height: 0; resize: vertical; }
 .kt-daftar-pilih .tautan.merah { color: var(--berat); }
 .kt-daftar-pilih .kt-sudah { color: var(--teks-redup); font-size: 14px; white-space: nowrap; }
 .kt-daftar-pilih li.kt-info { display: block; color: var(--teks-redup); font-size: 14px; }
+
+/* v1.16: dasbor piket, pembinaan hari ini, izin saat jam sekolah */
+.piket-aksi { display: grid; gap: 10px; }
+@media (min-width: 720px) { .piket-aksi { grid-template-columns: repeat(3, 1fr); } }
+.piket-kartu { display: flex; gap: 12px; align-items: flex-start; padding: 14px; border-radius: 16px; background: var(--putih); border: 1px solid var(--garis); color: inherit; text-decoration: none; }
+.piket-kartu .ik svg { width: 26px; height: 26px; }
+.piket-kartu strong { display: block; color: var(--dongker); }
+.piket-kartu small { display: block; color: var(--teks-redup); font-size: 14px; line-height: 1.35; margin-top: 2px; }
+.piket-kartu.utama { background: var(--dongker); border-color: var(--dongker); color: var(--putih); }
+.piket-kartu.utama strong, .piket-kartu.utama small { color: var(--putih); }
+.daftar-pembinaan { list-style: none; margin: 8px 0 0; padding: 0; background: var(--putih); border-radius: 16px; }
+.daftar-pembinaan li { border-top: 1px solid var(--latar); }
+.daftar-pembinaan li:first-child { border-top: 0; }
+.daftar-pembinaan li.keterangan { padding: 10px 14px; }
+.tautan-baris { display: block; width: 100%; text-align: left; background: none; border: 0; padding: 10px 14px; min-height: 44px; font: inherit; color: inherit; cursor: pointer; }
+.tautan-baris .nm { display: block; font-weight: 700; }
+.tautan-baris .mt { display: block; font-size: 14px; color: var(--teks-redup); }
+.info-pantau { background: var(--antre-latar); color: var(--dongker); border-radius: 12px; padding: 10px 14px; font-size: 14px; margin: 8px 0; }
+#pm-mode { margin-bottom: 8px; }
+.ih-jenis { margin-top: 12px; }
+.ih-daftar { list-style: none; margin: 6px 0 0; padding: 0; }
+.ih-daftar li { padding: 10px 0; border-top: 1px solid var(--latar); }
+.ih-daftar li .nm { font-weight: 700; }
+.ih-daftar li .mt { display: block; font-size: 14px; color: var(--teks-redup); margin: 2px 0 4px; }
+.ih-daftar li.aktif { background: var(--antre-latar); border-radius: 12px; padding: 10px 12px; }
+.ih-daftar .aksi { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
+.tag.emas { background: var(--telat-latar); color: var(--telat); }
