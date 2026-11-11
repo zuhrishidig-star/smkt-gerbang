@@ -98,7 +98,7 @@
       doc.setFillColor(WARNA.gunung); doc.rect(ox, oy + 14.9, W, 0.6, 'F');
       if (K.logo) doc.addImage(K.logo, 'PNG', ox + 3, oy + 2, 10, 10, 'logoSek', 'FAST');
       teks(doc, 'SMP NEGERI 1 WONOSARI', ox + 15, oy + 5.6, { pt: 8.6, tebal: true, warna: '#FFFFFF' });
-      teks(doc, 'KARTU PELAJAR', ox + 15, oy + 9.2, { pt: 6.6, tebal: true, warna: WARNA.lencana });
+      teks(doc, 'KARTU PRESENSI DIGITAL', ox + 15, oy + 9.2, { pt: 6.6, tebal: true, warna: WARNA.lencana });
       teks(doc, 'Kabupaten Malang  ·  NPSN 20517508', ox + 15, oy + 12.2, { pt: 4.8, warna: '#D6E4F0' });
       doc.setFillColor(WARNA.biru); doc.rect(ox, oy + 49, W, 5, 'F');
       teks(doc, 'Berlaku selama terdaftar sebagai siswa' + (K.awal && K.awal.tahunAjaran ? '  ·  TA ' + K.awal.tahunAjaran : ''), ox + 4, oy + 52.3, { pt: 4.6, warna: '#FFFFFF' });
@@ -201,45 +201,87 @@
     doc.lineTo(x + w, oy + f.bawahLurus); doc.lineTo(x + w / 2, oy + f.ujung); doc.lineTo(x, oy + f.bawahLurus);
     doc.lineTo(x, y + r); doc.curveTo(x, y + r - k, x + r - k, y, x + r, y);
     doc.close();
-    if (mode === 'isi') doc.fill(); else { doc.clip(); doc.discardPath(); }
+    if (mode === 'isi') doc.fill(); else if (mode === 'garis') doc.stroke(); else { doc.clip(); doc.discardPath(); }
   }
-  /** Latar pengganti mirip template Kobalt Emas, dipakai bila latar Canva belum diunggah. */
+  /** Desain bawaan "Kartu Presensi Digital": dasar terang dengan bidang-bidang miring biru tua,
+   *  biru, dan oranye seperti kartu pelajar sekolah. Dipakai bila latar Canva belum diunggah. */
+  const PRESENSI = { judul: 'KARTU PRESENSI DIGITAL', navy: '#0A2463', biru: '#1E4FA8', langit: '#5B8FD6', oranye: '#F28A1E', emas: '#F7B548', tinta: '#0B2238', label: '#5B6B7E' };
+  function poli(doc, warna, pts, ox, oy, buram) {
+    if (buram != null) doc.setGState(new doc.GState({ opacity: buram }));
+    doc.setFillColor(warna);
+    doc.moveTo(ox + pts[0][0], oy + pts[0][1]);
+    for (let i = 1; i < pts.length; i++) doc.lineTo(ox + pts[i][0], oy + pts[i][1]);
+    doc.close(); doc.fill();
+    if (buram != null) doc.setGState(new doc.GState({ opacity: 1 }));
+  }
+  function kepalaPresensi(doc, ox, oy) {
+    const P = PRESENSI, pg = (c, t, a) => poli(doc, c, t, ox, oy, a);
+    // sudut kanan atas
+    pg(P.navy, [[40, 0], [54, 0], [54, 9]]);
+    pg(P.oranye, [[47, 0], [54, 0], [54, 4.4]]);
+    pg(P.langit, [[34, 0], [40, 0], [54, 9], [54, 12.5]], 0.35);
+    if (K.logo) doc.addImage(K.logo, 'PNG', ox + 2.3, oy + 2.4, 9.6, 9.6, 'logoSek', 'FAST');
+    teks(doc, P.judul, ox + 13.1, oy + 5.0, { pt: 6.1, tebal: true, warna: P.navy, huruf: 'OpenSans', spasi: 0.18 });
+    doc.setFillColor(P.navy); doc.roundedRect(ox + 12.6, oy + 6.2, 38.2, 5.8, 2.9, 2.9, 'F');
+    teks(doc, 'SMP NEGERI 1 WONOSARI', ox + 31.7, oy + 10.3, { pt: 7.6, tebal: true, warna: '#FFFFFF', huruf: 'OpenSans', rata: 'center', spasi: 0.1 });
+    teks(doc, 'Jl. Raya Bumirejo No. 45 Wonosari, Kab. Malang', ox + 13.1, oy + 14.3, { pt: 3.5, warna: P.tinta, huruf: 'OpenSans' });
+  }
   function latarKobalt(doc, ox, oy, sisi) {
-    const L = KOBALT, abu = '#AFBED4', putih = '#FFFFFF';
-    doc.setFillColor('#061A4A'); doc.rect(ox, oy, L.w, L.h, 'F');
-    doc.setFillColor('#0B3C9E'); doc.triangle(ox + L.w, oy + 22, ox + L.w, oy + 62, ox + 6, oy + 62, 'F');
-    doc.setFillColor('#1257C8'); doc.triangle(ox + L.w, oy + 30, ox + L.w, oy + 58, ox + 24, oy + 58, 'F');
-    doc.setFillColor('#041334'); doc.rect(ox, oy + 61, L.w, L.h - 61, 'F');
-    const y0 = sisi === 'depan' ? 0 : 4;
-    if (K.logo) doc.addImage(K.logo, 'PNG', ox + 2.5, oy + 2 + y0, 9.5, 9.5, 'logoSek', 'FAST');
-    teks(doc, 'SMP NEGERI 1', ox + 12.8, oy + 5.4 + y0, { pt: 9, tebal: true, warna: putih, huruf: 'OpenSans' });
-    teks(doc, 'WONOSARI', ox + 12.8, oy + 10.4 + y0, { pt: 15, tebal: true, warna: putih, huruf: 'OpenSans' });
-    teks(doc, 'KABUPATEN MALANG', ox + 12.8, oy + 13 + y0, { pt: 3.6, tebal: true, warna: abu, huruf: 'OpenSans' });
+    const L = KOBALT, P = PRESENSI, putih = '#FFFFFF', pg = (c, t, a) => poli(doc, c, t, ox, oy, a);
+    doc.setFillColor('#F6F8FC'); doc.rect(ox, oy, L.w, L.h, 'F');
+    pg('#E7EDF6', [[16, 0], [40, 0], [6, 62], [0, 62], [0, 30]]);
+    pg('#EDF1F8', [[54, 12.5], [54, 40], [26, 62]]);
+    kepalaPresensi(doc, ox, oy);
     if (sisi === 'depan') {
-      teks(doc, 'KARTU PELAJAR', ox + L.w / 2, oy + 18.9, { pt: 8.6, tebal: true, warna: putih, rata: 'center', huruf: 'OpenSans', spasi: 0.3 });
-      doc.setFillColor(putih); doc.rect(ox + 11.5, oy + 20.3, 31, 0.5, 'F');
-      const lbl = (t, x, y) => teks(doc, t, ox + x, oy + y, { pt: 3.9, warna: abu, huruf: 'OpenSans', spasi: 0.25 });
-      lbl('NAMA PESERTA DIDIK', 2.83, 23.6); lbl('NIS', 2.83, 32.8); lbl('NISN', 12.45, 32.8); lbl('TTL', 2.83, 38.1); lbl('Alamat', 2.83, 46.0);
-      teks(doc, 'TATA TERTIB PEMAKAIAN KARTU', ox + L.w / 2, oy + 66, { pt: 5.6, tebal: true, warna: putih, rata: 'center', huruf: 'OpenSans' });
-      doc.setDrawColor(putih); doc.setLineWidth(0.3); doc.roundedRect(ox + 6.3, oy + 67.4, 41.4, 12.4, 1.2, 1.2, 'S');
-      ['Kartu wajib dipakai di lingkungan sekolah.', 'Tidak boleh dipinjamkan kepada orang lain.', 'Jika hilang, segera lapor ke wali kelas.', 'Menjaga kartu agar tidak rusak atau kotor.']
-        .forEach((t, i) => teks(doc, '•  ' + t, ox + 8, oy + 70.2 + i * 2.5, { pt: 4.2, tebal: true, warna: putih, huruf: 'OpenSans' }));
+      // garis aksen di bawah kepala kartu
+      doc.setFillColor(P.oranye); doc.rect(ox + 2.83, oy + 17.4, 9, 0.8, 'F');
+      doc.setFillColor(P.navy); doc.rect(ox + 11.83, oy + 17.4, 14, 0.8, 'F');
+      // bidang miring di belakang foto
+      pg(P.navy, [[28.4, 33.2], [54, 25.5], [54, 60], [33, 61]]);
+      pg(P.biru, [[54, 25.5], [54, 47], [31, 37]], 0.85);
+      pg(P.langit, [[54, 34], [54, 54], [42, 49]], 0.55);
+      pg(P.oranye, [[28.4, 33.2], [35, 31.2], [29.4, 37.6]]);
+      pg(P.emas, [[54, 25.5], [54, 29.4], [48, 27.6]]);
+      const lbl = (t, x, y) => teks(doc, t, ox + x, oy + y, { pt: 3.9, tebal: true, warna: P.label, huruf: 'OpenSans', spasi: 0.25 });
+      lbl('NAMA PESERTA DIDIK', 2.83, 23.6); lbl('NIS', 2.83, 32.8); lbl('NISN', 12.45, 32.8); lbl('TTL', 2.83, 38.1); lbl('ALAMAT', 2.83, 46.0);
+      kakiPresensi(doc, ox, oy, 61.4, 58.2);
+      teks(doc, 'TATA TERTIB PEMAKAIAN KARTU', ox + L.w / 2, oy + 66.4, { pt: 5.6, tebal: true, warna: putih, rata: 'center', huruf: 'OpenSans' });
+      doc.setDrawColor(putih); doc.setLineWidth(0.3); doc.roundedRect(ox + 5.3, oy + 67.8, 43.4, 13.2, 1.2, 1.2, 'S');
+      ['Bawa setiap hari dan pindai QR saat tiba di sekolah.', 'Tidak boleh dipinjamkan atau dipakai titip absen.', 'Jika hilang atau rusak, segera lapor ke wali kelas.', 'Jaga kartu agar tidak tertekuk, basah, atau kotor.']
+        .forEach((t, i) => teks(doc, '•  ' + t, ox + 6.8, oy + 70.6 + i * 2.6, { pt: 4.0, tebal: true, warna: putih, huruf: 'OpenSans' }));
     } else {
-      doc.setFillColor('#3A5A8C'); doc.rect(ox + 8, oy + 18.6, 38, 0.2, 'F');
-      teks(doc, 'QR ABSENSI', ox + L.w / 2, oy + 23, { pt: 8, warna: putih, rata: 'center', huruf: 'OpenSans', spasi: 0.2 });
-      teks(doc, 'Pindai untuk mencatat kehadiran', ox + L.w / 2, oy + 25.3, { pt: 4.1, warna: putih, rata: 'center', huruf: 'OpenSans' });
-      doc.setFillColor('#F4F4F4'); doc.roundedRect(ox + 2.5, oy + 66.5, 23, 17, 1.2, 1.2, 'F');
-      const ks = (K.awal && K.awal.kepsek) || { nama: 'Moh. Munif S.Pd, M.M.Pd.', nip: '196911171995121003' };
-      teks(doc, 'Kepala Sekolah', ox + 14, oy + 69.5, { pt: 4.4, warna: '#000000', rata: 'center', huruf: 'OpenSans' });
-      teks(doc, ks.nama, ox + 14, oy + 80.4, { pt: 4.4, warna: '#000000', rata: 'center', huruf: 'OpenSans', lebar: 22 });
-      teks(doc, 'NIP. ' + (ks.nip || '-'), ox + 14, oy + 82.3, { pt: 3.4, warna: '#000000', rata: 'center', huruf: 'OpenSans' });
-      doc.setDrawColor(putih); doc.setLineWidth(0.3); doc.roundedRect(ox + 28, oy + 66.5, 23.5, 15, 1.2, 1.2, 'S');
-      teks(doc, 'Kartu ini adalah milik resmi sekolah dan hanya digunakan oleh pemegang yang tertera.', ox + 29.5, oy + 69.5, { pt: 4.4, warna: putih, huruf: 'OpenSans', lebar: 21 });
+      // bidang miring di kiri dan kanan kotak QR
+      pg(P.navy, [[0, 20], [8, 24], [8, 64.5], [0, 64.5]]);
+      pg(P.oranye, [[0, 20], [8, 24], [0, 27]]);
+      pg(P.biru, [[0, 33], [8, 40], [8, 64.5], [0, 52]], 0.8);
+      pg(P.navy, [[54, 20], [46, 24], [46, 64.5], [54, 64.5]]);
+      pg(P.langit, [[54, 28], [46, 34], [54, 46]], 0.6);
+      pg(P.emas, [[54, 56], [46, 64.5], [54, 64.5]]);
+      teks(doc, 'QR ABSENSI', ox + L.w / 2, oy + 21.9, { pt: 8, tebal: true, warna: P.navy, rata: 'center', huruf: 'OpenSans', spasi: 0.25 });
+      teks(doc, 'Pindai di gerbang untuk mencatat kehadiran', ox + L.w / 2, oy + 24.6, { pt: 3.9, warna: P.tinta, rata: 'center', huruf: 'OpenSans' });
+      kakiPresensi(doc, ox, oy, 65.4, 64.4);
+      doc.setFillColor(putih); doc.roundedRect(ox + 2.5, oy + 66.5, 23, 17.6, 1.2, 1.2, 'F');
+      const ks = (K.awal && K.awal.kepsek) || { nama: 'Moh. Munif, S.Pd., M.M.Pd', nip: '196911171995121003' };
+      teks(doc, 'Kepala Sekolah', ox + 14, oy + 69.1, { pt: 4.4, warna: '#000000', rata: 'center', huruf: 'OpenSans' });
+      if (K.ttd) doc.addImage(K.ttd, 'PNG', ox + 3.3, oy + 69.6, 21.4, 21.4 * K.ttdRasio, 'ttdKepsek', 'FAST');
+      teks(doc, ks.nama, ox + 14, oy + 80.9, { pt: 4.2, tebal: true, warna: '#000000', rata: 'center', huruf: 'OpenSans', lebar: 22 });
+      teks(doc, 'NIP. ' + (ks.nip || '-'), ox + 14, oy + 82.8, { pt: 3.4, warna: '#000000', rata: 'center', huruf: 'OpenSans' });
+      doc.setDrawColor(putih); doc.setLineWidth(0.3); doc.roundedRect(ox + 28, oy + 66.5, 23.5, 17.6, 1.2, 1.2, 'S');
+      teks(doc, 'Kartu ini milik resmi SMP Negeri 1 Wonosari dan hanya berlaku untuk siswa yang namanya tertera. Bila menemukan, mohon kembalikan ke sekolah.', ox + 29.5, oy + 69.5, { pt: 4.0, warna: putih, huruf: 'OpenSans', lebar: 21 });
     }
+  }
+  /** Panel bawah biru tua dengan bidang miring dan garis oranye. kiri/kanan = tinggi tepi atas panel. */
+  function kakiPresensi(doc, ox, oy, kiri, kanan) {
+    const P = PRESENSI, L = KOBALT, pg = (c, t, a) => poli(doc, c, t, ox, oy, a);
+    pg(P.oranye, [[0, kiri - 0.9], [54, kanan - 0.9], [54, kanan], [0, kiri]]);
+    pg(P.navy, [[0, kiri], [54, kanan], [54, L.h], [0, L.h]]);
+    pg(P.biru, [[0, kiri], [22, kiri - (kiri - kanan) * 22 / 54], [0, kiri + 12]], 0.9);
+    pg(P.langit, [[54, kanan + 9], [54, L.h], [33, L.h]], 0.45);
+    pg(P.emas, [[0, L.h - 5], [9, L.h], [0, L.h]]);
   }
   function kobaltDepan(doc, ox, oy, o) {
     const s = o.siswa || { nama: 'NAMA PESERTA DIDIK', nis: '0000', nisn: '0000', tempatLahir: 'Malang', tanggalLahir: '2013-01-01', alamat: 'Alamat siswa' };
-    const L = KOBALT, putih = o.tinta || '#FFFFFF';
+    const L = KOBALT, putih = o.tinta || (o.latar ? '#FFFFFF' : PRESENSI.tinta);
     if (o.latar) doc.addImage(o.latar, ox, oy, L.w, L.h, 'latarD', 'FAST');
     else latarKobalt(doc, ox, oy, 'depan');
     // Foto berbingkai segi lima seperti template
@@ -248,8 +290,9 @@
       doc.saveGraphicsState(); bentukFoto(doc, ox, oy, 'klip');
       doc.addImage(o.foto, 'JPEG', ox + L.foto.x, oy + L.foto.y, L.foto.w, L.foto.w * 4 / 3, undefined, 'FAST');
       doc.restoreGraphicsState();
+      if (!o.latar) { doc.setDrawColor('#FFFFFF'); doc.setLineWidth(0.7); bentukFoto(doc, ox, oy, 'garis'); }
     } else {
-      teks(doc, 'FOTO', ox + L.foto.x + L.foto.w / 2, oy + 45, { pt: 6, warna: putih, rata: 'center', huruf: 'Poppins' });
+      teks(doc, 'FOTO', ox + L.foto.x + L.foto.w / 2, oy + 45, { pt: 6, warna: '#FFFFFF', rata: 'center', huruf: 'Poppins' });
     }
     // Nama: huruf kapital, maksimal 2 baris (mengecil bila perlu)
     let pt = L.nama.pt, baris;
@@ -341,9 +384,13 @@
   }
 
   async function latarDipakai() {
-    if (!$('kt-pakai-latar').checked) return { depan: '', belakang: '' };
-    if (!K.latar) { status('Mengambil latar desain Canva…'); K.latar = await T.api('kartu.ambilLatar'); }
-    return K.latar;
+    const pakai = $('kt-pakai-latar').checked;
+    const perluTtd = K.awal.latar.ttd && !K.ttd;
+    if ((pakai || perluTtd) && !K.latar) { status('Mengambil latar dan tanda tangan Kepala Sekolah…'); K.latar = await T.api('kartu.ambilLatar'); }
+    if (perluTtd && K.latar && K.latar.ttd) {
+      try { const im = await muatGambar(K.latar.ttd); K.ttd = K.latar.ttd; K.ttdRasio = im.height / im.width; } catch (e) { K.ttd = null; }
+    }
+    return pakai ? K.latar : { depan: '', belakang: '' };
   }
 
   async function unduhKartu() {
@@ -408,11 +455,11 @@
       const dasar = perSiswa
         ? (d.siswa.length === 1 ? d.siswa[0].nis + '_' + d.siswa[0].nama.split(/\s+/)[0] : 'cetak_ulang_' + d.siswa.length + '_siswa')
         : (kelas.length > 3 ? kelas.length + '_kelas' : kelas.join('_'));
-      const nama = ('Kartu_Pelajar_' + dasar).replace(/[^\w\-]+/g, '_') + (a4 ? '_A4' : '_ukuran_kartu') + '.pdf';
+      const nama = ('Kartu_Presensi_' + dasar).replace(/[^\w\-]+/g, '_') + (a4 ? '_A4' : '_ukuran_kartu') + '.pdf';
       tautanUnduh(doc, nama);
       const tanpaFoto = $('kt-foto').checked ? d.siswa.filter((s) => !foto[s.nis]).length : 0;
       status(d.siswa.length + ' kartu tersimpan sebagai ' + nama + '.' + (tanpaFoto ? ' ' + tanpaFoto + ' siswa belum punya foto (kotak FOTO kosong).' : '') + (K.galatFoto ? ' Sebagian foto gagal diambil: ' + K.galatFoto : ''));
-      T.toast('PDF kartu pelajar diunduh.', 'hadir');
+      T.toast('PDF kartu presensi diunduh.', 'hadir');
     } catch (e) { console.error('[kartu]', e); status('Gagal membuat PDF: ' + (e && e.message ? e.message : e) + (K.tahap ? ' (tahap: ' + K.tahap + ')' : '')); }
     finally { K.menyusun = false; $('kt-unduh').disabled = false; }
   }
@@ -484,8 +531,24 @@
       status('Latar ' + sisi + ' tersimpan.');
     } catch (e) { status(e.message); }
   }
+  /** Tanda tangan + stempel Kepala Sekolah: PNG transparan, diperkecil ke 800 piksel lebar. */
+  async function unggahTtd(file) {
+    if (!file) return;
+    if (file.type !== 'image/png') { status('Pilih gambar PNG berlatar transparan.'); return; }
+    status('Mengunggah tanda tangan dan stempel…');
+    try {
+      const img = await muatGambar(URL.createObjectURL(file));
+      const lebar = Math.min(800, img.width), tinggi = Math.round(lebar * img.height / img.width);
+      const c = document.createElement('canvas'); c.width = lebar; c.height = tinggi;
+      c.getContext('2d').drawImage(img, 0, 0, lebar, tinggi);
+      await T.api('kartu.latar', { sisi: 'ttd', gambar: c.toDataURL('image/png') });
+      K.awal.latar.ttd = true; K.ttd = null; K.latar = null;
+      renderLatar();
+      status('Tanda tangan dan stempel Kepala Sekolah tersimpan.');
+    } catch (e) { status(e.message); }
+  }
   async function hapusLatar(sisi) {
-    try { await T.api('kartu.latar', { sisi: sisi, hapus: true }); K.awal.latar[sisi] = false; K.latar = null; renderLatar(); status('Latar ' + sisi + ' dihapus. Kartu kembali memakai desain bawaan.'); }
+    try { await T.api('kartu.latar', { sisi: sisi, hapus: true }); K.awal.latar[sisi] = false; K.latar = null; if (sisi === 'ttd') K.ttd = null; renderLatar(); status(sisi === 'ttd' ? 'Tanda tangan dan stempel dihapus.' : 'Latar ' + sisi + ' dihapus. Kartu kembali memakai desain bawaan.'); }
     catch (e) { status(e.message); }
   }
 
@@ -517,6 +580,8 @@
       $('kt-latar-' + s + '-ket').textContent = l[s] ? 'Sudah diunggah' : 'Belum ada (memakai desain bawaan)';
       $('kt-latar-' + s + '-hapus').hidden = !l[s];
     });
+    $('kt-ttd-ket').textContent = l.ttd ? 'Sudah terpasang, tercetak di bagian belakang kartu' : 'Belum ada (kotak tanda tangan kosong)';
+    $('kt-ttd-hapus').hidden = !l.ttd;
     const ada = l.depan || l.belakang;
     $('kt-pakai-latar').disabled = !ada;
     if (!ada) $('kt-pakai-latar').checked = false;
@@ -609,6 +674,8 @@
     $('kt-tata').addEventListener('change', gantiTata);
     $('kt-template').addEventListener('click', unduhTemplate);
     $('kt-csv').addEventListener('click', unduhCsv);
+    $('kt-ttd').addEventListener('change', (e) => { unggahTtd(e.target.files[0]); e.target.value = ''; });
+    $('kt-ttd-hapus').addEventListener('click', () => hapusLatar('ttd'));
     ['depan', 'belakang'].forEach((s) => {
       $('kt-latar-' + s).addEventListener('change', (e) => { unggahLatar(s, e.target.files[0]); e.target.value = ''; });
       $('kt-latar-' + s + '-hapus').addEventListener('click', () => hapusLatar(s));
