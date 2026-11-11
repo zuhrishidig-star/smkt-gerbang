@@ -792,3 +792,14 @@ textarea.isian { min-height: 0; resize: vertical; }
 .konf-daftar li + li { margin-top: 4px; }
 .wa-segera { border: 2px solid var(--berat); background: var(--berat-latar); border-radius: 12px; padding: 12px; margin: 10px 0; }
 .wa-segera p { margin: 0 0 8px; }
+
+.lapor-berat { display: flex; gap: 12px; align-items: center; width: 100%; margin-top: 12px; padding: 14px; text-align: left; border: 2px solid var(--berat); border-radius: 12px; background: var(--berat-latar); color: inherit; font: inherit; cursor: pointer; }
+.lapor-berat .em { font-size: 28px; line-height: 1; }
+.lapor-berat strong { display: block; color: var(--berat); }
+.lapor-berat small { display: block; margin-top: 2px; color: var(--teks-redup); font-size: 14px; }
+.daftar-plg li.berat-kunci .lapor-berat { margin-top: 0; }
+.himbauan-berat { border: 2px solid var(--berat); background: var(--berat-latar); border-radius: 12px; padding: 12px; margin: 10px 0; }
+.panduan.himbauan-berat .panduan-judul { color: var(--berat); }
+.konf-cerita { margin: 0 0 10px; padding: 8px 12px; border-left: 4px solid var(--berat); background: var(--berat-latar); border-radius: 0 8px 8px 0; white-space: pre-wrap; }
+.form-tetapkan { margin-top: 10px; }
+.daftar-plg li.berat-kunci button.lapor-berat { display: flex; grid-template-columns: none; padding: 14px; border: 2px solid var(--berat); background: var(--berat-latar); }
