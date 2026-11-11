@@ -819,3 +819,15 @@ textarea.isian { min-height: 0; resize: vertical; }
 .hasil-banyak { list-style: none; margin: 8px 0; padding: 0; }
 .hasil-banyak li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--garis, #d5dbe5); }
 .hasil-banyak .nm { font-weight: 700; }
+
+/* Kartu pelajar: pilih siswa untuk cetak ulang */
+.kt-mode { margin: 4px 0 12px; }
+.kt-daftar-pilih { list-style: none; margin: 6px 0 0; padding: 0; }
+.kt-daftar-pilih:empty { display: none; }
+.kt-daftar-pilih li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 0; border-top: 1px solid var(--latar); }
+.kt-daftar-pilih .nm { font-weight: 700; line-height: 1.25; }
+.kt-daftar-pilih small { display: block; color: var(--teks-redup); font-weight: 500; }
+.kt-daftar-pilih .tautan { min-height: 40px; white-space: nowrap; }
+.kt-daftar-pilih .tautan.merah { color: var(--berat); }
+.kt-daftar-pilih .kt-sudah { color: var(--teks-redup); font-size: 14px; white-space: nowrap; }
+.kt-daftar-pilih li.kt-info { display: block; color: var(--teks-redup); font-size: 14px; }

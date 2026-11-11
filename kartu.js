@@ -7,7 +7,7 @@
   const $ = (id) => document.getElementById(id);
   const W = 85.6, H = 54;
   const WARNA = { dongker: '#0B3558', biru: '#0B6AAA', langit: '#0090DA', gunung: '#7AC02B', lencana: '#FFE600', tinta: '#0B2238', redup: '#5B6B7E', latar: '#EEF5FA' };
-  const K = { awal: null, pilih: new Set(), logo: '', latar: null, menyusun: false, tata: 'bawaan', huruf: false };
+  const K = { awal: null, pilih: new Set(), logo: '', latar: null, menyusun: false, tata: 'bawaan', huruf: false, mode: 'kelas', terpilih: new Map(), semua: null };
 
   const skrip = {};
   const VERSI_ASET = '20261110a';
@@ -348,14 +348,22 @@
 
   async function unduhKartu() {
     if (K.menyusun) return;
+    const perSiswa = K.mode === 'siswa';
     const kelas = Array.from(K.pilih);
-    if (!kelas.length) { status('Pilih minimal satu kelas.'); return; }
+    if (perSiswa ? !K.terpilih.size : !kelas.length) { status(perSiswa ? 'Pilih minimal satu siswa.' : 'Pilih minimal satu kelas.'); return; }
     K.menyusun = true; $('kt-unduh').disabled = true;
     try {
       await siapkanPustaka();
-      status('Mengambil data siswa…');
-      const d = await T.api('kartu.data', { kelas: kelas });
-      if (!d.siswa.length) { status('Tidak ada siswa aktif di kelas yang dipilih.'); return; }
+      let d, label;
+      if (perSiswa) {
+        d = { siswa: Array.from(K.terpilih.values()) };
+        label = d.siswa.length === 1 ? d.siswa[0].nama + ' (' + d.siswa[0].kelas + ')' : d.siswa.length + ' siswa (cetak ulang)';
+      } else {
+        status('Mengambil data siswa…');
+        d = await T.api('kartu.data', { kelas: kelas });
+        if (!d.siswa.length) { status('Tidak ada siswa aktif di kelas yang dipilih.'); return; }
+        label = kelas.join(', ');
+      }
       K.galatFoto = '';
       const foto = $('kt-foto').checked ? await ambilFoto(d.siswa) : {};
       const latar = await latarDipakai();
@@ -381,7 +389,7 @@
           const isi = d.siswa.slice(i, i + per);
           if (i) doc.addPage();
           isi.forEach((s, j) => { const x = mx + (j % tl.kolom) * tl.w, y = my + Math.floor(j / tl.kolom) * tl.h; tl.depan(doc, x, y, opsiD(s)); tandaPotong(doc, x, y, tl.w, tl.h); });
-          teks(doc, 'Halaman depan ' + (i / per + 1) + '  ·  ' + kelas.join(', '), 105, 293, { pt: 6, warna: WARNA.redup, rata: 'center' });
+          teks(doc, 'Halaman depan ' + (i / per + 1) + '  ·  ' + label, 105, 293, { pt: 6, warna: WARNA.redup, rata: 'center' });
           doc.addPage();
           // Halaman belakang dicerminkan kiri-kanan untuk cetak bolak-balik (balik sisi panjang).
           isi.forEach((s, j) => { const x = mx + (tl.kolom - 1 - (j % tl.kolom)) * tl.w, y = my + Math.floor(j / tl.kolom) * tl.h; tl.belakang(doc, x, y, opsiB(s)); tandaPotong(doc, x, y, tl.w, tl.h); });
@@ -397,7 +405,10 @@
           tl.belakang(doc, 0, 0, opsiB(s));
         });
       }
-      const nama = 'Kartu_Pelajar_' + (kelas.length > 3 ? kelas.length + '_kelas' : kelas.join('_')) + (a4 ? '_A4' : '_ukuran_kartu') + '.pdf';
+      const dasar = perSiswa
+        ? (d.siswa.length === 1 ? d.siswa[0].nis + '_' + d.siswa[0].nama.split(/\s+/)[0] : 'cetak_ulang_' + d.siswa.length + '_siswa')
+        : (kelas.length > 3 ? kelas.length + '_kelas' : kelas.join('_'));
+      const nama = ('Kartu_Pelajar_' + dasar).replace(/[^\w\-]+/g, '_') + (a4 ? '_A4' : '_ukuran_kartu') + '.pdf';
       tautanUnduh(doc, nama);
       const tanpaFoto = $('kt-foto').checked ? d.siswa.filter((s) => !foto[s.nis]).length : 0;
       status(d.siswa.length + ' kartu tersimpan sebagai ' + nama + '.' + (tanpaFoto ? ' ' + tanpaFoto + ' siswa belum punya foto (kotak FOTO kosong).' : '') + (K.galatFoto ? ' Sebagian foto gagal diambil: ' + K.galatFoto : ''));
@@ -515,10 +526,66 @@
     const k = K.awal.kelas;
     $('kt-kelas').innerHTML = k.map((x) => '<label class="centang-kecil"><input type="checkbox" value="' + T.esc(x.kelas) + '"' + (K.pilih.has(x.kelas) ? ' checked' : '') +
       '><span>' + T.esc(x.kelas) + ' <small>(' + x.jumlah + ')</small></span></label>').join('');
-    const n = k.filter((x) => K.pilih.has(x.kelas)).reduce((a, x) => a + x.jumlah, 0);
+    renderJumlah();
+  }
+
+  function renderJumlah() {
+    if (K.mode === 'siswa') {
+      const n = K.terpilih.size;
+      $('kt-jumlah').textContent = n ? n + ' kartu siswa terpilih' : 'Belum ada siswa dipilih. Cari nama atau NIS, lalu ketuk Tambah.';
+      $('kt-unduh').disabled = !n;
+      $('kt-unduh').textContent = n ? 'Unduh PDF kartu (' + n + ' kartu)' : 'Pilih siswa dulu';
+      return;
+    }
+    const n = K.awal.kelas.filter((x) => K.pilih.has(x.kelas)).reduce((a, x) => a + x.jumlah, 0);
     $('kt-jumlah').textContent = K.pilih.size ? n + ' kartu dari ' + K.pilih.size + ' kelas' : 'Belum ada kelas dipilih. Centang kelas di atas, lalu tombol unduh akan aktif.';
     $('kt-unduh').disabled = !K.pilih.size;
     $('kt-unduh').textContent = K.pilih.size ? 'Unduh PDF kartu (' + n + ' kartu)' : 'Pilih kelas dulu';
+  }
+
+  /* ---------------- Pilih siswa (cetak ulang kartu hilang/rusak) ---------------- */
+  async function gantiMode(mode) {
+    K.mode = mode === 'siswa' ? 'siswa' : 'kelas';
+    document.querySelectorAll('#kt-mode button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === K.mode)));
+    $('kt-wadah-kelas').hidden = K.mode !== 'kelas';
+    $('kt-wadah-siswa').hidden = K.mode !== 'siswa';
+    renderJumlah();
+    if (K.mode !== 'siswa') return;
+    $('kt-cari').focus();
+    if (!K.semua) {
+      $('kt-hasil').innerHTML = '<li class="kt-info">Memuat daftar siswa…</li>';
+      try { K.semua = (await T.api('kartu.data', { kelas: [] })).siswa; }
+      catch (e) { $('kt-hasil').innerHTML = '<li class="kt-info">' + T.esc(e.message) + '</li>'; return; }
+    }
+    renderCari();
+  }
+
+  function itemSiswa(s, aksi) {
+    return '<li><div><span class="nm">' + T.esc(s.nama) + '</span><small>' + T.esc(s.kelas) + ' · NIS ' + T.esc(s.nis) + '</small></div>' + aksi + '</li>';
+  }
+
+  function renderCari() {
+    if (!K.semua) return;
+    const q = $('kt-cari').value.trim().toLowerCase();
+    if (q.length < 2) { $('kt-hasil').innerHTML = '<li class="kt-info">Ketik minimal 2 huruf nama atau angka NIS.</li>'; return; }
+    const kata = q.split(/\s+/);
+    const cocok = K.semua.filter((s) => {
+      if (/^\d+$/.test(q)) return s.nis.indexOf(q) === 0 || String(s.nisn || '').indexOf(q) === 0;
+      const t = (s.nama + ' ' + s.kelas).toLowerCase();
+      return kata.every((k) => t.indexOf(k) > -1);
+    });
+    if (!cocok.length) { $('kt-hasil').innerHTML = '<li class="kt-info">Tidak ada siswa aktif yang cocok.</li>'; return; }
+    $('kt-hasil').innerHTML = cocok.slice(0, 12).map((s) => itemSiswa(s, K.terpilih.has(s.nis)
+      ? '<span class="kt-sudah">Sudah dipilih</span>'
+      : '<button type="button" class="tautan" data-tambah="' + T.esc(s.nis) + '">Tambah</button>')).join('') +
+      (cocok.length > 12 ? '<li class="kt-info">' + (cocok.length - 12) + ' siswa lain cocok. Ketik nama lebih lengkap.</li>' : '');
+  }
+
+  function renderTerpilih() {
+    const isi = Array.from(K.terpilih.values());
+    $('kt-terpilih').innerHTML = isi.map((s) => itemSiswa(s, '<button type="button" class="tautan merah" data-buang="' + T.esc(s.nis) + '" aria-label="Batalkan ' + T.esc(s.nama) + '">Batal</button>')).join('');
+    $('kt-kosongkan').hidden = !isi.length;
+    renderJumlah();
   }
 
   let terpasang = false;
@@ -527,6 +594,18 @@
     $('kt-kelas').addEventListener('change', (e) => { const v = e.target.value; if (e.target.checked) K.pilih.add(v); else K.pilih.delete(v); renderKelas(); });
     $('kt-semua').addEventListener('click', () => { const semua = K.pilih.size === K.awal.kelas.length; K.pilih = new Set(semua ? [] : K.awal.kelas.map((x) => x.kelas)); renderKelas(); });
     $('kt-unduh').addEventListener('click', unduhKartu);
+    $('kt-mode').addEventListener('click', (e) => { const b = e.target.closest('button[data-mode]'); if (b) gantiMode(b.dataset.mode); });
+    $('kt-cari').addEventListener('input', renderCari);
+    $('kt-hasil').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-tambah]'); if (!b) return;
+      const s = (K.semua || []).find((x) => x.nis === b.dataset.tambah);
+      if (s) { K.terpilih.set(s.nis, s); renderTerpilih(); renderCari(); }
+    });
+    $('kt-terpilih').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-buang]'); if (!b) return;
+      K.terpilih.delete(b.dataset.buang); renderTerpilih(); renderCari();
+    });
+    $('kt-kosongkan').addEventListener('click', () => { K.terpilih.clear(); renderTerpilih(); renderCari(); });
     $('kt-tata').addEventListener('change', gantiTata);
     $('kt-template').addEventListener('click', unduhTemplate);
     $('kt-csv').addEventListener('click', unduhCsv);
@@ -542,11 +621,13 @@
     $('kt-ket').textContent = 'Memuat…';
     try {
       K.awal = await T.api('kartu.awal');
+      K.semua = null;
       $('kt-ket').textContent = K.awal.kelas.reduce((a, x) => a + x.jumlah, 0) + ' siswa aktif di ' + K.awal.kelas.length + ' kelas. QR berisi NIS, sama dengan yang dibaca Gerbang dan Kios.';
       $('kt-canva').hidden = !K.awal.canva;
       if (K.awal.canva) $('kt-canva').href = K.awal.canva;
       K.tata = 'kobalt';   // desain mendatar ditiadakan; semua kartu memakai Kobalt Emas (tegak)
       renderKelas(); renderLatar(); renderTata();
+      renderTerpilih(); if (K.mode === 'siswa') gantiMode('siswa');
       if (K.tata === 'kobalt' && (K.awal.latar.depan || K.awal.latar.belakang)) $('kt-pakai-latar').checked = true;
       if (K.awal.kolomBaru && K.awal.kolomBaru.length) status('Kolom ' + K.awal.kolomBaru.join(', ') + ' ditambahkan di ujung kanan tab Siswa. Isi dari data Dapodik agar TTL dan alamat tercetak.');
       siapkanPustaka().catch(() => {});

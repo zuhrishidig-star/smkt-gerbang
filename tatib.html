@@ -135,8 +135,21 @@
       <section id="p-kartu" class="panel" hidden>
         <div class="blok">
           <p class="keterangan" id="kt-ket">Memuat…</p>
-          <div class="kt-kepala"><span class="label">Kelas</span><button id="kt-semua" class="tautan" type="button">Pilih semua / kosongkan</button></div>
-          <div id="kt-kelas" class="daftar-centang kt-kelas"></div>
+          <div class="saring kt-mode" id="kt-mode" role="group" aria-label="Cara memilih kartu yang dicetak">
+            <button type="button" data-mode="kelas" aria-pressed="true">Per kelas</button>
+            <button type="button" data-mode="siswa" aria-pressed="false">Pilih siswa (cetak ulang)</button>
+          </div>
+          <div id="kt-wadah-kelas">
+            <div class="kt-kepala"><span class="label">Kelas</span><button id="kt-semua" class="tautan" type="button">Pilih semua / kosongkan</button></div>
+            <div id="kt-kelas" class="daftar-centang kt-kelas"></div>
+          </div>
+          <div id="kt-wadah-siswa" hidden>
+            <label class="label" for="kt-cari">Cari siswa yang kartunya hilang atau rusak</label>
+            <input id="kt-cari" class="isian" type="search" autocomplete="off" placeholder="Ketik nama atau NIS">
+            <ul id="kt-hasil" class="kt-daftar-pilih" aria-live="polite"></ul>
+            <div class="kt-kepala"><span class="label">Akan dicetak</span><button id="kt-kosongkan" class="tautan" type="button" hidden>Kosongkan</button></div>
+            <ul id="kt-terpilih" class="kt-daftar-pilih"></ul>
+          </div>
           <p class="keterangan" id="kt-jumlah"></p>
           <label class="label" for="kt-tata">Desain kartu</label>
           <select id="kt-tata" class="isian">
