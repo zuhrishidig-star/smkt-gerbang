@@ -464,7 +464,33 @@
     finally { K.menyusun = false; $('kt-unduh').disabled = false; }
   }
 
+  /** Template Canva untuk desain Kartu Presensi Digital: latar polos (tanpa data dan tanpa TTD)
+   *  dan versi berpanduan yang menandai area isian aplikasi. */
+  async function unduhTemplatePresensi() {
+    await siapkanPustaka(); await siapkanHuruf();
+    const { jsPDF } = window.jspdf; const L = KOBALT;
+    const doc = new jsPDF({ unit: 'mm', format: [L.w, L.h], orientation: 'portrait', compress: true });
+    pasangHuruf(doc);
+    const simpan = K.ttd; K.ttd = null;
+    try {
+      latarKobalt(doc, 0, 0, 'depan');
+      doc.addPage([L.w, L.h], 'portrait'); latarKobalt(doc, 0, 0, 'belakang');
+      const k = L.qr.kotak;
+      doc.setFillColor('#FFFFFF'); doc.roundedRect(k.x, k.y, k.s, k.s, 1.6, 1.6, 'F');
+      doc.addPage([L.w, L.h], 'portrait'); latarKobalt(doc, 0, 0, 'depan');
+      garisPanduan(doc, L.nama.x, 24.4, 47, 6.6, 'NAMA (maks. 2 baris)');
+      garisPanduan(doc, L.nis.x, 33.2, 9, 2.8, 'NIS'); garisPanduan(doc, L.nisn.x, 33.2, 14.5, 2.8, 'NISN');
+      garisPanduan(doc, L.ttl.x, 38.6, 24, 5.4, 'TTL'); garisPanduan(doc, L.alamat.x, 46.4, 25, 7.2, 'ALAMAT (3 baris)');
+      garisPanduan(doc, L.foto.x, L.foto.y, L.foto.w, L.foto.ujung - L.foto.y, 'FOTO');
+      doc.addPage([L.w, L.h], 'portrait'); latarKobalt(doc, 0, 0, 'belakang');
+      garisPanduan(doc, k.x, k.y, k.s, k.s, 'QR + NAMA (kotak putih)');
+    } finally { K.ttd = simpan; }
+    doc.save('Template_Canva_Kartu_Presensi_Digital.pdf');
+    status('Template tersimpan: halaman 1-2 latar polos untuk diedit di Canva, halaman 3-4 panduan area yang diisi aplikasi. Ekspor dari Canva hanya halaman 1-2 sebagai PNG.');
+  }
+
   async function unduhTemplate() {
+    if (K.tata === 'kobalt') { try { await unduhTemplatePresensi(); } catch (e) { status(e.message); } return; }
     try {
       await siapkanPustaka();
       const { jsPDF } = window.jspdf;
@@ -569,7 +595,7 @@
     $('kt-tata-ket').textContent = K.tata === 'kobalt'
       ? 'Kartu tegak 54 x 85,6 mm. Depan: nama, NIS, NISN, TTL, alamat, dan foto. Belakang: QR. Lembar A4 memuat 9 kartu.'
       : 'Kartu mendatar 85,6 x 54 mm dengan desain bawaan aplikasi. Lembar A4 memuat 10 kartu.';
-    $('kt-template').hidden = K.tata === 'kobalt';
+    $('kt-template').hidden = false;
     $('kt-panduan-kobalt').hidden = K.tata !== 'kobalt';
     $('kt-teks-putih').closest('label').hidden = K.tata === 'kobalt';
     $('kt-format').options[0].textContent = 'Kertas A4, ' + (K.tata === 'kobalt' ? 9 : 10) + ' kartu per lembar, bolak-balik (dipotong)';
@@ -701,5 +727,5 @@
     } catch (e) { $('kt-ket').textContent = e.message; }
   }
 
-  window.SMKTKartu = { buka: buka, _uji: { depan: depan, belakang: belakang, kobaltDepan: kobaltDepan, kobaltBelakang: kobaltBelakang, pasangHuruf: pasangHuruf, siapkanHuruf: siapkanHuruf, siapkanPustaka: siapkanPustaka, K: K, KOBALT: KOBALT } };
+  window.SMKTKartu = { buka: buka, _uji: { unduhTemplatePresensi: unduhTemplatePresensi, depan: depan, belakang: belakang, kobaltDepan: kobaltDepan, kobaltBelakang: kobaltBelakang, pasangHuruf: pasangHuruf, siapkanHuruf: siapkanHuruf, siapkanPustaka: siapkanPustaka, K: K, KOBALT: KOBALT } };
 })();
