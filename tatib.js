@@ -27,7 +27,7 @@
     { k: 'hp', nm: 'HP dan media sosial', em: '📱', kunci: 'hp hape handphone ponsel gawai main game medsos media sosial tiktok instagram ig wa grup video foto rekam merekam memotret konten unggah upload sebar porno bokep' },
     { k: 'rokok', nm: 'Rokok, miras, narkoba', em: '🚬', kunci: 'rokok udud ngudud ngerokok vape pod korek miras mabuk alkohol ciu arak bir oplosan narkoba napza obat pil' },
     { k: 'kelahi', nm: 'Berkelahi, bully, ancaman', em: '👊', kunci: 'kelahi berkelahi berantem gelut gelud tawuran tarung duel ufc smackdown pukul tonjok tendang bully rundung ejek provokasi sorak ancam mengancam leceh senjata pisau celurit sajam' },
-    { k: 'curi', nm: 'Mencuri, memalak, memalsu', em: '💰', kunci: 'curi mencuri nyolong maling ambil barang palak malak memalak peras minta uang palsu tanda tangan ttd surat izin stempel rapor raport' },
+    { k: 'curi', nm: 'Mencuri, memalak, memalsu', em: '💰', kunci: 'curi mencuri nyolong maling ambil barang palak malak memalak peras minta uang palsu tanda tangan ttd surat izin izin palsu wa ortu hp orang tua stempel rapor raport' },
     { k: 'bersih', nm: 'Kebersihan dan fasilitas', em: '🌱', kunci: 'sampah buang kotor coret corat vandal tembok meja kursi rusak merusak fasilitas tanaman bunga buah petik' },
     { k: 'motor', nm: 'Kendaraan dan parkir', em: '🏍️', kunci: 'motor sepeda kendaraan parkir helm knalpot brong plat nomor spion' },
     { k: 'lain', nm: 'Lainnya dan kasus serius', em: '⚠️', kunci: 'lain lainnya geng organisasi diskotik tempat hiburan judi slot asusila hamil menikah pidana' },
