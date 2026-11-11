@@ -803,3 +803,19 @@ textarea.isian { min-height: 0; resize: vertical; }
 .konf-cerita { margin: 0 0 10px; padding: 8px 12px; border-left: 4px solid var(--berat); background: var(--berat-latar); border-radius: 0 8px 8px 0; white-space: pre-wrap; }
 .form-tetapkan { margin-top: 10px; }
 .daftar-plg li.berat-kunci button.lapor-berat { display: flex; grid-template-columns: none; padding: 14px; border: 2px solid var(--berat); background: var(--berat-latar); }
+
+#c-tambah { margin-top: 10px; }
+#c-tambah-btn { width: 100%; }
+.tambah-pilih { margin-top: 10px; }
+.daftar-terlibat { list-style: none; margin: 0 0 8px; padding: 0; }
+.daftar-terlibat li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 10px; background: var(--latar); }
+.daftar-terlibat li + li { margin-top: 6px; }
+.daftar-terlibat li.judul-kecil { background: none; padding: 0; }
+.daftar-terlibat .kl, .konf-banyak .kl, .hasil-banyak .kl { color: var(--teks-redup); font-size: 14px; }
+.konf-banyak { list-style: none; margin: 0 0 10px; padding: 0; max-height: 40vh; overflow-y: auto; }
+.konf-banyak li { padding: 8px 0; border-bottom: 1px solid var(--garis, #d5dbe5); }
+.konf-banyak .nm { font-weight: 700; }
+.konf-banyak select { margin-top: 6px; width: 100%; }
+.hasil-banyak { list-style: none; margin: 8px 0; padding: 0; }
+.hasil-banyak li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--garis, #d5dbe5); }
+.hasil-banyak .nm { font-weight: 700; }

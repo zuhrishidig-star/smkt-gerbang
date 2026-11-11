@@ -1097,13 +1097,19 @@
   /* =================================================================
    *  LAPOR
    * ================================================================= */
-  const C = { siswa: null, ringkas: null, plg: null, kategori: '', idCatat: null, penanganan: 'sendiri', ke: '', menyimpan: false, pemilih: null, hasil: null };
+  const C = { siswa: null, ringkas: null, plg: null, kategori: '', idCatat: null, penanganan: 'sendiri', ke: '', menyimpan: false, pemilih: null, hasil: null, lain: [], idBanyak: null };
 
   function langkahLapor(n) { [1, 2, 3].forEach((i) => { $('ll-' + i).className = i < n ? 'selesai' : i === n ? 'aktif' : ''; }); }
   function initLapor() {
     if (S.siap.lapor) return;
     S.siap.lapor = true;
     C.pemilih = pemilihSiswa($('c-siswa-pilih'), { id: 'cs', label: 'Siswa yang melanggar', pilih: pilihSiswaLapor });
+    C.pemilihTambah = pemilihSiswa($('c-tambah-pilih'), { id: 'ct', label: 'Cari siswa lain yang terlibat', pilih: tambahTerlibat });
+    $('c-tambah-btn').addEventListener('click', () => { const p = $('c-tambah-pilih'); p.hidden = !p.hidden; if (!p.hidden) C.pemilihTambah.fokus(); });
+    $('c-terlibat').addEventListener('click', (e) => {
+      const b = e.target.closest('button[data-hapus]'); if (!b) return;
+      C.lain = C.lain.filter((x) => x.nis !== b.dataset.hapus); C.idBanyak = null; renderTerlibat();
+    });
     $('c-cari-plg').addEventListener('input', renderDaftarPlg);
     $('c-plg-cari').addEventListener('click', (e) => {
       const t = e.target.closest('button[data-topik]');
@@ -1114,7 +1120,7 @@
     });
     $('c-simpan').addEventListener('click', bukaKonfirmasiLapor);
     $('konf-batal').addEventListener('click', () => { $('modal-konfirmasi').hidden = true; });
-    $('konf-simpan').addEventListener('click', () => { $('modal-konfirmasi').hidden = true; simpanLapor(); });
+    $('konf-simpan').addEventListener('click', () => { const banyak = C.lain.length > 0; if (banyak) simpanBanyak(); $('modal-konfirmasi').hidden = true; if (!banyak) simpanLapor(); });
     $('c-melawan').addEventListener('change', renderPenanganan);
     $('c-penanganan').addEventListener('change', (e) => {
       if (e.target.name === 'c-tangani') C.penanganan = e.target.value;
@@ -1135,6 +1141,11 @@
           sesudah: (r) => { $('c-hasil').innerHTML = '<h2>Laporan ditarik</h2><p>Laporan untuk ' + esc(d.siswa.nama) + ' tidak lagi dihitung. Total poin sekarang <strong>' + r.total + '</strong>.</p>' +
             '<p class="redup">Bila orang tua atau wali kelas sudah menerima pesan WhatsApp tentang laporan ini, mohon kabari bahwa laporannya ditarik.</p>' +
             '<div class="aksi"><button type="button" class="tombol tombol-utama" data-aksi="siswa-lain">Lapor siswa lain</button></div>'; C.hasil = null; } });
+      }
+      if (a.dataset.aksi === 'tarik-satu' && C.hasilBanyak) {
+        const i = Number(a.dataset.i), d = C.hasilBanyak[i]; if (!d) return;
+        bukaKoreksi({ id: d.idLog, jalur: 'tarik', judul: d.siswa.nama + ': ' + ((d.pelanggaran || {}).nama || ''),
+          sesudah: () => { const li = $('c-hasil').querySelector('li[data-i="' + i + '"]'); if (li) { li.querySelector('small').textContent = 'Ditarik, tidak dihitung'; a.remove(); } } });
       }
       if (a.dataset.aksi === 'lagi-siswa-ini') { const s = C.siswa; resetLapor(false); pilihSiswaLapor(s); }
       if (a.dataset.aksi === 'siswa-sekejadian') { const cerita = C.ceritaBerat; resetLapor(true); C.lanjutBerat = cerita; toast('Pilih siswa berikutnya. Cerita kejadian akan diisikan otomatis.', 'hadir', 4000); }
@@ -1167,7 +1178,8 @@
     finally { $('kor-simpan').disabled = false; }
   }
   function resetLapor(fokus) {
-    Object.assign(C, { siswa: null, ringkas: null, plg: null, kategori: '', idCatat: null, penanganan: 'sendiri', ke: '', hasil: null });
+    Object.assign(C, { siswa: null, ringkas: null, plg: null, kategori: '', idCatat: null, penanganan: 'sendiri', ke: '', hasil: null, lain: [], idBanyak: null });
+    $('c-tambah').hidden = true; $('c-tambah-pilih').hidden = true;
     $('c-siswa-pilih').hidden = false; $('c-siswa-kartu').hidden = true;
     $('c-plg').hidden = true; $('c-tindak').hidden = true; $('c-hasil').hidden = true;
     $('c-melawan').checked = false; $('c-ket').value = ''; $('c-tindakan').value = ''; $('c-cari-plg').value = '';
@@ -1182,6 +1194,7 @@
     $('c-melawan').checked = false; $('c-ket').value = ''; $('c-tindakan').value = '';
     $('c-siswa-pilih').hidden = true; $('c-hasil').hidden = true; $('c-tindak').hidden = true;
     renderKartuLapor('Memuat poin siswa…');
+    C.lain = C.lain.filter((x) => x.nis !== s.nis); C.idBanyak = null; renderTerlibat();
     bukaDaftarPlg();
     if (C.lanjutBerat && S.master.get(ID_LAPOR_BERAT)) { const c = C.lanjutBerat; C.lanjutBerat = ''; pilihPlg(S.master.get(ID_LAPOR_BERAT)); $('c-ket').value = c; aturTombolSimpan(); }
     try {
@@ -1191,6 +1204,25 @@
     } catch (e) {
       if (C.siswa === s) renderKartuLapor('Poin siswa belum bisa dimuat (' + e.message + '). Laporan tetap bisa disimpan.');
     }
+  }
+  /* ---------- Beberapa siswa dalam satu kejadian ---------- */
+  function semuaTerlibat() { return C.siswa ? [C.siswa].concat(C.lain) : []; }
+  function tambahTerlibat(s) {
+    if (!s || !C.siswa) return;
+    if (s.nis === C.siswa.nis || C.lain.some((x) => x.nis === s.nis)) { toast(s.nama + ' sudah ada di daftar.', 'galat'); return; }
+    if (C.lain.length >= 19) { toast('Paling banyak 20 siswa dalam satu laporan.', 'galat'); return; }
+    C.lain.push(s); C.idBanyak = null;
+    $('c-tambah-pilih').hidden = true;
+    renderTerlibat();
+    toast(s.nama + ' ditambahkan. Total ' + semuaTerlibat().length + ' siswa.', 'hadir');
+  }
+  function renderTerlibat() {
+    $('c-tambah').hidden = !C.siswa;
+    const n = C.lain.length;
+    $('c-terlibat').innerHTML = n ? '<li class="judul-kecil">Siswa lain yang terlibat (' + n + ')</li>' + C.lain.map((x) =>
+      '<li><span><span class="nm">' + esc(x.nama) + '</span> <span class="kl">' + esc(x.kelas) + '</span></span><button type="button" class="tautan merah" data-hapus="' + esc(x.nis) + '" aria-label="Hapus ' + esc(x.nama) + '">Hapus</button></li>').join('') : '';
+    $('c-tambah-btn').textContent = n ? '+ Tambah siswa lagi' : '+ Tambah siswa yang terlibat';
+    if (C.plg) renderPenanganan();
   }
   function renderKartuLapor(pesan) {
     const s = C.siswa, r = C.ringkas;
@@ -1337,7 +1369,8 @@
   function renderPenanganan() {
     if (!C.plg) return;
     const lb = C.plg.id === ID_LAPOR_BERAT;
-    $('c-melawan').closest('label').hidden = lb; if (lb) $('c-melawan').checked = false;
+    const banyak = C.lain.length > 0;
+    $('c-melawan').closest('label').hidden = lb || banyak; if (lb || banyak) $('c-melawan').checked = false;
     document.querySelector('label[for="c-ket"]').innerHTML = lb ? 'Ceritakan kejadiannya <span class="redup">(wajib)</span>' : 'Keterangan kejadian <span class="redup" id="c-ket-opsional">(opsional)</span>';
     $('c-ket').placeholder = lb ? 'Apa yang terjadi, di mana, jam berapa, siapa saja yang terlibat atau melihat' : 'Waktu, tempat, saksi';
     $('c-ket').rows = lb ? 4 : 2;
@@ -1400,13 +1433,13 @@
     if (!C.plg) return;
     const b = $('c-simpan');
     if (C.plg.id === ID_LAPOR_BERAT) {
-      b.textContent = C.menyimpan ? 'Mengirim…' : 'Laporkan ke Tim Tatib';
+      b.textContent = C.menyimpan ? 'Mengirim…' : 'Laporkan ke Tim Tatib' + (C.lain.length ? ' (' + semuaTerlibat().length + ' siswa)' : '');
       b.disabled = C.menyimpan || $('c-ket').value.trim().length < 15;
       $('c-melawan-ket').hidden = true;
       return;
     }
     const k = keputusanLapor();
-    b.textContent = C.menyimpan ? 'Menyimpan…' : k.terus ? 'Simpan dan teruskan ke ' + k.ke : 'Simpan, selesai ditangani';
+    b.textContent = C.menyimpan ? 'Menyimpan…' : (k.terus ? 'Simpan dan teruskan ke ' + k.ke : 'Simpan, selesai ditangani') + (C.lain.length ? ' (' + semuaTerlibat().length + ' siswa)' : '');
     const kurangFakta = k.melawan && $('c-ket').value.trim().length < 10;
     b.disabled = C.menyimpan || (!k.terus && !$('c-tindakan').value.trim()) || kurangFakta;
     $('c-melawan-ket').hidden = !k.melawan;
@@ -1418,6 +1451,7 @@
     if (!k.terus && !tindakan) { $('c-tindakan').focus(); toast('Tulis dulu tindakan yang sudah Anda lakukan.', 'galat'); return; }
     if (k.melawan && $('c-ket').value.trim().length < 10) { $('c-ket').focus(); return; }
     const s = C.siswa, m = C.plg, r = C.ringkas;
+    if (C.lain.length) { bukaKonfirmasiBanyak(k); return; }
     if (m.id === ID_LAPOR_BERAT) {
       if ($('c-ket').value.trim().length < 15) { $('c-ket').focus(); toast('Ceritakan dulu kejadiannya.', 'galat'); return; }
       $('konf-isi').innerHTML = '<p class="konf-siswa"><strong>' + esc(s.nama) + '</strong> (' + esc(s.kelas) + ')</p><p class="konf-plg">🚨 Laporan kejadian berat</p>' +
@@ -1440,6 +1474,82 @@
     h += '</ul><p class="keterangan">Sudah benar? Bila siswa atau jenis pelanggarannya keliru, tekan Periksa lagi.</p>';
     $('konf-isi').innerHTML = h;
     $('modal-konfirmasi').hidden = false; $('konf-simpan').focus();
+  }
+  function pilihanJenisHtml(nis, terpilih) {
+    if (terpilih === ID_LAPOR_BERAT) return '<span class="kt">Jenis ditetapkan Tim Tatib</span>';
+    const daftar = Array.from(S.master.values()).filter(bolehDipilih).sort((a, b) => urutKategori(a.kategori, b.kategori) || a.id.localeCompare(b.id, 'id', { numeric: true }));
+    const grup = {}; daftar.forEach((m) => { (grup[m.kategori] = grup[m.kategori] || []).push(m); });
+    return '<select class="isian konf-jenis" data-nis="' + esc(nis) + '" aria-label="Jenis pelanggaran">' + Object.keys(grup).sort(urutKategori).map((kat) =>
+      '<optgroup label="' + esc(kat) + '">' + grup[kat].map((m) => '<option value="' + esc(m.id) + '"' + (m.id === terpilih ? ' selected' : '') + '>' + esc(m.nama) + ' (+' + m.bobot + ')</option>').join('') + '</optgroup>').join('') + '</select>';
+  }
+  function bukaKonfirmasiBanyak(k) {
+    const m = C.plg, lb = m.id === ID_LAPOR_BERAT, semua = semuaTerlibat();
+    if (lb && $('c-ket').value.trim().length < 15) { $('c-ket').focus(); toast('Ceritakan dulu kejadiannya.', 'galat'); return; }
+    let h = '<p class="konf-plg"><strong>' + semua.length + ' siswa</strong> dalam satu kejadian: ' + (lb ? '🚨 laporan kejadian berat' : esc(m.nama)) + '</p>' +
+      (lb ? '' : '<p class="keterangan">Bila peran seorang siswa berbeda (misalnya hanya menyoraki), ganti jenisnya di bawah.</p>') +
+      '<ul class="konf-banyak">' + semua.map((x) => '<li><span class="nm">' + esc(x.nama) + '</span> <span class="kl">' + esc(x.kelas) + '</span>' + pilihanJenisHtml(x.nis, m.id) + '</li>').join('') + '</ul><ul class="konf-daftar">';
+    if (lb) h += '<li>Poin <strong>belum dihitung</strong>. Tim Tatib menetapkan jenis dan poin tiap siswa.</li>';
+    else h += '<li>Setiap siswa mendapat catatan dan poin sendiri, ditandai sebagai kejadian yang sama.</li>';
+    if (k.terus || lb) h += '<li>Laporan <strong>diteruskan ke ' + esc(k.ke || 'Tim Tatib') + '</strong>. Cukup kirim <strong>satu pesan WhatsApp</strong> untuk semua siswa.</li>';
+    else h += '<li>Laporan <strong>selesai di tangan Anda</strong>.</li>';
+    if (lb || /^Berat/.test(m.kategori)) h += '<li><strong>Bawa para siswa ke ruang Tata Tertib</strong> atau temui guru Tata Tertib sekarang.</li>';
+    h += '</ul>';
+    $('konf-isi').innerHTML = h;
+    $('konf-simpan').textContent = 'Ya, simpan ' + semua.length + ' siswa';
+    $('modal-konfirmasi').hidden = false; $('konf-simpan').focus();
+  }
+  async function simpanBanyak() {
+    if (C.menyimpan || !C.siswa || !C.plg) return;
+    const semua = semuaTerlibat(), k = keputusanLapor(), m = C.plg;
+    const jenis = {}; document.querySelectorAll('#konf-isi select.konf-jenis').forEach((el) => { jenis[el.dataset.nis] = el.value; });
+    if (!C.idBanyak) { C.idBanyak = {}; semua.forEach((x) => { C.idBanyak[x.nis] = uuid(); }); }
+    const nama = semua.map((x) => namaPendek(x.nama) + ' (' + x.kelas + ')');
+    const tanda = '[Kejadian bersama ' + semua.length + ' siswa: ' + nama.join(', ') + '] ';
+    const ket = (tanda + $('c-ket').value.trim()).slice(0, 500), tindakan = $('c-tindakan').value.trim();
+    C.menyimpan = true; const b = $('c-simpan');
+    const hasil = [];
+    try {
+      for (let i = 0; i < semua.length; i++) {
+        const x = semua[i];
+        b.textContent = 'Menyimpan ' + (i + 1) + ' dari ' + semua.length + '…'; b.disabled = true;
+        const d = await api('tatib.catat', { nis: x.nis, idPlg: jenis[x.nis] || m.id, melawan: false, keterangan: ket, tindakan: tindakan,
+          penanganan: C.penanganan, teruskanKe: C.ke || k.ke, idCatat: C.idBanyak[x.nis], foto: i === 0 && C.foto ? C.foto.data : '' });
+        hasil.push(d);
+        if (!d.sudahTercatat && (jenis[x.nis] || m.id) !== ID_LAPOR_BERAT) catatSering(jenis[x.nis] || m.id);
+      }
+      C.menyimpan = false;
+      C.ceritaBerat = '';
+      tampilHasilBanyak(hasil);
+    } catch (e) {
+      C.menyimpan = false; aturTombolSimpan();
+      toast((hasil.length ? hasil.length + ' dari ' + semua.length + ' siswa sudah tersimpan. ' : '') + 'Sisanya belum: ' + e.message + ' Tekan Simpan lagi; yang sudah tersimpan tidak akan tercatat dua kali.', 'galat', 8000);
+    }
+  }
+  function tampilHasilBanyak(hasil) {
+    C.hasil = null; C.hasilBanyak = hasil;
+    $('c-plg').hidden = true; $('c-tindak').hidden = true; $('c-tambah').hidden = true;
+    [1, 2, 3].forEach((i) => { $('ll-' + i).className = 'selesai'; });
+    const terus = hasil.filter((d) => d.diteruskan), berat = hasil.some((d) => /^Berat/.test((d.pelanggaran || {}).kategori || ''));
+    let h = '<h2>Tersimpan untuk ' + hasil.length + ' siswa' + (terus.length ? ', diteruskan ke ' + esc(terus[0].diteruskan.ke) : '') + '</h2><ul class="hasil-banyak">' +
+      hasil.map((d, i) => '<li data-i="' + i + '"><span><span class="nm">' + esc(d.siswa.nama) + '</span> <span class="kl">' + esc(d.siswa.kelas) + '</span><br>' +
+        '<small>' + esc((d.pelanggaran || {}).id === ID_LAPOR_BERAT ? 'Laporan kejadian berat, poin ditetapkan Tim Tatib' : (d.pelanggaran || {}).nama + ', +' + d.poin + ' poin, total ' + d.total) + '</small></span>' +
+        '<button type="button" class="tautan" data-aksi="tarik-satu" data-i="' + i + '">Tarik</button></li>').join('') + '</ul>';
+    if (berat) h += '<div class="himbauan-berat"><strong>Bawa para siswa ke ruang Tata Tertib</strong> atau temui guru Tata Tertib sekarang.</div>';
+    const d0 = terus[0];
+    if (d0 && !d0.waOtomatis && (d0.kontak || []).length) {
+      const tautan = location.origin + location.pathname + '#kotak';
+      const nm = hasil.map((d) => namaPendek(d.siswa.nama)).join(', ');
+      const kls = Array.from(new Set(hasil.map((d) => d.siswa.kelas))).join(', ');
+      const plg = Array.from(new Set(hasil.map((d) => (d.pelanggaran || {}).nama))).join('; ');
+      h += '<div class="wa-segera"><p><strong>Kabari ' + esc(d0.diteruskan.ke) + ' lewat WhatsApp.</strong> Cukup satu pesan untuk semua siswa.</p><div class="kontak">' +
+        d0.kontak.map((x) => tombolWa(x.wa, isiTemplat(S.templat.WA_KASUS_PENERIMA, { penerima: namaPendek(x.nama), nama: nm + ' (' + hasil.length + ' siswa)', kelas: kls, pelanggaran: plg,
+          alasan: 'kejadian bersama', tautan: tautan }), 'WA ' + namaPendek(x.nama), { jenis: 'kasus-penerima', ref: d0.idLog, nis: d0.siswa.nis })).join('') + '</div></div>';
+    } else if (d0 && d0.waOtomatis) h += '<p class="info-wa">' + ikon('wa') + '<span>Penerima dikabari otomatis lewat WhatsApp.</span></p>';
+    h += '<div class="aksi"><button type="button" class="tombol tombol-utama" data-aksi="siswa-lain">Lapor kejadian lain</button></div>' +
+      '<p class="redup" style="margin-top:12px">Salah memasukkan siswa? Tekan Tarik di samping namanya (hanya hari ini, sebelum ditindaklanjuti).</p>';
+    const el = $('c-hasil'); el.className = 'blok hasil'; el.innerHTML = h; el.hidden = false;
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    toast('Tersimpan untuk ' + hasil.length + ' siswa', 'hadir');
   }
   async function simpanLapor() {
     if (C.menyimpan || !C.siswa || !C.plg) return;
@@ -1557,7 +1667,7 @@
       '<div class="kasus-kepala">' + fotoHtml({ nis: it.nis, nama: it.nama }) + '<span><span class="nm">' + esc(it.nama) + '</span><span class="kl">' + esc(it.kelas) + '</span></span>' +
       '<span class="wkt">' + esc(it.tanggal) + (it.waktu ? '<br>' + esc(it.waktu) : '') + '</span></div>' +
       '<p class="plg">' + esc(it.pelanggaran) + ' <span class="kat ' + kelasKat(it.kategori) + '">' + esc(it.kategori || '-') + '</span> <span class="tag">+' + it.poin + '</span>' +
-      (it.melawan ? ' <span class="tag merah">membangkang</span>' : '') + '</p>' +
+      (it.melawan ? ' <span class="tag merah">membangkang</span>' : '') + (/^\[Kejadian bersama/.test(it.catatan || '') ? ' <span class="tag">kejadian bersama</span>' : '') + '</p>' +
       '<p class="meta"><span class="chip-tangga"><b>' + (it.tangga || 1) + '</b>' + esc(LABEL_TANGGA[it.tangga || 1]) + '</span> dilaporkan ' + esc(namaPendek(it.pelapor) || '-') +
       (it.status === 'Selesai' && it.ditindakOleh ? ', ditangani ' + esc(namaPendek(it.ditindakOleh)) : '') + '</p>';
     if (it.alasan) h += '<p class="meta">Alasan: ' + esc(it.alasan) + '</p>';
