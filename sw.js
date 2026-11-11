@@ -3,7 +3,7 @@
  * antrean scan disimpan oleh app.js dan kios.js.
  * Model wajah (vendor/mediapipe, ±27 MB) sengaja tidak dipasang di awal:
  * tersimpan otomatis saat kios pertama kali dibuka. */
-const CACHE = 'smkt-gerbang-v29';
+const CACHE = 'smkt-gerbang-v30';
 const ASET = [
   './', 'index.html', 'style.css', 'tema.css', 'config.js', 'app.js', 'manifest.webmanifest',
   'tatib.html', 'tatib.css', 'tatib.js',
@@ -32,7 +32,7 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
   if (e.request.method !== 'GET' || url.origin !== self.location.origin) return;
   e.respondWith(
-    fetch(e.request)
+    fetch(e.request, { cache: 'no-cache' })
       .then((r) => {
         if (r.ok) { const salin = r.clone(); caches.open(CACHE).then((c) => c.put(e.request, salin)); }
         return r;
