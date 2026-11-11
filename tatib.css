@@ -185,7 +185,7 @@ textarea.isian { min-height: 0; resize: vertical; }
 .hasil-cari button { border: 2px solid var(--latar); }
 .hasil-cari button:hover { border-color: var(--garis); }
 
-/* Kartu siswa dengan foto seperti kartu pelajar */
+/* Kartu siswa dengan foto seperti kartu presensi */
 .kartu-siswa { display: grid; grid-template-columns: 66px 1fr auto; gap: 14px; align-items: start; }
 .foto-siswa {
   width: 66px; aspect-ratio: 3 / 4; border-radius: 10px; overflow: hidden;
@@ -753,7 +753,7 @@ textarea.isian { min-height: 0; resize: vertical; }
 .pl-tambah { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
 .pl-tambah .tombol { margin: 0; }
 
-/* v1.9: kartu pelajar */
+/* v1.9: kartu presensi digital */
 .kt-kepala { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
 .kt-kelas { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 6px; }
 .kt-kelas small { color: var(--teks-redup); font-weight: 500; }
@@ -820,7 +820,7 @@ textarea.isian { min-height: 0; resize: vertical; }
 .hasil-banyak li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--garis, #d5dbe5); }
 .hasil-banyak .nm { font-weight: 700; }
 
-/* Kartu pelajar: pilih siswa untuk cetak ulang */
+/* Kartu presensi: pilih siswa untuk cetak ulang */
 .kt-mode { margin: 4px 0 12px; }
 .kt-daftar-pilih { list-style: none; margin: 6px 0 0; padding: 0; }
 .kt-daftar-pilih:empty { display: none; }

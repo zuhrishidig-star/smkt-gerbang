@@ -1,4 +1,4 @@
-/* Kartu pelajar ber-QR untuk Administrator (dimuat saat menu Kartu pelajar dibuka).
+/* Kartu Presensi Digital ber-QR untuk Administrator (dimuat saat menu Kartu presensi dibuka).
  * PDF disusun di browser dengan jsPDF; QR digambar sebagai vektor (qrcode-generator) berisi NIS,
  * sama dengan yang dibaca Gerbang dan Kios. Ukuran kartu ID-1: 85,6 x 54 mm. */
 (function () {
@@ -136,7 +136,7 @@
       doc.setFillColor('#FFFFFF'); doc.rect(ox, oy, W, H, 'F');
       doc.setFillColor(WARNA.dongker); doc.rect(ox, oy, W, 8, 'F');
       doc.setFillColor(WARNA.lencana); doc.rect(ox, oy + 8, W, 0.7, 'F');
-      teks(doc, 'KETENTUAN KARTU PELAJAR', ox + 4, oy + 5.4, { pt: 6.6, tebal: true, warna: '#FFFFFF' });
+      teks(doc, 'KETENTUAN KARTU PRESENSI DIGITAL', ox + 4, oy + 5.4, { pt: 6.6, tebal: true, warna: '#FFFFFF' });
       if (K.logo) doc.addImage(K.logo, 'PNG', ox + W - 10, oy + 1, 6, 6, 'logoSek', 'FAST');
       const aturan = [
         'Kartu wajib dibawa setiap hari dan dipindai saat tiba di sekolah.',
@@ -218,7 +218,7 @@
     if (mode === 'isi') doc.fill(); else if (mode === 'garis') doc.stroke(); else { doc.clip(); doc.discardPath(); }
   }
   /** Desain bawaan "Kartu Presensi Digital": dasar terang dengan bidang-bidang miring biru tua,
-   *  biru, dan oranye seperti kartu pelajar sekolah. Dipakai bila latar Canva belum diunggah. */
+   *  biru, dan oranye seperti kartu identitas sekolah. Dipakai bila latar Canva belum diunggah. */
   const PRESENSI = { judul: 'KARTU PRESENSI DIGITAL', navy: '#0A2463', biru: '#1E4FA8', langit: '#5B8FD6', oranye: '#F28A1E', emas: '#F7B548', tinta: '#0B2238', label: '#5B6B7E' };
   function poli(doc, warna, pts, ox, oy, buram) {
     if (buram != null) doc.setGState(new doc.GState({ opacity: buram }));
@@ -551,7 +551,7 @@
       doc.addPage([W, H], 'landscape'); belakang(doc, 0, 0, {});
       doc.addPage('a4', 'portrait');
       const p = [
-        'Panduan template kartu pelajar SMKT',
+        'Panduan template Kartu Presensi Digital SMKT',
         '',
         'Ukuran kartu 85,6 x 54 mm (ID-1, sama dengan kartu ATM). Halaman 1-2 menandai area data dengan garis putus-putus;',
         'halaman 3-4 adalah latar polos yang siap diedit di Canva.',
@@ -561,14 +561,14 @@
         '2. Biarkan area FOTO, NAMA, NIS/NISN, KELAS, dan QR (lihat halaman 1) tetap polos. Aplikasi mengisinya otomatis.',
         '   Area QR akan diberi kotak putih; jangan menaruh hiasan penting di sana.',
         '3. Unduh dari Canva sebagai PNG atau JPG, ukuran minimal 1012 x 638 piksel (300 dpi), tanpa garis potong.',
-        '4. Di aplikasi SMKT, menu Kartu pelajar > Latar desain Canva: unggah latar depan dan belakang.',
+        '4. Di aplikasi SMKT, menu Kartu presensi > Latar desain Canva: unggah latar depan dan belakang.',
         '5. Centang "Pakai latar desain Canva", lalu unduh PDF kartu. Pilih "Teks putih" bila latar depan berwarna gelap.',
         '',
         'Isi QR adalah NIS siswa, sama dengan yang dibaca Gerbang dan Kios. Jangan mengganti QR dengan buatan Canva.'
       ];
       p.forEach((t, i) => teks(doc, t, 18, 24 + i * 7, { pt: i ? 10 : 15, tebal: !i, lebar: 175 }));
-      doc.save('Template_Kartu_Pelajar_SMKT.pdf');
-      status('Template tersimpan: Template_Kartu_Pelajar_SMKT.pdf (5 halaman).');
+      doc.save('Template_Kartu_Presensi_SMKT.pdf');
+      status('Template tersimpan: Template_Kartu_Presensi_SMKT.pdf (5 halaman).');
     } catch (e) { status(e.message); }
   }
 
@@ -580,7 +580,7 @@
       const csv = ['Nama,NIS,NISN,Kelas,Tempat_Lahir,Tanggal_Lahir,Alamat'].concat(d.siswa.map((s) => [s.nama, s.nis, s.nisn, s.kelas, s.tempatLahir, tglPanjang(s.tanggalLahir), s.alamat].map(sel).join(','))).join('\r\n');
       const a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
-      a.download = 'Data_Kartu_Pelajar' + (kelas.length ? '_' + (kelas.length > 3 ? kelas.length + '_kelas' : kelas.join('_')) : '') + '.csv';
+      a.download = 'Data_Kartu_Presensi' + (kelas.length ? '_' + (kelas.length > 3 ? kelas.length + '_kelas' : kelas.join('_')) : '') + '.csv';
       document.body.appendChild(a); a.click(); a.remove();
       status(d.siswa.length + ' baris data diunduh untuk Canva Bulk Create.');
     } catch (e) { status(e.message); }

@@ -81,7 +81,7 @@
     { id: 'ekskul', label: 'Ekskul', ikon: 'ekskul', judul: 'Absensi ekskul', boleh: (a) => a.ekskul, ket: 'Kehadiran anggota ekstrakurikuler yang Anda bina' },
     { id: 'akun', label: 'Akun guru', ikon: 'siswa', judul: 'Kelola akun guru', boleh: (a) => a.akun, ket: 'Email, peran, dan kelas wali setiap guru' },
     { id: 'bintang', label: 'Bintang Pagi', ikon: 'bintang', judul: 'Bintang Pagi', boleh: (a) => a.bintang, ket: 'Siswa yang konsisten datang pagi, per siswa dan per kelas' },
-    { id: 'kartu', label: 'Kartu pelajar', ikon: 'kartu', judul: 'Kartu pelajar', boleh: (a) => a.akun, ket: 'Cetak kartu ber-QR depan dan belakang, template Canva' },
+    { id: 'kartu', label: 'Kartu presensi', ikon: 'kartu', judul: 'Kartu Presensi Digital', boleh: (a) => a.akun, ket: 'Cetak kartu ber-QR depan dan belakang, template Canva' },
   ];
   // Menu per ruang kerja. Hak sebenarnya tetap diperiksa server untuk ruang yang dipilih.
   const RUANG_MENU = {
@@ -471,7 +471,7 @@
   async function muatKartu() {
     window.SMKT_TATIB = { api: api, toast: toast, esc: esc };
     if (!window.SMKTKartu) {
-      await new Promise((ok, gagal) => { const sc = document.createElement('script'); sc.src = 'kartu.js?v=20261111d'; sc.onload = ok; sc.onerror = () => gagal(new Error('Gagal memuat menu kartu')); document.head.appendChild(sc); })
+      await new Promise((ok, gagal) => { const sc = document.createElement('script'); sc.src = 'kartu.js?v=20261111e'; sc.onload = ok; sc.onerror = () => gagal(new Error('Gagal memuat menu kartu')); document.head.appendChild(sc); })
         .catch((e) => toast(e.message, 'alfa'));
     }
     if (window.SMKTKartu) window.SMKTKartu.buka();
@@ -1020,7 +1020,7 @@
     const id = opsi.id;
     wadah.innerHTML = '<label class="label" for="' + id + '-q">' + esc(opsi.label || 'Cari siswa') + '</label>' +
       '<div class="cari-baris"><input id="' + id + '-q" class="isian" type="search" autocomplete="off" enterkeyhint="search" placeholder="Nama, NIS, atau kelas">' +
-      '<button type="button" class="tombol-scan" aria-label="Scan kartu pelajar">' + ikon('qr') + '<span>Scan</span></button></div>' +
+      '<button type="button" class="tombol-scan" aria-label="Scan kartu presensi digital">' + ikon('qr') + '<span>Scan</span></button></div>' +
       (opsi.catatan ? '<p class="keterangan">' + esc(opsi.catatan) + '</p>' : '') + '<ul class="hasil-cari" id="' + id + '-hasil"></ul>';
     const q = wadah.querySelector('input'), ul = wadah.querySelector('ul');
     const boleh = () => Array.from(S.siswa.values()).filter(opsi.saring || (() => true));
@@ -1084,7 +1084,7 @@
           try { if (navigator.vibrate) navigator.vibrate(r.galat ? [60, 60, 60] : 70); } catch (e) { /* tidak didukung */ }
         }, () => {});
       if ($('modal-scan').hidden) { tutupScan(); return; }
-      ket.textContent = opsi.ket || 'Arahkan kamera ke QR kartu pelajar.';
+      ket.textContent = opsi.ket || 'Arahkan kamera ke QR kartu presensi digital.';
     } catch (e) {
       ket.textContent = 'Kamera belum bisa dibuka. Izinkan akses kamera di browser, atau tutup lalu ketik nama siswa.';
     }

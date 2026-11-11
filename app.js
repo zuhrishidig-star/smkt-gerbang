@@ -1,6 +1,6 @@
 /*
  * Gerbang SMKT · aplikasi web guru piket · v1.1 (3 November 2026)
- * Scan QR kartu pelajar → foto tampil 2 detik → tersimpan otomatis
+ * Scan QR kartu presensi digital → foto tampil 2 detik → tersimpan otomatis
  * ke Google Sheets lewat API Apps Script. Scan yang gagal terkirim
  * disimpan di HP dan dikirim ulang otomatis saat sinyal kembali.
  */
@@ -275,7 +275,7 @@
     $('panel-kamera').hidden = true;
     $('panel-cari').hidden = false;
     const hanyaNis = S.mode === MODE.MASUK;
-    $('label-cari').textContent = hanyaNis ? 'Ketik NIS yang tercetak di kartu pelajar'
+    $('label-cari').textContent = hanyaNis ? 'Ketik NIS yang tercetak di kartu presensi digital'
       : S.mode === MODE.MANUAL ? 'Cari siswa yang lupa membawa kartu' : 'Cari nama atau NIS siswa';
     $('input-cari').placeholder = hanyaNis ? 'NIS' : 'Nama atau NIS';
     $('input-cari').inputMode = hanyaNis ? 'numeric' : 'text';
@@ -341,7 +341,7 @@
 
   async function nyalakanKamera_() {
     if ($('panel-kamera').hidden || $('layar-utama').hidden) return;
-    const siap = 'Arahkan QR di kartu pelajar ke kamera.';
+    const siap = 'Arahkan QR di kartu presensi digital ke kamera.';
     // Selalu ikuti status asli pustaka, bukan tebakan aplikasi.
     const st = keadaanKamera();
     if (st === KAM.PINDAI) { S.kameraJalan = true; $('petunjuk').textContent = siap; return; }
@@ -486,7 +486,7 @@
     if (!foto) {
       $('tombol-simpan').hidden = false;
       $('tombol-simpan').disabled = false;
-      $('kartu-ket').textContent = 'Foto belum tersedia. Cocokkan dengan kartu pelajar, lalu tekan Simpan.';
+      $('kartu-ket').textContent = 'Foto belum tersedia. Cocokkan dengan kartu presensi digital, lalu tekan Simpan.';
       $('popup').hidden = false;
       return;
     }
