@@ -213,9 +213,11 @@
 
         <div class="blok" id="c-plg" hidden>
           <div id="c-plg-cari">
-            <label class="label" for="c-cari-plg">Jenis pelanggaran</label>
-            <input id="c-cari-plg" class="isian" type="search" autocomplete="off" placeholder="Cari: rambut, HP, sampah">
-            <div class="saring" id="c-kategori" role="group" aria-label="Saring kategori"></div>
+            <label class="label" for="c-cari-plg">Apa yang dilakukan siswa?</label>
+            <input id="c-cari-plg" class="isian" type="search" autocomplete="off" placeholder="Ketik saja: rokok, gondrong, HP, telat, gelut">
+            <div id="c-sering"></div>
+            <div id="c-topik"></div>
+            <div id="c-topik-judul" hidden></div>
             <ul class="daftar-plg" id="c-daftar-plg"></ul>
           </div>
           <div id="c-plg-terpilih" hidden></div>
@@ -583,6 +585,17 @@
   </div>
 
   <!-- Koreksi laporan -->
+  <div id="modal-konfirmasi" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="konf-judul">
+    <div class="modal-isi">
+      <h2 id="konf-judul" class="judul-blok">Periksa sebelum disimpan</h2>
+      <div id="konf-isi"></div>
+      <div class="modal-aksi">
+        <button id="konf-batal" class="tombol tombol-garis" type="button">Periksa lagi</button>
+        <button id="konf-simpan" class="tombol tombol-utama" type="button">Ya, simpan</button>
+      </div>
+    </div>
+  </div>
+
   <div id="modal-koreksi" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="kor-judul">
     <div class="modal-isi">
       <h2 id="kor-judul" class="judul-blok">Koreksi laporan</h2>

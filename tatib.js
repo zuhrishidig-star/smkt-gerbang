@@ -18,6 +18,44 @@
   const KE_LEVEL_BAWAAN = { 1: 'Wali Kelas', 2: 'BK', 3: 'Tim Tatib', 4: 'Wakasek', 5: 'Wakasek' };
   const URUT_KATEGORI = ['Ringan I', 'Ringan II', 'Sedang I', 'Sedang II', 'Berat I', 'Berat II', 'Berat Sekali'];
   const BATAS_ULANG = 3;
+  /* Kelompok kejadian untuk memilih pelanggaran: guru memilih menurut apa yang dilihat, bukan menurut kode. */
+  const TOPIK = [
+    { k: 'seragam', nm: 'Seragam dan penampilan', em: '👕', kunci: 'seragam baju celana rok sepatu kaos kaki sabuk ikat pinggang atribut id card kartu topi gelang cincin kalung perhiasan aksesoris kuku dandan make up bedak lipstik jeans levis cepol jedai sandal' },
+    { k: 'rambut', nm: 'Rambut, alis, tindik, tato', em: '💇', kunci: 'rambut gondrong panjang cukur potong cat semir warna pirang alis skin diskin tindik anting piercing tato tatto' },
+    { k: 'hadir', nm: 'Terlambat, bolos, absen', em: '⏰', kunci: 'telat terlambat bolos minggat cabut kabur pagar lompat loncat alpa alpha absen tanpa keterangan titip absen presensi kartu teman' },
+    { k: 'kelas', nm: 'Sikap di kelas dan pergaulan', em: '📚', kunci: 'tugas pr pekerjaan rumah ramai gaduh ganggu mengganggu nongkrong keluar kelas jendela kaki meja kursi membantah melawan nada keras jorok kotor misuh umpat ejek nama orang tua contek nyontek menyontek plagiat jiplak pacaran gandengan berduaan buku tatib' },
+    { k: 'hp', nm: 'HP dan media sosial', em: '📱', kunci: 'hp hape handphone ponsel gawai main game medsos media sosial tiktok instagram ig wa grup video foto rekam merekam memotret konten unggah upload sebar porno bokep' },
+    { k: 'rokok', nm: 'Rokok, miras, narkoba', em: '🚬', kunci: 'rokok udud ngudud ngerokok vape pod korek miras mabuk alkohol ciu arak bir oplosan narkoba napza obat pil' },
+    { k: 'kelahi', nm: 'Berkelahi, bully, ancaman', em: '👊', kunci: 'kelahi berkelahi berantem gelut gelud tawuran tarung duel ufc smackdown pukul tonjok tendang bully rundung ejek provokasi sorak ancam mengancam leceh senjata pisau celurit sajam' },
+    { k: 'curi', nm: 'Mencuri, memalak, memalsu', em: '💰', kunci: 'curi mencuri nyolong maling ambil barang palak malak memalak peras minta uang palsu tanda tangan ttd surat izin stempel rapor raport' },
+    { k: 'bersih', nm: 'Kebersihan dan fasilitas', em: '🌱', kunci: 'sampah buang kotor coret corat vandal tembok meja kursi rusak merusak fasilitas tanaman bunga buah petik' },
+    { k: 'motor', nm: 'Kendaraan dan parkir', em: '🏍️', kunci: 'motor sepeda kendaraan parkir helm knalpot brong plat nomor spion' },
+    { k: 'lain', nm: 'Lainnya dan kasus serius', em: '⚠️', kunci: 'lain lainnya geng organisasi diskotik tempat hiburan judi slot asusila hamil menikah pidana' },
+  ];
+  const TOPIK_KODE = {
+    'R.1.2': 'seragam', 'R.1.3': 'seragam', 'R.1.4': 'seragam', 'R.1.5': 'seragam', 'R.1.6': 'seragam', 'R.1.7': 'seragam', 'R.1.9': 'seragam',
+    'R.1.10': 'seragam', 'R.1.11': 'seragam', 'R.1.12': 'seragam', 'R.1.19': 'seragam',
+    'R.1.13': 'rambut', 'R.1.14': 'rambut', 'R.1.16': 'rambut', 'S.2.13': 'rambut', 'S.2.14': 'rambut', 'S.2.15': 'rambut', 'B.1.19': 'rambut',
+    'B.S.1': 'rambut', 'B.S.2': 'rambut', 'B.S.3': 'rambut',
+    'R.1.18': 'hadir', 'R.TLB': 'hadir', 'S.2.5': 'hadir', 'S.2.9': 'hadir', 'B.1.1': 'hadir', 'B.1.4': 'hadir', 'B.1.21': 'hadir',
+    'R.1.15': 'kelas', 'R.1.17': 'kelas', 'S.1.1': 'kelas', 'S.1.2': 'kelas', 'S.2.2': 'kelas', 'S.2.4': 'kelas', 'S.2.6': 'kelas', 'S.2.7': 'kelas', 'S.2.11': 'kelas',
+    'S.2.3': 'hp', 'S.2.10': 'hp', 'S.2.12': 'hp', 'B.1.7': 'hp', 'B.1.18': 'hp', 'B.1.22': 'hp', 'B.2.4': 'hp', 'B.2.13': 'hp',
+    'B.1.5': 'rokok', 'B.2.8': 'rokok', 'B.2.9': 'rokok',
+    'B.1.3': 'kelahi', 'B.1.6': 'kelahi', 'B.2.1': 'kelahi', 'B.2.2': 'kelahi', 'B.2.5': 'kelahi', 'B.2.11': 'kelahi', 'B.2.12': 'kelahi', 'B.S.8': 'kelahi',
+    'B.1.2': 'curi', 'B.1.20': 'curi', 'B.1.23': 'curi', 'B.2.6': 'curi', 'B.2.7': 'curi',
+    'R.1.1': 'bersih', 'S.2.1': 'bersih', 'S.2.8': 'bersih',
+    'S.1.3': 'motor', 'S.1.4': 'motor', 'S.1.5': 'motor',
+    'B.2.3': 'lain', 'B.2.10': 'lain', 'B.S.4': 'lain', 'B.S.5': 'lain', 'B.S.6': 'lain', 'B.S.7': 'lain',
+  };
+  // Cadangan bila ada kode baru yang belum dipetakan: ditebak dari nama pelanggarannya.
+  const TOPIK_TEBAK = [
+    [/rokok|vape|miras|napza|narkoba|alkohol/, 'rokok'], [/kelahi|duel|tarung|bully|rundung|ancam|leceh|pukul|senjata|provokasi/, 'kelahi'],
+    [/\bhp\b|media sosial|video|foto|rekam|grup|porno/, 'hp'], [/curi|palak|peras|palsu/, 'curi'], [/rambut|alis|tindik|tat+o/, 'rambut'],
+    [/terlambat|bolos|absen|tidak masuk|pagar|meninggalkan sekolah/, 'hadir'], [/kendaraan|helm|knalpot|parkir/, 'motor'],
+    [/sampah|coret|corat|merusak|tanaman/, 'bersih'], [/seragam|baju|sepatu|kaos kaki|sabuk|atribut|id card|topi|gelang|perhiasan|cincin|celana|rok |kuku|sandal/, 'seragam'],
+    [/tugas|pelajaran|kelas|jorok|umpat|contek|plagiat|pacaran|kaki di ?atas|intonasi/, 'kelas'],
+  ];
+  const SERING_BAWAAN = ['R.1.12', 'R.1.13', 'S.2.3', 'R.1.1', 'S.2.4', 'R.1.4', 'S.1.1', 'R.1.10'];
   const HARI_IZIN_MUNDUR = 7;
   const IKON = {"beranda":"<path d=\"M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8\" /> <path d=\"M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\" />","lapor":"<path d=\"m3 11 18-5v12L3 14v-3z\" /> <path d=\"M11.6 16.8a3 3 0 1 1-5.8-1.6\" />","kotak":"<polyline points=\"22 12 16 12 14 15 10 15 8 12 2 12\" /> <path d=\"M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z\" />","siswa":"<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\" /> <circle cx=\"9\" cy=\"7\" r=\"4\" /> <path d=\"M22 21v-2a4 4 0 0 0-3-3.87\" /> <path d=\"M16 3.13a4 4 0 0 1 0 7.75\" />","waspada":"<path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\" /> <path d=\"M12 8v4\" /> <path d=\"M12 16h.01\" />","pulih":"<path d=\"M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z\" /> <path d=\"M12 5 9.04 7.96a2.17 2.17 0 0 0 0 3.08c.82.82 2.13.85 3 .07l2.07-1.9a2.82 2.82 0 0 1 3.79 0l2.96 2.66\" /> <path d=\"m18 15-2-2\" /> <path d=\"m15 18-2-2\" />","absen":"<path d=\"M8 2v4\" /> <path d=\"M16 2v4\" /> <rect width=\"18\" height=\"18\" x=\"3\" y=\"4\" rx=\"2\" /> <path d=\"M3 10h18\" /> <path d=\"m9 16 2 2 4-4\" />","wa":"<path d=\"M7.9 20A9 9 0 1 0 4 16.1L2 22Z\" />","qr":"<rect width=\"5\" height=\"5\" x=\"3\" y=\"3\" rx=\"1\" /> <rect width=\"5\" height=\"5\" x=\"16\" y=\"3\" rx=\"1\" /> <rect width=\"5\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\" /> <path d=\"M21 16h-3a2 2 0 0 0-2 2v3\" /> <path d=\"M21 21v.01\" /> <path d=\"M12 7v3a2 2 0 0 1-2 2H7\" /> <path d=\"M3 12h.01\" /> <path d=\"M12 3h.01\" /> <path d=\"M12 16v.01\" /> <path d=\"M16 12h1\" /> <path d=\"M21 12v.01\" /> <path d=\"M12 21v-1\" />","kanan":"<path d=\"m9 18 6-6-6-6\" />","menu":"<circle cx=\"12\" cy=\"12\" r=\"1\" /> <circle cx=\"12\" cy=\"5\" r=\"1\" /> <circle cx=\"12\" cy=\"19\" r=\"1\" />","keluar":"<path d=\"M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4\" /> <polyline points=\"16 17 21 12 16 7\" /> <line x1=\"21\" x2=\"9\" y1=\"12\" y2=\"12\" />","muat":"<path d=\"M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8\" /> <path d=\"M21 3v5h-5\" /> <path d=\"M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16\" /> <path d=\"M8 16H3v5\" />","cek":"<path d=\"M20 6 9 17l-5-5\" />","gerbang":"<path d=\"M13 4h3a2 2 0 0 1 2 2v14\" /> <path d=\"M2 20h3\" /> <path d=\"M13 20h9\" /> <path d=\"M10 12v.01\" /> <path d=\"M13 4.562v16.157a1 1 0 0 1-1.242.97L5 20V5.562a2 2 0 0 1 1.515-1.94l4-1A2 2 0 0 1 13 4.561Z\" />","cari":"<circle cx=\"11\" cy=\"11\" r=\"8\" /> <path d=\"m21 21-4.3-4.3\" />","surat":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\" /> <path d=\"M14 2v4a2 2 0 0 0 2 2h4\" /> <path d=\"M10 9H8\" /> <path d=\"M16 13H8\" /> <path d=\"M16 17H8\" />","jam":"<circle cx=\"12\" cy=\"12\" r=\"10\" /> <polyline points=\"12 6 12 12 16 14\" />","awas":"<path d=\"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3\" /> <path d=\"M12 9v4\" /> <path d=\"M12 17h.01\" />","orang":"<circle cx=\"12\" cy=\"8\" r=\"5\" /> <path d=\"M20 21a8 8 0 0 0-16 0\" />","lainnya":"<rect width=\"7\" height=\"7\" x=\"3\" y=\"3\" rx=\"1\" /> <rect width=\"7\" height=\"7\" x=\"14\" y=\"3\" rx=\"1\" /> <rect width=\"7\" height=\"7\" x=\"14\" y=\"14\" rx=\"1\" /> <rect width=\"7\" height=\"7\" x=\"3\" y=\"14\" rx=\"1\" />","ekskul":"<path d=\"M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15\" /> <path d=\"M11 12 5.12 2.2\" /> <path d=\"m13 12 5.88-9.8\" /> <path d=\"M8 7h8\" /> <circle cx=\"12\" cy=\"17\" r=\"5\" /> <path d=\"M12 18v-2h-.5\" />","kirim":"<path d=\"M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z\" /> <path d=\"m21.854 2.147-10.94 10.939\" />"};
 
@@ -1066,8 +1104,15 @@
     S.siap.lapor = true;
     C.pemilih = pemilihSiswa($('c-siswa-pilih'), { id: 'cs', label: 'Siswa yang melanggar', pilih: pilihSiswaLapor });
     $('c-cari-plg').addEventListener('input', renderDaftarPlg);
-    $('c-kategori').addEventListener('click', (e) => { const b = e.target.closest('button[data-kat]'); if (!b) return; C.kategori = b.dataset.kat; renderDaftarPlg(); });
-    $('c-daftar-plg').addEventListener('click', (e) => { const b = e.target.closest('button[data-id]'); if (b) pilihPlg(S.master.get(b.dataset.id)); });
+    $('c-plg-cari').addEventListener('click', (e) => {
+      const t = e.target.closest('button[data-topik]');
+      if (t) { C.kategori = t.dataset.topik; $('c-cari-plg').value = ''; renderDaftarPlg(); $('c-plg').scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+      if (e.target.closest('button[data-aksi="semua-topik"]')) { C.kategori = ''; $('c-cari-plg').value = ''; renderDaftarPlg(); return; }
+      const b = e.target.closest('button[data-id]'); if (b) pilihPlg(S.master.get(b.dataset.id));
+    });
+    $('c-simpan').addEventListener('click', bukaKonfirmasiLapor);
+    $('konf-batal').addEventListener('click', () => { $('modal-konfirmasi').hidden = true; });
+    $('konf-simpan').addEventListener('click', () => { $('modal-konfirmasi').hidden = true; simpanLapor(); });
     $('c-melawan').addEventListener('change', renderPenanganan);
     $('c-penanganan').addEventListener('change', (e) => {
       if (e.target.name === 'c-tangani') C.penanganan = e.target.value;
@@ -1076,7 +1121,6 @@
     });
     $('c-tindakan').addEventListener('input', aturTombolSimpan);
     $('c-ket').addEventListener('input', aturTombolSimpan);
-    $('c-simpan').addEventListener('click', simpanLapor);
     C.foto = pasangInputFoto('c-foto-input', 'c-foto-pratinjau', 'c-foto-hapus', 'c-foto-label');
     $('p-lapor').addEventListener('click', (e) => {
       const a = e.target.closest('[data-aksi]');
@@ -1161,27 +1205,62 @@
     langkahLapor(2); renderKategori(); renderDaftarPlg();
   }
   function urutKategori(a, b) { const ia = URUT_KATEGORI.indexOf(a), ib = URUT_KATEGORI.indexOf(b); return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib) || a.localeCompare(b); }
-  function renderKategori() {
-    const kat = Array.from(new Set(Array.from(S.master.values()).map((m) => m.kategori).filter(Boolean))).sort(urutKategori);
-    $('c-kategori').innerHTML = ['', ...kat].map((k) => '<button type="button" data-kat="' + esc(k) + '" aria-pressed="' + (C.kategori === k) + '">' + esc(k || 'Semua') + '</button>').join('');
+  function topikDari(m) {
+    if (m.topik && TOPIK.some((t) => t.k === m.topik)) return m.topik;
+    if (TOPIK_KODE[m.id]) return TOPIK_KODE[m.id];
+    const n = (m.nama || '').toLowerCase();
+    const cocok = TOPIK_TEBAK.filter((x) => x[0].test(n))[0];
+    return cocok ? cocok[1] : 'lain';
   }
+  function teksCari(m) {
+    if (!m._cari) {
+      const t = TOPIK.filter((x) => x.k === topikDari(m))[0] || {};
+      m._cari = (m.nama + ' ' + m.id + ' ' + m.kategori + ' ' + (t.nm || '') + ' ' + (t.kunci || '') + ' ' + (m.kunci || '')).toLowerCase();
+    }
+    return m._cari;
+  }
+  function kunciSering() { return 'smkt_sering_' + ((S.guru && S.guru.email) || ''); }
+  function catatSering(id) { const h = simpan.get(kunciSering(), {}); h[id] = (h[id] || 0) + 1; simpan.set(kunciSering(), h); }
+  function daftarSering() {
+    const h = simpan.get(kunciSering(), {});
+    const milik = Object.keys(h).filter((id) => S.master.has(id)).sort((a, b) => h[b] - h[a]);
+    SERING_BAWAAN.forEach((id) => { if (milik.indexOf(id) === -1 && S.master.has(id)) milik.push(id); });
+    return milik.slice(0, 6).map((id) => S.master.get(id));
+  }
+  function itemPlgHtml(m, hitung) {
+    const n = hitung[m.id] || 0;
+    return '<li class="' + kelasKat(m.kategori) + '"><button type="button" data-id="' + esc(m.id) + '"><span class="pita"></span><span class="nm">' + esc(m.nama) + '</span>' +
+      '<span class="pn">+' + m.bobot + '</span><span class="kt">' + esc(m.kategori) + ', ' + esc(m.id) +
+      (n ? ', <span class="ulang">sudah ' + n + '× dalam 30 hari</span>' : '') + '</span></button></li>';
+  }
+  function renderKategori() { /* digantikan kotak kelompok kejadian di renderDaftarPlg */ }
   function renderDaftarPlg() {
     if (!C.siswa) return;
-    document.querySelectorAll('#c-kategori button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.kat === C.kategori)));
-    const kata = $('c-cari-plg').value.toLowerCase().split(/\s+/).filter(Boolean);
+    const q = $('c-cari-plg').value.toLowerCase().trim();
+    const kata = q.split(/\s+/).filter(Boolean);
     const hitung = (C.ringkas && C.ringkas.hitung30) || {};
-    const daftar = Array.from(S.master.values()).filter((m) => {
-      if (C.kategori && m.kategori !== C.kategori) return false;
-      const t = (m.nama + ' ' + m.id + ' ' + m.kategori).toLowerCase();
-      return kata.every((k) => t.indexOf(k) > -1);
-    }).sort((a, b) => urutKategori(a.kategori, b.kategori) || a.id.localeCompare(b.id, 'id', { numeric: true }));
-    if (!daftar.length) { $('c-daftar-plg').innerHTML = '<li class="kosong">Tidak ada jenis pelanggaran yang cocok.</li>'; return; }
-    $('c-daftar-plg').innerHTML = daftar.map((m) => {
-      const n = hitung[m.id] || 0;
-      return '<li class="' + kelasKat(m.kategori) + '"><button type="button" data-id="' + esc(m.id) + '"><span class="pita"></span><span class="nm">' + esc(m.nama) + '</span>' +
-        '<span class="pn">+' + m.bobot + '</span><span class="kt">' + esc(m.kategori) + ', ' + esc(m.id) +
-        (n ? ', <span class="ulang">sudah ' + n + '× dalam 30 hari</span>' : '') + '</span></button></li>';
-    }).join('');
+    const semua = Array.from(S.master.values());
+    const urut = (a, b) => urutKategori(a.kategori, b.kategori) || a.id.localeCompare(b.id, 'id', { numeric: true });
+    const beranda = !kata.length && !C.kategori;
+    $('c-sering').hidden = !beranda; $('c-topik').hidden = !beranda; $('c-topik-judul').hidden = beranda || !!kata.length;
+    if (beranda) {
+      $('c-sering').innerHTML = '<p class="judul-kecil">Sering dipakai</p><ul class="daftar-plg sering">' + daftarSering().map((m) => itemPlgHtml(m, hitung)).join('') + '</ul>';
+      const ada = {}; semua.forEach((m) => { const k = topikDari(m); ada[k] = (ada[k] || 0) + 1; });
+      $('c-topik').innerHTML = '<p class="judul-kecil">Atau pilih jenis kejadiannya</p><div class="kotak-topik">' + TOPIK.filter((t) => ada[t.k]).map((t) =>
+        '<button type="button" data-topik="' + t.k + '"><span class="em" aria-hidden="true">' + t.em + '</span><span class="nm">' + esc(t.nm) + '</span><span class="jml">' + ada[t.k] + ' pilihan</span></button>').join('') + '</div>';
+      $('c-daftar-plg').innerHTML = '';
+      return;
+    }
+    let daftar;
+    if (kata.length) {
+      daftar = semua.filter((m) => { const t = teksCari(m); return kata.every((k) => t.indexOf(k) > -1); }).sort(urut);
+    } else {
+      const t = TOPIK.filter((x) => x.k === C.kategori)[0] || { em: '', nm: '' };
+      $('c-topik-judul').innerHTML = '<button type="button" class="tautan" data-aksi="semua-topik">‹ Semua jenis kejadian</button><p class="judul-topik">' + t.em + ' ' + esc(t.nm) + '</p>';
+      daftar = semua.filter((m) => topikDari(m) === C.kategori).sort(urut);
+    }
+    $('c-daftar-plg').innerHTML = daftar.length ? daftar.map((m) => itemPlgHtml(m, hitung)).join('')
+      : '<li class="kosong">Tidak ada yang cocok dengan "' + esc(q) + '". Coba kata lain, atau hapus kata pencarian lalu pilih jenis kejadiannya.</li>';
   }
   function panduanUntuk(m) {
     return S.panduan[m.kategori] || { ditangani: 'Guru yang menemukan', langkah: 'Tegur siswa, jalankan sanksi di daftar tata tertib, lalu catat.', teruskanKe: 'Wali Kelas', wajib: false, syarat: '' };
@@ -1289,6 +1368,24 @@
     $('c-melawan-ket').hidden = !k.melawan;
     $('c-ket-opsional').textContent = k.melawan ? '(wajib: ucapan atau tindakan siswa)' : '(opsional)';
   }
+  function bukaKonfirmasiLapor() {
+    if (C.menyimpan || !C.siswa || !C.plg) return;
+    const k = keputusanLapor(), tindakan = $('c-tindakan').value.trim();
+    if (!k.terus && !tindakan) { $('c-tindakan').focus(); toast('Tulis dulu tindakan yang sudah Anda lakukan.', 'galat'); return; }
+    if (k.melawan && $('c-ket').value.trim().length < 10) { $('c-ket').focus(); return; }
+    const s = C.siswa, m = C.plg, r = C.ringkas;
+    let h = '<p class="konf-siswa"><strong>' + esc(s.nama) + '</strong> (' + esc(s.kelas) + ')</p>' +
+      '<p class="konf-plg">' + esc(m.nama) + '</p><ul class="konf-daftar">' +
+      '<li>Poin bertambah <strong>' + k.poin + '</strong>' + (k.melawan ? ' (×2 karena membangkang)' : '') + (r ? ', total menjadi <strong>' + (r.poin + k.poin) + '</strong>' : '') + '.</li>';
+    if (r && k.lvNanti > r.level) h += '<li>Siswa naik ke <strong>Level ' + k.lvNanti + '</strong>.</li>';
+    if (k.terus) {
+      h += '<li>Laporan <strong>diteruskan ke ' + esc(k.ke) + '</strong> dan masuk Kotak Masuk mereka.</li>';
+      if (/^Berat/.test(m.kategori)) h += '<li>Pelanggaran berat: setelah disimpan, <strong>kabari Tim Tatib lewat tombol WhatsApp</strong> yang muncul.</li>';
+    } else h += '<li>Laporan <strong>selesai di tangan Anda</strong>.</li>';
+    h += '</ul><p class="keterangan">Sudah benar? Bila siswa atau jenis pelanggarannya keliru, tekan Periksa lagi.</p>';
+    $('konf-isi').innerHTML = h;
+    $('modal-konfirmasi').hidden = false; $('konf-simpan').focus();
+  }
   async function simpanLapor() {
     if (C.menyimpan || !C.siswa || !C.plg) return;
     const k = keputusanLapor(), tindakan = $('c-tindakan').value.trim();
@@ -1299,6 +1396,7 @@
       const d = await api('tatib.catat', { nis: C.siswa.nis, idPlg: C.plg.id, melawan: k.melawan, keterangan: $('c-ket').value.trim(), tindakan: tindakan,
         penanganan: C.penanganan, teruskanKe: C.ke || k.ke, idCatat: C.idCatat, foto: C.foto ? C.foto.data : '' });
       C.menyimpan = false;
+      if (!d.sudahTercatat) catatSering(C.plg.id);
       tampilHasilLapor(d);
     } catch (e) {
       C.menyimpan = false; aturTombolSimpan();
@@ -1327,9 +1425,11 @@
           (tanpa.length ? ' ' + esc(sebut(tanpa)) + ' belum punya nomor WA di tab Guru.' : '') + '</span></p>';
       } else if (kontak.length) {
         const tautan = location.origin + location.pathname + '#kotak';
-        h += '<p class="redup">Kabari penerima lewat WhatsApp bila perlu:</p><div class="kontak">' + kontak.map((x) => tombolWa(x.wa,
+        const berat = /^Berat/.test(plg.kategori || '');
+        h += (berat ? '<div class="wa-segera"><p><strong>Pelanggaran berat: segera kabari ' + esc(d.diteruskan.ke) + ' lewat WhatsApp.</strong> Tekan tombol di bawah, lalu tekan Kirim di WhatsApp.</p>'
+          : '<p class="redup">Kabari penerima lewat WhatsApp bila perlu:</p>') + '<div class="kontak">' + kontak.map((x) => tombolWa(x.wa,
           isiTemplat(S.templat.WA_KASUS_PENERIMA, { penerima: namaPendek(x.nama), nama: d.siswa.nama, kelas: d.siswa.kelas, pelanggaran: plg.nama, alasan: alasan.join('; ') || 'perlu bantuan', tautan: tautan }),
-          'WA ' + namaPendek(x.nama), { jenis: 'kasus-penerima', ref: d.idLog, nis: d.siswa.nis })).join('') + '</div>';
+          'WA ' + namaPendek(x.nama), { jenis: 'kasus-penerima', ref: d.idLog, nis: d.siswa.nis })).join('') + '</div>' + (berat ? '</div>' : '');
       }
     } else if (d.tanggungJawabSaya) {
       h += '<p>Ini tanggung jawab Anda sebagai ' + esc(SEBUT_TANGGA[d.tangga]) + '. ' + esc(d.rekomendasi || '') + '</p>';

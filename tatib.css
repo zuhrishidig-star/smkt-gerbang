@@ -774,3 +774,21 @@ textarea.isian { min-height: 0; resize: vertical; }
 .bp-siswa tbody th small { font-weight: 400; }
 #bp-csv { margin-top: 14px; }
 .bp-siswa td { white-space: nowrap; }
+
+/* Memilih pelanggaran: kelompok kejadian bergambar */
+.kotak-topik { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin-top: 6px; }
+.kotak-topik button { display: grid; gap: 2px; justify-items: start; text-align: left; min-height: 92px; padding: 12px; border: 1px solid var(--garis, #d5dbe5); border-radius: 12px; background: var(--putih, #fff); font: inherit; color: inherit; cursor: pointer; }
+.kotak-topik button:hover, .kotak-topik button:focus-visible { border-color: var(--dongker); }
+.kotak-topik .em { font-size: 28px; line-height: 1; }
+.kotak-topik .nm { font-weight: 700; line-height: 1.25; }
+.kotak-topik .jml { font-size: 13px; color: var(--teks-redup); }
+#c-sering .daftar-plg { max-height: none; }
+#c-sering, #c-topik { margin-top: 12px; }
+#c-topik-judul { margin-top: 10px; }
+.judul-topik { font-weight: 800; font-size: 18px; margin: 4px 0 0; }
+.konf-siswa { font-size: 18px; margin: 0 0 4px; }
+.konf-plg { margin: 0 0 8px; }
+.konf-daftar { margin: 0 0 10px; padding-left: 20px; }
+.konf-daftar li + li { margin-top: 4px; }
+.wa-segera { border: 2px solid var(--berat); background: var(--berat-latar); border-radius: 12px; padding: 12px; margin: 10px 0; }
+.wa-segera p { margin: 0 0 8px; }
