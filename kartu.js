@@ -10,7 +10,7 @@
   const K = { awal: null, pilih: new Set(), logo: '', latar: null, menyusun: false, tata: 'bawaan', huruf: false, mode: 'kelas', terpilih: new Map(), semua: null };
 
   const skrip = {};
-  const VERSI_ASET = '20261110a';
+  const VERSI_ASET = '20261111a';
   function muatSkrip(src) {
     src = src + (src.indexOf('?') > -1 ? '&' : '?') + 'v=' + VERSI_ASET;
     if (!skrip[src]) skrip[src] = new Promise((ok, gagal) => {
@@ -33,6 +33,7 @@
     doc.addFileToVFS('OpenSans-Bold.ttf', F.OpenSansBold); doc.addFont('OpenSans-Bold.ttf', 'OpenSans', 'bold');
     doc.addFileToVFS('OpenSans-Regular.ttf', F.OpenSans); doc.addFont('OpenSans-Regular.ttf', 'OpenSans', 'normal');
     doc.addFileToVFS('Poppins-Regular.ttf', F.Poppins); doc.addFont('Poppins-Regular.ttf', 'Poppins', 'normal');
+    if (F.PoppinsBold) { doc.addFileToVFS('Poppins-Bold.ttf', F.PoppinsBold); doc.addFont('Poppins-Bold.ttf', 'Poppins', 'bold'); }
   }
   async function keDataUrl(url) {
     const b = await (await fetch(url)).blob();
@@ -178,6 +179,19 @@
     // Nama siswa di bawah QR (desain Canva terbaru): Open Sans Bold hitam, rata tengah dalam kotak putih
     namaQr: { tengah: 28.42, y: 62.26, pt: 4.8, ptMin: 3.6, spasi: 0.2, lebar: 35.0, jarak: 1.6 }
   };
+  /** Posisi isian untuk latar desain Canva sekolah (Kartu Presensi Digital, versi Canva 11 Nov 2026).
+   *  Diukur dari ekspor Canva 1993 x 3156 piksel. Huruf: nama Poppins Bold, NIS/NISN Open Sans, TTL dan alamat Poppins. */
+  const LATAR = {
+    w: 54, h: 85.6, warna: { nama: '#0B2238', isi: '#0A0A0A' },
+    foto: { x: 29.3, y: 29.95, w: 22.63, bawahLurus: 55.65, ujung: 59.85, r: 1.05, isi: '#6E99D0' },
+    nama: { x: 2.9, y: 25.09, jarak: 3.44, pt: 8.94, spasi: 0.346, lebar: 35, huruf: 'Poppins' },
+    nis: { x: 2.86, y: 35.03, pt: 6.33, spasi: 0 }, nisn: { x: 12.47, y: 35.03 },
+    ttl: { x: 2.9, y: 40.59, jarak: 2.52, pt: 6.46, spasi: 0.066 },
+    alamat: { x: 2.9, y: 48.15, jarak: 2.29, pt: 5.98, spasi: 0.05, lebar: 25.6, baris: 3 },
+    qr: { kotak: null, x: 11.26, y: 24.16, s: 31.25 },
+    namaQr: { tengah: 26.9, y: 56.71, pt: 4.8, ptMin: 3.6, spasi: 0.2, lebar: 34.0, jarak: 1.6 },
+    kepsek: { tengah: 13.94, lebar: 21.6, ttd: { y: 65.1, w: 19.6, hMaks: 9.0 }, nama: { y: 75.5, pt: 4.6 }, nip: { y: 77.85, pt: 4.2 } }
+  };
   const BULAN = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
   function tglPanjang(v) {
     const m = String(v || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
@@ -194,8 +208,8 @@
     if (baris) out.push(baris);
     return out;
   }
-  function bentukFoto(doc, ox, oy, mode) {
-    const f = KOBALT.foto, x = ox + f.x, y = oy + f.y, w = f.w, r = f.r, k = 0.55 * r;
+  function bentukFoto(doc, ox, oy, mode, G) {
+    const f = (G || KOBALT).foto, x = ox + f.x, y = oy + f.y, w = f.w, r = f.r, k = 0.55 * r;
     doc.moveTo(x + r, y); doc.lineTo(x + w - r, y);
     doc.curveTo(x + w - r + k, y, x + w, y + r - k, x + w, y + r);
     doc.lineTo(x + w, oy + f.bawahLurus); doc.lineTo(x + w / 2, oy + f.ujung); doc.lineTo(x, oy + f.bawahLurus);
@@ -281,29 +295,32 @@
   }
   function kobaltDepan(doc, ox, oy, o) {
     const s = o.siswa || { nama: 'NAMA PESERTA DIDIK', nis: '0000', nisn: '0000', tempatLahir: 'Malang', tanggalLahir: '2013-01-01', alamat: 'Alamat siswa' };
-    const L = KOBALT, putih = o.tinta || (o.latar ? '#FFFFFF' : PRESENSI.tinta);
+    const L = o.latar ? LATAR : KOBALT;
+    const putih = o.tinta || (o.latar ? LATAR.warna.isi : PRESENSI.tinta);
+    const warnaNama = o.tinta || (o.latar ? LATAR.warna.nama : PRESENSI.tinta);
     if (o.latar) doc.addImage(o.latar, ox, oy, L.w, L.h, 'latarD', 'FAST');
     else latarKobalt(doc, ox, oy, 'depan');
     // Foto berbingkai segi lima seperti template
-    doc.setFillColor(L.foto.isi); bentukFoto(doc, ox, oy, 'isi');
+    doc.setFillColor(L.foto.isi); bentukFoto(doc, ox, oy, 'isi', L);
     if (o.foto) {
-      doc.saveGraphicsState(); bentukFoto(doc, ox, oy, 'klip');
+      doc.saveGraphicsState(); bentukFoto(doc, ox, oy, 'klip', L);
       doc.addImage(o.foto, 'JPEG', ox + L.foto.x, oy + L.foto.y, L.foto.w, L.foto.w * 4 / 3, undefined, 'FAST');
       doc.restoreGraphicsState();
-      if (!o.latar) { doc.setDrawColor('#FFFFFF'); doc.setLineWidth(0.7); bentukFoto(doc, ox, oy, 'garis'); }
+      if (!o.latar) { doc.setDrawColor('#FFFFFF'); doc.setLineWidth(0.7); bentukFoto(doc, ox, oy, 'garis', L); }
     } else {
-      teks(doc, 'FOTO', ox + L.foto.x + L.foto.w / 2, oy + 45, { pt: 6, warna: '#FFFFFF', rata: 'center', huruf: 'Poppins' });
+      teks(doc, 'FOTO', ox + L.foto.x + L.foto.w / 2, oy + (L.foto.y + L.foto.bawahLurus) / 2 + 1, { pt: 6, warna: '#FFFFFF', rata: 'center', huruf: 'Poppins' });
     }
     // Nama: huruf kapital, maksimal 2 baris (mengecil bila perlu)
     let pt = L.nama.pt, baris;
-    doc.setFont('OpenSans', 'bold');
+    const hurufNama = L.nama.huruf || 'OpenSans';
+    doc.setFont(hurufNama, 'bold');
     for (;;) {
       doc.setFontSize(pt);
       baris = bungkus(doc, String(s.nama || '').toUpperCase(), L.nama.lebar, L.nama.spasi);
       if (baris.length <= 2 || pt <= 6) break;
       pt -= 0.5;
     }
-    baris.slice(0, 2).forEach((b, i) => teks(doc, b, ox + L.nama.x, oy + L.nama.y + i * L.nama.jarak, { pt: pt, tebal: true, warna: putih, huruf: 'OpenSans', spasi: L.nama.spasi }));
+    baris.slice(0, 2).forEach((b, i) => teks(doc, b, ox + L.nama.x, oy + L.nama.y + i * L.nama.jarak, { pt: pt, tebal: true, warna: warnaNama, huruf: hurufNama, spasi: L.nama.spasi }));
     teks(doc, s.nis || '-', ox + L.nis.x, oy + L.nis.y, { pt: L.nis.pt, warna: putih, huruf: 'OpenSans', spasi: L.nis.spasi });
     teks(doc, s.nisn || '-', ox + L.nisn.x, oy + L.nisn.y, { pt: L.nis.pt, warna: putih, huruf: 'OpenSans', spasi: L.nis.spasi });
     const ttl = s.tempatLahir || s.tanggalLahir ? [(s.tempatLahir || '-') + ',', tglPanjang(s.tanggalLahir) || '-'] : ['-'];
@@ -313,18 +330,36 @@
     al.forEach((b, i) => teks(doc, b, ox + L.alamat.x, oy + L.alamat.y + i * L.alamat.jarak, { pt: L.alamat.pt, warna: putih, huruf: 'Poppins', spasi: L.alamat.spasi }));
   }
   function kobaltBelakang(doc, ox, oy, o) {
-    const L = KOBALT;
+    const L = o.latar ? LATAR : KOBALT;
     if (o.latar) doc.addImage(o.latar, ox, oy, L.w, L.h, 'latarB', 'FAST');
     else latarKobalt(doc, ox, oy, 'belakang');
     const k = L.qr.kotak;
-    doc.setFillColor('#FFFFFF'); doc.roundedRect(ox + k.x, oy + k.y, k.s, k.s, 1.6, 1.6, 'F');
+    if (k) { doc.setFillColor('#FFFFFF'); doc.roundedRect(ox + k.x, oy + k.y, k.s, k.s, 1.6, 1.6, 'F'); }
     const s = o.siswa || { nis: '0000', nama: 'NAMA PESERTA DIDIK' };
     qr(doc, s.nis, ox + L.qr.x, oy + L.qr.y, L.qr.s);
-    namaBawahQr(doc, ox, oy, String(s.nama || '').toUpperCase());
+    namaBawahQr(doc, ox, oy, String(s.nama || '').toUpperCase(), L);
+    if (o.latar && L.kepsek) kepsekLatar(doc, ox, oy, L.kepsek);
+  }
+  /** Tanda tangan, stempel, nama, dan NIP Kepala Sekolah di kotak putih latar Canva. */
+  function kepsekLatar(doc, ox, oy, P) {
+    const ks = (K.awal && K.awal.kepsek) || { nama: 'Moh. Munif, S.Pd., M.M.Pd', nip: '196911171995121003' };
+    if (K.ttd) {
+      let w = P.ttd.w, h = w * K.ttdRasio;
+      if (h > P.ttd.hMaks) { h = P.ttd.hMaks; w = h / K.ttdRasio; }
+      doc.addImage(K.ttd, 'PNG', ox + P.tengah - w / 2, oy + P.ttd.y, w, h, 'ttdKepsek', 'FAST');
+    }
+    const muat = (t, y, pt0, tebal) => {
+      doc.setFont('OpenSans', tebal ? 'bold' : 'normal');
+      let pt = pt0; doc.setFontSize(pt);
+      while (pt > 3.2 && doc.getTextWidth(t) > P.lebar) { pt -= 0.1; doc.setFontSize(pt); }
+      teks(doc, t, ox + P.tengah, oy + y, { pt: pt, tebal: tebal, warna: '#000000', rata: 'center', huruf: 'OpenSans' });
+    };
+    muat(ks.nama, P.nama.y, P.nama.pt, true);
+    muat('NIP. ' + (ks.nip || '-'), P.nip.y, P.nip.pt, false);
   }
   /** Nama di bawah QR: satu baris, mengecil bila panjang; bila tetap tidak muat, dua baris. */
-  function namaBawahQr(doc, ox, oy, nama) {
-    const N = KOBALT.namaQr;
+  function namaBawahQr(doc, ox, oy, nama, G) {
+    const N = (G || KOBALT).namaQr;
     if (!nama) return;
     doc.setFont('OpenSans', 'bold');
     const lebarTeks = (t, pt) => { doc.setFontSize(pt); return doc.getTextWidth(t) + Math.max(0, t.length - 1) * N.spasi; };
@@ -468,22 +503,37 @@
    *  dan versi berpanduan yang menandai area isian aplikasi. */
   async function unduhTemplatePresensi() {
     await siapkanPustaka(); await siapkanHuruf();
-    const { jsPDF } = window.jspdf; const L = KOBALT;
+    const ada = K.awal && K.awal.latar && K.awal.latar.depan && K.awal.latar.belakang;
+    if (ada && !K.latar) { status('Mengambil latar desain Canva…'); K.latar = await T.api('kartu.ambilLatar'); }
+    const pakaiLatar = ada && K.latar && K.latar.depan && K.latar.belakang;
+    const L = pakaiLatar ? LATAR : KOBALT;
+    const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit: 'mm', format: [L.w, L.h], orientation: 'portrait', compress: true });
     pasangHuruf(doc);
     const simpan = K.ttd; K.ttd = null;
+    const latar = (sisi) => {
+      if (pakaiLatar) doc.addImage(K.latar[sisi], 0, 0, L.w, L.h, sisi === 'depan' ? 'latarD' : 'latarB', 'FAST');
+      else {
+        latarKobalt(doc, 0, 0, sisi);
+        if (sisi === 'belakang') { const k = L.qr.kotak; doc.setFillColor('#FFFFFF'); doc.roundedRect(k.x, k.y, k.s, k.s, 1.6, 1.6, 'F'); }
+      }
+    };
     try {
-      latarKobalt(doc, 0, 0, 'depan');
-      doc.addPage([L.w, L.h], 'portrait'); latarKobalt(doc, 0, 0, 'belakang');
-      const k = L.qr.kotak;
-      doc.setFillColor('#FFFFFF'); doc.roundedRect(k.x, k.y, k.s, k.s, 1.6, 1.6, 'F');
-      doc.addPage([L.w, L.h], 'portrait'); latarKobalt(doc, 0, 0, 'depan');
-      garisPanduan(doc, L.nama.x, 24.4, 47, 6.6, 'NAMA (maks. 2 baris)');
-      garisPanduan(doc, L.nis.x, 33.2, 9, 2.8, 'NIS'); garisPanduan(doc, L.nisn.x, 33.2, 14.5, 2.8, 'NISN');
-      garisPanduan(doc, L.ttl.x, 38.6, 24, 5.4, 'TTL'); garisPanduan(doc, L.alamat.x, 46.4, 25, 7.2, 'ALAMAT (3 baris)');
+      latar('depan'); doc.addPage([L.w, L.h], 'portrait'); latar('belakang');
+      doc.addPage([L.w, L.h], 'portrait'); latar('depan');
+      const nm = L.nama, capN = nm.pt * 0.3528 * 0.72;
+      garisPanduan(doc, nm.x, nm.y - capN - 0.3, nm.lebar, nm.jarak + capN + 0.6, 'NAMA (maks. 2 baris)');
+      const capS = L.nis.pt * 0.3528 * 0.72;
+      garisPanduan(doc, L.nis.x, L.nis.y - capS - 0.3, 8.5, capS + 0.6, 'NIS'); garisPanduan(doc, L.nisn.x, L.nis.y - capS - 0.3, 14.5, capS + 0.6, 'NISN');
+      const capT = L.ttl.pt * 0.3528 * 0.72;
+      garisPanduan(doc, L.ttl.x, L.ttl.y - capT - 0.3, 24, L.ttl.jarak + capT + 0.9, 'TTL');
+      const capA = L.alamat.pt * 0.3528 * 0.72;
+      garisPanduan(doc, L.alamat.x, L.alamat.y - capA - 0.3, L.alamat.lebar, 2 * L.alamat.jarak + capA + 0.9, 'ALAMAT (3 baris)');
       garisPanduan(doc, L.foto.x, L.foto.y, L.foto.w, L.foto.ujung - L.foto.y, 'FOTO');
-      doc.addPage([L.w, L.h], 'portrait'); latarKobalt(doc, 0, 0, 'belakang');
-      garisPanduan(doc, k.x, k.y, k.s, k.s, 'QR + NAMA (kotak putih)');
+      doc.addPage([L.w, L.h], 'portrait'); latar('belakang');
+      garisPanduan(doc, L.qr.x, L.qr.y, L.qr.s, L.qr.s, 'QR');
+      const N = L.namaQr; garisPanduan(doc, N.tengah - N.lebar / 2, N.y - 1.6, N.lebar, 2.2, 'NAMA');
+      if (L.kepsek) { const P = L.kepsek; garisPanduan(doc, P.tengah - P.lebar / 2, P.ttd.y, P.lebar, P.nip.y - P.ttd.y + 0.6, 'TTD, STEMPEL, NAMA, NIP'); }
     } finally { K.ttd = simpan; }
     doc.save('Template_Canva_Kartu_Presensi_Digital.pdf');
     status('Template tersimpan: halaman 1-2 latar polos untuk diedit di Canva, halaman 3-4 panduan area yang diisi aplikasi. Ekspor dari Canva hanya halaman 1-2 sebagai PNG.');
@@ -727,5 +777,5 @@
     } catch (e) { $('kt-ket').textContent = e.message; }
   }
 
-  window.SMKTKartu = { buka: buka, _uji: { unduhTemplatePresensi: unduhTemplatePresensi, depan: depan, belakang: belakang, kobaltDepan: kobaltDepan, kobaltBelakang: kobaltBelakang, pasangHuruf: pasangHuruf, siapkanHuruf: siapkanHuruf, siapkanPustaka: siapkanPustaka, K: K, KOBALT: KOBALT } };
+  window.SMKTKartu = { buka: buka, _uji: { LATAR: LATAR, unduhTemplatePresensi: unduhTemplatePresensi, depan: depan, belakang: belakang, kobaltDepan: kobaltDepan, kobaltBelakang: kobaltBelakang, pasangHuruf: pasangHuruf, siapkanHuruf: siapkanHuruf, siapkanPustaka: siapkanPustaka, K: K, KOBALT: KOBALT } };
 })();
