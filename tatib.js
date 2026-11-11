@@ -20,7 +20,7 @@
   const BATAS_ULANG = 3;
   /* Kelompok kejadian untuk memilih pelanggaran: guru memilih menurut apa yang dilihat, bukan menurut kode. */
   const TOPIK = [
-    { k: 'seragam', nm: 'Seragam dan penampilan', em: '👕', kunci: 'seragam baju celana rok sepatu kaos kaki sabuk ikat pinggang atribut id card kartu topi gelang cincin kalung perhiasan aksesoris mainan catok catokan alat kecantikan speaker kartu remi barang bawaan kuku dandan make up bedak lipstik jeans levis cepol jedai sandal' },
+    { k: 'seragam', nm: 'Seragam, penampilan, barang bawaan', em: '👕', kunci: 'seragam baju celana rok sepatu kaos kaki sabuk ikat pinggang atribut id card kartu topi gelang cincin kalung perhiasan aksesoris mainan catok catokan alat kecantikan speaker kartu remi barang bawaan kuku dandan make up bedak lipstik jeans levis cepol jedai sandal' },
     { k: 'rambut', nm: 'Rambut, alis, tindik, tato', em: '💇', kunci: 'rambut gondrong panjang cukur potong cat semir warna pirang alis skin diskin tindik anting piercing tato tatto' },
     { k: 'hadir', nm: 'Terlambat, bolos, absen', em: '⏰', kunci: 'telat terlambat bolos minggat cabut kabur pagar lompat loncat alpa alpha absen tanpa keterangan titip absen presensi kartu teman' },
     { k: 'kelas', nm: 'Sikap di kelas dan pergaulan', em: '📚', kunci: 'tugas pr pekerjaan rumah ramai gaduh ganggu mengganggu nongkrong keluar kelas jendela kaki meja kursi membantah melawan nada keras jorok kotor misuh umpat ejek nama orang tua contek nyontek menyontek plagiat jiplak pacaran gandengan berduaan buku tatib' },
@@ -34,7 +34,7 @@
   ];
   const TOPIK_KODE = {
     'R.1.2': 'seragam', 'R.1.3': 'seragam', 'R.1.4': 'seragam', 'R.1.5': 'seragam', 'R.1.6': 'seragam', 'R.1.7': 'seragam', 'R.1.9': 'seragam',
-    'R.1.10': 'seragam', 'R.1.11': 'seragam', 'R.1.12': 'seragam', 'R.1.19': 'seragam',
+    'R.1.10': 'seragam', 'R.1.11': 'seragam', 'R.1.12': 'seragam', 'R.1.19': 'seragam', 'S.1.6': 'seragam',
     'R.1.13': 'rambut', 'R.1.14': 'rambut', 'R.1.16': 'rambut', 'S.2.13': 'rambut', 'S.2.14': 'rambut', 'S.2.15': 'rambut', 'B.1.19': 'rambut',
     'B.S.1': 'rambut', 'B.S.2': 'rambut', 'B.S.3': 'rambut',
     'R.1.18': 'hadir', 'R.TLB': 'hadir', 'S.2.5': 'hadir', 'S.2.9': 'hadir', 'B.1.1': 'hadir', 'B.1.4': 'hadir', 'B.1.21': 'hadir',
