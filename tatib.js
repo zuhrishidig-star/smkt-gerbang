@@ -1211,11 +1211,11 @@
   function urutKategori(a, b) { const ia = URUT_KATEGORI.indexOf(a), ib = URUT_KATEGORI.indexOf(b); return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib) || a.localeCompare(b); }
   /** Guru biasa tidak memilih kode berat: kejadian berat dilaporkan, Tim Tatib yang menetapkan. */
   const bolehPilihBerat = () => !!S.akses.pilihBerat;
-  const beratTerkunci = (m) => /^Berat/.test(m.kategori || '') && !bolehPilihBerat();
+  const beratTerkunci = () => false;   // guru tetap memilih jenisnya; penanganan pelanggaran berat selalu oleh Tim Tatib
   function bolehDipilih(m) { return m.id !== ID_LAPOR_BERAT && !beratTerkunci(m); }
   function tombolLaporBerat(teks) {
-    return '<button type="button" class="lapor-berat" data-aksi="lapor-berat"><span class="em" aria-hidden="true">🚨</span><span><strong>Laporkan kejadian berat ke Tim Tatib</strong>' +
-      '<small>' + esc(teks || 'Berkelahi, rokok, miras, mencuri, memalak, bully, membawa senjata, dan sejenisnya. Anda cukup menceritakan kejadiannya.') + '</small></span></button>';
+    return '<button type="button" class="lapor-berat" data-aksi="lapor-berat"><span class="em" aria-hidden="true">🚨</span><span><strong>Kejadian berat, tapi tidak tahu jenisnya?</strong>' +
+      '<small>' + esc(teks || 'Tidak tahu jenis pelanggarannya? Ceritakan saja kejadiannya, Tim Tatib yang menetapkan jenis dan poinnya.') + '</small></span></button>';
   }
   function topikDari(m) {
     if (m.topik && TOPIK.some((t) => t.k === m.topik)) return m.topik;
@@ -1367,6 +1367,7 @@
     if (k.tembusan.length && k.terus) h += '<div><dt>Tembusan</dt><dd>' + esc(kapital(sebutDaftar(k.tembusan))) + ' ikut diberi tahu lewat Kotak Masuk.</dd></div>';
     h += '</dl>';
     if (k.alasan.length && !(k.alasan.length === 1 && k.alasan[0] === 'dipilih Anda')) h += '<p class="alasan">Naik ke tangga ' + k.tangga + ' karena ' + esc(k.alasan.join('; ')) + '.</p>';
+    if (/^Berat/.test(m.kategori) && k.terus) h = '<div class="himbauan-berat"><strong>Bawa siswa ke ruang Tata Tertib</strong> atau temui guru Tata Tertib sekarang. Jangan menjatuhkan sanksi sendiri; penanganannya oleh Tim Tatib.</div>' + h;
     $('c-panduan').className = 'panduan ' + (k.terus ? 'terus' : 'sendiri');
     $('c-panduan').innerHTML = h;
 
@@ -1434,7 +1435,7 @@
     if (r && k.lvNanti > r.level) h += '<li>Siswa naik ke <strong>Level ' + k.lvNanti + '</strong>.</li>';
     if (k.terus) {
       h += '<li>Laporan <strong>diteruskan ke ' + esc(k.ke) + '</strong> dan masuk Kotak Masuk mereka.</li>';
-      if (/^Berat/.test(m.kategori)) h += '<li>Pelanggaran berat: setelah disimpan, <strong>kabari Tim Tatib lewat tombol WhatsApp</strong> yang muncul.</li>';
+      if (/^Berat/.test(m.kategori)) h += '<li>Pelanggaran berat: setelah disimpan, <strong>bawa siswa ke ruang Tata Tertib</strong> dan kabari Tim Tatib lewat tombol WhatsApp yang muncul. Tim Tatib bisa mengganti jenisnya bila kurang tepat.</li>';
     } else h += '<li>Laporan <strong>selesai di tangan Anda</strong>.</li>';
     h += '</ul><p class="keterangan">Sudah benar? Bila siswa atau jenis pelanggarannya keliru, tekan Periksa lagi.</p>';
     $('konf-isi').innerHTML = h;
@@ -1469,7 +1470,8 @@
       (lb ? '<p>Laporan kejadian berat untuk ' + esc(d.siswa.nama) + ' (' + esc(d.siswa.kelas) + ') sudah masuk Kotak Masuk Tim Tatib. Poinnya ditetapkan Tim Tatib.</p>' +
         '<div class="himbauan-berat"><strong>Bawa siswa ke ruang Tata Tertib</strong> atau temui guru Tata Tertib sekarang.</div>'
       : '<p>' + esc(d.siswa.nama) + ' (' + esc(d.siswa.kelas) + '): ' + esc(plg.nama) + ', <strong>+' + d.poin + ' poin</strong>' + (d.melawan ? ' (×2 membangkang)' : '') + '.</p>' +
-      '<p>Total poin sekarang <strong>' + d.total + '</strong> ' + lencanaLevel(d.level) + '</p>') +
+      '<p>Total poin sekarang <strong>' + d.total + '</strong> ' + lencanaLevel(d.level) + '</p>' +
+      (/^Berat/.test(plg.kategori || '') && d.diteruskan ? '<div class="himbauan-berat"><strong>Bawa siswa ke ruang Tata Tertib</strong> atau temui guru Tata Tertib sekarang.</div>' : '')) +
       (d.foto ? '<p class="redup">Foto bukti tersimpan dan masuk ke berkas bukti SP.</p>' : '');
     const alasan = (d.alasan || []).filter((x) => x !== 'dipilih guru pelapor');
     if (d.diteruskan) {
@@ -1564,9 +1566,10 @@
     if (it.catatan) h += '<div class="catatan">Kejadian: ' + esc(it.catatan) + '</div>';
     if (it.tindakan) h += '<div class="catatan">' + esc(it.tindakan) + '</div>';
     h += '<div class="aksi">';
-    const perluTetapkan = tunggu && it.idPlg === ID_LAPOR_BERAT && bolehPilihBerat();
-    if (perluTetapkan) h += '<button type="button" class="tombol tombol-utama" data-aksi="buka-tetapkan">Tetapkan pelanggaran</button>';
-    if (tunggu) h += '<button type="button" class="tombol ' + (perluTetapkan ? 'tombol-garis' : 'tombol-utama') + '" data-aksi="buka-tl">Tindak lanjuti</button>';
+    const belumJenis = it.idPlg === ID_LAPOR_BERAT;
+    const perluTetapkan = tunggu && bolehPilihBerat() && (belumJenis || /^Berat/.test(it.kategori || ''));
+    if (perluTetapkan) h += '<button type="button" class="tombol ' + (belumJenis ? 'tombol-utama' : 'tombol-garis') + '" data-aksi="buka-tetapkan">' + (belumJenis ? 'Tetapkan pelanggaran' : 'Ganti jenis') + '</button>';
+    if (tunggu) h += '<button type="button" class="tombol ' + (perluTetapkan && belumJenis ? 'tombol-garis' : 'tombol-utama') + '" data-aksi="buka-tl">Tindak lanjuti</button>';
     if (tunggu && jenisPbnKasus(it)) h += '<button type="button" class="tombol tombol-garis" data-aksi="pbn">' + ikon('surat') + 'Pernyataan siswa</button>';
     if (tunggu && S.akses.aturProgram) h += '<button type="button" class="tombol tombol-garis" data-aksi="program">' + ikon('pembinaan') + 'Masa pembinaan</button>';
     if (T.status !== 'Tembusan' && it.waOrtu !== undefined) {
@@ -1578,7 +1581,8 @@
     if (perluTetapkan) {
       const pil = Array.from(S.master.values()).filter((m) => m.id !== ID_LAPOR_BERAT).sort((a, b) => urutKategori(b.kategori, a.kategori) || a.id.localeCompare(b.id, 'id', { numeric: true }));
       const grup = {}; pil.forEach((m) => { (grup[m.kategori] = grup[m.kategori] || []).push(m); });
-      h += '<div class="form-tetapkan" hidden><p class="keterangan">Baca cerita kejadian dan dengar siswanya, lalu pilih jenis pelanggaran yang tepat. Bila tidak terbukti, langsung tekan Tindak lanjuti tanpa menetapkan.</p>' +
+      h += '<div class="form-tetapkan" hidden><p class="keterangan">' + (belumJenis ? 'Baca cerita kejadian dan dengar siswanya, lalu pilih jenis pelanggaran yang tepat. Bila tidak terbukti, langsung tekan Tindak lanjuti tanpa menetapkan.'
+        : 'Bila jenis yang dipilih guru pelapor kurang tepat, ganti di sini. Poin siswa ikut menyesuaikan.') + '</p>' +
         '<label class="label" for="tp-' + esc(it.idLog) + '">Jenis pelanggaran</label><select id="tp-' + esc(it.idLog) + '" class="isian"><option value="">Pilih…</option>' +
         Object.keys(grup).sort((a, b) => urutKategori(b, a)).map((k) => '<optgroup label="' + esc(k) + '">' + grup[k].map((m) => '<option value="' + esc(m.id) + '">' + esc(m.id + ' ' + m.nama + ' (+' + m.bobot + ')') + '</option>').join('') + '</optgroup>').join('') +
         '</select><button type="button" class="tombol tombol-utama" data-aksi="simpan-tetapkan" style="margin-top:10px">Simpan penetapan</button></div>';
@@ -1632,7 +1636,7 @@
         const it = T.item.filter((x) => x.idLog === li.dataset.id)[0];
         if (it) Object.assign(it, { idPlg: d.idPlg, pelanggaran: d.pelanggaran, kategori: d.kategori, poin: d.poin });
         renderTL();
-        toast('Ditetapkan: ' + d.pelanggaran + ', +' + d.poin + ' poin. Total poin siswa ' + d.total + '. Lanjutkan dengan Tindak lanjuti.', 'hadir', 6000);
+        toast((it && it.idPlg !== d.idPlg ? '' : '') + 'Ditetapkan: ' + d.pelanggaran + ', +' + d.poin + ' poin. Total poin siswa ' + d.total + '. Lanjutkan dengan Tindak lanjuti.', 'hadir', 6000);
       } catch (err) { a.disabled = false; a.textContent = 'Simpan penetapan'; toast(err.message, 'galat', 5000); }
       return;
     }
