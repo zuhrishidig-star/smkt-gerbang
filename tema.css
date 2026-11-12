@@ -444,3 +444,29 @@ body.kios .k-merah { box-shadow: none; }
   .rs-atas, #rs-segmen, #rs-ket { max-width: 760px; }
   .rs-tgl { max-width: 760px; }
 }
+
+/* v1.19 · Layanan BK: rujukan, deteksi dini, pola pelanggaran */
+.rj-sinyal { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 0; }
+.rj-sinyal .chip { white-space: normal; }
+#ly-baru { width: auto; margin: 0 0 4px; }
+.ly-tanda { margin: 8px 0 0; padding-left: 18px; font-size: 14.5px; }
+.ly-tanda li + li { margin-top: 2px; }
+.ly-pola { width: 100%; border-collapse: collapse; font-size: 14px; }
+.ly-pola th { text-align: left; font-size: 12.5px; color: var(--teks-redup); font-weight: 700; padding: 4px 6px; border-bottom: 1px solid var(--garis); }
+.ly-pola td { padding: 7px 6px; border-bottom: 1px solid var(--latar); vertical-align: middle; }
+.ly-pola .nm { display: block; font-weight: 700; line-height: 1.25; }
+.ly-pola .kd { display: block; font-size: 12px; color: var(--teks-redup); }
+.ly-pola .ang { text-align: right; font-variant-numeric: tabular-nums; width: 46px; }
+.ly-pola .jml { min-width: 96px; white-space: nowrap; }
+.ly-pola .batang { display: inline-block; height: 8px; max-width: 54px; border-radius: 4px; background: var(--dongker); margin-right: 6px; vertical-align: middle; }
+.ly-pola .jml b { font-variant-numeric: tabular-nums; }
+.ly-pola .tren { margin-left: 4px; font-size: 11px; }
+.ly-pola .tren.naik { color: var(--berat); }
+.ly-pola .tren.turun { color: var(--hadir); }
+.ly-kelas { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.ly-kelas li { padding: 8px 10px; border: 1px solid var(--garis); border-radius: 10px; }
+.ly-kelas strong { display: block; }
+.ly-kelas span { font-size: 13px; color: var(--teks-redup); }
+.ly-kelas small { display: block; font-size: 12.5px; margin-top: 2px; }
+.ly-jenjang { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 0; }
+@media (max-width: 599px) { .ly-pola .ang { display: none; } }

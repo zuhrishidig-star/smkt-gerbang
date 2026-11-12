@@ -359,6 +359,19 @@
         </div>
       </section>
 
+      <!-- LAYANAN BK -->
+      <section id="p-layanan" class="panel" hidden>
+        <div class="segmen segmen-3" id="ly-segmen" role="group" aria-label="Tampilkan">
+          <button type="button" data-f="sinyal" aria-pressed="true">Deteksi dini</button>
+          <button type="button" data-f="rujukan" aria-pressed="false">Rujukan</button>
+          <button type="button" data-f="pola" aria-pressed="false">Pola</button>
+        </div>
+        <p class="keterangan" id="ly-ket"></p>
+        <button type="button" id="ly-baru" class="tombol tombol-garis" hidden>Rujuk murid lain</button>
+        <div id="ly-pilih" class="blok" hidden></div>
+        <div id="ly-isi"></div>
+      </section>
+
       <!-- RESTORASI HARIAN -->
       <section id="p-restorasi" class="panel" hidden>
         <div class="rs-atas">
@@ -714,6 +727,24 @@
       <div class="modal-aksi">
         <button id="kor-batal" class="tombol tombol-garis" type="button">Batal</button>
         <button id="kor-simpan" class="tombol tombol-utama" type="button">Simpan koreksi</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-rujuk" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="rj-judul">
+    <div class="modal-isi">
+      <h2 id="rj-judul" class="judul-blok">Rujuk ke layanan BK</h2>
+      <p id="rj-siswa" style="font-weight:700;margin:0"></p>
+      <p class="keterangan" id="rj-ket"></p>
+      <p id="rj-sinyal" class="rj-sinyal" hidden></p>
+      <div id="rj-sumber-wadah" hidden><label class="label" for="rj-sumber">Asal</label>
+        <select id="rj-sumber" class="isian"><option>Datang sendiri</option><option>Orang tua</option><option>Deteksi dini</option><option>Rujukan guru</option></select></div>
+      <label class="label" for="rj-alasan">Alasan singkat dan faktual</label>
+      <textarea id="rj-alasan" class="isian" rows="3" maxlength="500"></textarea>
+      <p class="pesan-galat" id="rj-pesan" aria-live="polite"></p>
+      <div class="modal-aksi">
+        <button id="rj-batal" class="tombol tombol-garis" type="button">Batal</button>
+        <button id="rj-kirim" class="tombol tombol-utama" type="button">Kirim</button>
       </div>
     </div>
   </div>
