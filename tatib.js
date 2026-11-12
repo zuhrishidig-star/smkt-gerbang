@@ -66,6 +66,8 @@
   IKON.kartu = '<rect width="20" height="14" x="2" y="5" rx="2" /> <circle cx="8" cy="11" r="2" /> <path d="M5 16c.6-1.6 1.7-2.4 3-2.4s2.4.8 3 2.4" /> <path d="M14 10h5" /> <path d="M14 14h3" />';
   IKON.bintang = '<path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />';
   IKON.tambah = '<path d="M5 12h14" /> <path d="M12 5v14" />';
+  IKON.restorasi = '<rect width="8" height="4" x="8" y="2" rx="1" ry="1" /> <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /> <path d="m9 14 2 2 4-4" />';
+  IKON.titipan = '<path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z" /> <path d="M12 22V12" /> <path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7" /> <path d="m7.5 4.27 9 5.15" />';
   IKON.pembinaan = '<path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5" /> <path d="M16 2v4" /> <path d="M8 2v4" /> <path d="M3 10h5" /> <path d="M17.5 17.5 16 16.3V14" /> <circle cx="16" cy="16" r="6" />';
 
   const MENU = [
@@ -76,7 +78,9 @@
     { id: 'siswa', label: 'Siswa', ikon: 'siswa', judul: 'Riwayat siswa', boleh: (a) => a.riwayat, ket: 'Poin, kehadiran, dan pembinaan per siswa' },
     { id: 'waspada', label: 'Waspada', ikon: 'waspada', judul: 'Waspada', boleh: (a) => a.zona, ket: 'Siswa yang poinnya mencapai level tindakan' },
     { id: 'pembinaan', label: 'Pembinaan', ikon: 'pembinaan', judul: 'Masa pembinaan', boleh: (a) => a.program, ket: 'Jadwal pembinaan dan skorsing per hari sekolah' },
+    { id: 'restorasi', label: 'Restorasi', ikon: 'restorasi', judul: 'Restorasi', boleh: (a) => a.restorasi, ket: 'Catat kehadiran dan kegiatan siswa restorasi, Kartu Kendali' },
     { id: 'pulih', label: 'Pulih', ikon: 'pulih', judul: 'Pulih', boleh: (a) => a.pemulihan, ket: 'Program fisik dan pembinaan lain' },
+    { id: 'titipan', label: 'Titipan', ikon: 'titipan', judul: 'Titipan HP dan barang', boleh: (a) => a.titipan, ket: 'HP dan barang sitaan: catat, tanda terima, pengembalian' },
     { id: 'absen', label: 'Absen', ikon: 'absen', judul: 'Absen', boleh: (a) => a.izin, ket: 'Catat izin atau sakit siswa' },
     { id: 'ekskul', label: 'Ekskul', ikon: 'ekskul', judul: 'Absensi ekskul', boleh: (a) => a.ekskul, ket: 'Kehadiran anggota ekstrakurikuler yang Anda bina' },
     { id: 'akun', label: 'Akun guru', ikon: 'siswa', judul: 'Kelola akun guru', boleh: (a) => a.akun, ket: 'Email, peran, dan kelas wali setiap guru' },
@@ -85,18 +89,18 @@
   ];
   // Menu per ruang kerja. Hak sebenarnya tetap diperiksa server untuk ruang yang dipilih.
   const RUANG_MENU = {
-    wali: ['beranda', 'lapor', 'kotak', 'verifikasi', 'siswa', 'waspada', 'pembinaan', 'absen', 'bintang'],
-    bk: ['beranda', 'lapor', 'kotak', 'siswa', 'waspada', 'pembinaan', 'pulih', 'absen', 'bintang'],
-    tatib: ['beranda', 'lapor', 'kotak', 'verifikasi', 'siswa', 'waspada', 'pembinaan', 'pulih', 'absen', 'bintang'],
-    wakasek: ['beranda', 'lapor', 'kotak', 'verifikasi', 'siswa', 'waspada', 'pembinaan', 'bintang'],
+    wali: ['beranda', 'lapor', 'kotak', 'verifikasi', 'siswa', 'waspada', 'pembinaan', 'restorasi', 'absen', 'titipan', 'bintang'],
+    bk: ['beranda', 'lapor', 'kotak', 'siswa', 'waspada', 'pembinaan', 'restorasi', 'pulih', 'absen', 'titipan', 'bintang'],
+    tatib: ['beranda', 'lapor', 'kotak', 'restorasi', 'verifikasi', 'siswa', 'waspada', 'pembinaan', 'pulih', 'titipan', 'absen', 'bintang'],
+    wakasek: ['beranda', 'lapor', 'kotak', 'verifikasi', 'siswa', 'waspada', 'pembinaan', 'restorasi', 'titipan', 'bintang'],
     kepsek: ['beranda', 'siswa', 'waspada', 'bintang'],
     pantau: ['beranda', 'siswa', 'waspada', 'bintang'],
-    piket: ['beranda', 'absen', 'lapor'],
-    olahraga: ['beranda', 'lapor', 'pulih'],
-    agama: ['beranda', 'lapor', 'pulih'],
+    piket: ['beranda', 'absen', 'lapor', 'restorasi', 'titipan'],
+    olahraga: ['beranda', 'restorasi', 'lapor', 'pulih', 'titipan'],
+    agama: ['beranda', 'restorasi', 'lapor', 'pulih', 'titipan'],
     ekskul: ['ekskul', 'lapor'],
     admin: ['akun', 'kartu'],
-    mapel: ['beranda', 'lapor'],
+    mapel: ['beranda', 'lapor', 'restorasi', 'titipan'],
   };
   /** Nama menu yang disesuaikan per ruang kerja. */
   const MENU_RUANG = {
@@ -437,7 +441,7 @@
       if (aktif) x.setAttribute('aria-current', 'page'); else x.removeAttribute('aria-current');
     });
     document.querySelectorAll('.panel').forEach((p) => { p.hidden = p.id !== 'p-' + nama; });
-    ({ bintang: muatBintang, kartu: muatKartu, akun: muatAkun, beranda: muatBeranda, lapor: initLapor, kotak: muatTL, verifikasi: muatVerifikasi, siswa: initRiwayat, waspada: muatZona, pembinaan: muatProgram, pulih: muatPulih, absen: bukaAbsen, ekskul: muatEkskul })[nama]();
+    ({ bintang: muatBintang, kartu: muatKartu, akun: muatAkun, beranda: muatBeranda, lapor: initLapor, kotak: muatTL, verifikasi: muatVerifikasi, siswa: initRiwayat, waspada: muatZona, pembinaan: muatProgram, pulih: muatPulih, absen: bukaAbsen, ekskul: muatEkskul, restorasi: () => muatRestorasi(), titipan: muatTitipan })[nama]();
     window.scrollTo(0, 0);
   }
 
@@ -736,6 +740,15 @@
     }
     if (d.waspada) {
       ba += barisAksi('#waspada', 'merah', 'waspada', 'Waspada', d.waspada.perluSurat ? d.waspada.perluSurat + ' siswa perlu surat pernyataan' : 'Siswa yang mencapai level tindakan', d.waspada.jumlah);
+    }
+    if (d.restorasi && d.restorasi.aktif) {
+      const rs = d.restorasi;
+      ba += S.akses.validasi && rs.menungguValidasi
+        ? barisAksi('#restorasi', 'emas', 'restorasi', 'Restorasi', rs.menungguValidasi + ' program menunggu validasi Anda' + (rs.belumHariIni ? ', ' + rs.belumHariIni + ' siswa belum dicatat hari ini' : ''), rs.menungguValidasi)
+        : barisAksi('#restorasi', rs.tinjau ? 'merah' : '', 'restorasi', 'Restorasi hari ini', rs.belumHariIni ? rs.belumHariIni + ' dari ' + rs.aktif + ' siswa belum dicatat' : rs.aktif + ' siswa menjalani restorasi' + (rs.tinjau ? ', ' + rs.tinjau + ' bolong 3 kali' : ''), rs.belumHariIni);
+    }
+    if (d.titipan && d.titipan.dititipkan) {
+      ba += barisAksi('#titipan', '', 'titipan', 'Titipan barang', d.titipan.siap ? d.titipan.siap + ' barang siap diambil orang tua' : d.titipan.dititipkan + ' barang disimpan di ruang Tatib', d.titipan.siap);
     }
     if (S.akses.catat !== false) ba += barisAksi('#lapor', '', 'lapor', 'Laporan saya, 7 hari', d.laporanSaya ? d.sendiriSaya + ' selesai Anda tangani sendiri' : 'Belum ada laporan minggu ini', d.laporanSaya);
     if (ba) h += '<section class="b-aksi"><h2 class="judul-bagian">Perlu perhatian</h2><ul class="baris-aksi">' + ba + '</ul></section>';
@@ -2275,7 +2288,7 @@
     try {
       const d = await api('tatib.pemulihan');
       P.item = d.item || []; P.potongan = d.potongan || 15; P.kegiatan = d.kegiatanSpiritual || [];
-      P.bolehFisik = d.bolehFisik !== false; P.bolehSpiritual = !!d.bolehSpiritual;
+      P.bolehFisik = d.bolehFisik !== false; P.bolehSpiritual = !!d.bolehSpiritual; P.bolehLulus = d.bolehLulus !== false;
       if (!P.mode) P.mode = S.ruang === 'agama' || (!P.bolehFisik && P.bolehSpiritual) ? 'Program Spiritual' : 'Program Fisik';
       renderPulih();
     } catch (e) { $('pm-ket').textContent = e.message; }
@@ -2286,7 +2299,9 @@
     $('pm-mode').hidden = !dua;
     $('pm-mode').querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === P.mode)));
     $('pm-ket').textContent = P.item.length
-      ? 'Kasus yang bisa ditebus dengan ' + nama + (spiritual ? ' (sholat berjamaah, baca Yasin Rabu-Jumat, atau BTQ)' : '') + '. Status Lulus mengurangi poin sesuai kategori kasusnya (separuh poin kasus, seperempat untuk Berat II), sekali untuk setiap kasus.'
+      ? 'Kasus yang bisa ditebus dengan ' + nama + (spiritual ? ' (sholat berjamaah, baca Yasin Rabu-Jumat, atau BTQ)' : '') + '. ' +
+        (P.bolehLulus ? 'Status Lulus mengurangi poin sesuai kategori kasusnya (separuh poin kasus, seperempat untuk Berat II), sekali untuk setiap kasus.'
+          : 'Tandai Selesai bila siswa sudah menuntaskannya. Tim Tata Tertib yang memvalidasi Lulus dan memotong poin.')
       : 'Belum ada kasus yang bisa ditebus dengan program restorasi pada periode ini.';
     const urut = P.item.slice().sort((a, b) => (a.sudahDipotong - b.sudahDipotong));
     const opsiKeg = (it) => '<label class="label" for="pk-' + esc(it.idLog) + '">Kegiatan</label><select class="isian pm-kegiatan" id="pk-' + esc(it.idLog) + '">' +
@@ -2299,9 +2314,11 @@
         '<p class="plg">' + esc(it.pelanggaran) + ' <span class="tag">+' + it.poin + '</span></p>' +
         '<p class="meta">' + (spiritual ? 'Program spiritual' : 'Program fisik') + ': ' +
           (it.sudahDipotong ? '<span class="tag hijau">' + (lulusLain ? 'Sudah lulus ' + esc(NAMA_TEBUS[it.lulusDengan] || '') : 'Lulus') + ', −' + (it.potongan || 0) + ' poin</span>'
-            : esc((st || 'belum dijadwalkan') + (spiritual && it.kegiatanSpiritual ? ' · ' + it.kegiatanSpiritual : ''))) + '</p>' +
+            : esc((st === 'Selesai' ? 'Selesai, menunggu validasi Tim Tatib' : st || 'belum dijadwalkan') + (spiritual && it.kegiatanSpiritual ? ' · ' + it.kegiatanSpiritual : ''))) + '</p>' +
         (it.sudahDipotong ? '' : (spiritual ? opsiKeg(it) : '') + '<div class="aksi">' + ['Dijadwalkan', 'Berjalan'].filter((x) => x !== st).map((x) => '<button type="button" class="tombol tombol-garis" data-status="' + x + '">' + x + '</button>').join('') +
-          '<button type="button" class="tombol tombol-utama" data-status="Lulus">Lulus (−' + (it.potongan || 0) + ')</button><button type="button" class="tombol tombol-garis" data-status="Tidak Lulus">Tidak lulus</button></div>') + '</li>';
+          (P.bolehLulus ? '<button type="button" class="tombol tombol-utama" data-status="Lulus">Lulus (−' + (it.potongan || 0) + ')</button>'
+            : st === 'Selesai' ? '' : '<button type="button" class="tombol tombol-utama" data-status="Selesai">Selesai, ajukan validasi</button>') +
+          '<button type="button" class="tombol tombol-garis" data-status="Tidak Lulus">Tidak lulus</button></div>') + '</li>';
     }).join('');
   }
   async function klikPulih(e) {
@@ -2319,7 +2336,7 @@
       if (status === 'Lulus' && d && d.potongan != null) it.potongan = d.potongan;
       if (kat === 'Program Spiritual') { it.statusSpiritual = status; it.kegiatanSpiritual = kegiatan; } else { it.statusFisik = status; it.statusTerakhir = status; }
       if (status === 'Lulus') { it.sudahDipotong = true; it.lulusDengan = kat; }
-      renderPulih(); toast(status === 'Lulus' ? 'Lulus. Poin ' + it.nama + ' berkurang ' + (it.potongan || 0) + '.' : 'Status ' + status + ' tersimpan.', 'hadir');
+      renderPulih(); toast(status === 'Lulus' ? 'Lulus. Poin ' + it.nama + ' berkurang ' + (it.potongan || 0) + '.' : status === 'Selesai' ? 'Selesai tercatat. Tim Tata Tertib akan memvalidasinya.' : 'Status ' + status + ' tersimpan.', 'hadir');
     } catch (err) { a.disabled = false; toast(err.message, 'galat', 5000); }
   }
   async function simpanPembinaan() {
@@ -2331,6 +2348,395 @@
       toast(d.kategori + ' untuk ' + d.nama + ' tersimpan.', 'hadir');
       $('pm-catatan').value = ''; P.siswaLain = null; pilihanTerpilih($('pm-siswa-pilih'), null);
     } catch (e) { toast(e.message, 'galat', 5000); } finally { b.disabled = false; b.textContent = 'Simpan pembinaan'; }
+  }
+
+  /* =================================================================
+   *  RESTORASI HARIAN (v1.18): pendamping mencatat lewat HP,
+   *  hari bolong menambah jadwal, Tim Tatib memvalidasi selesai.
+   * ================================================================= */
+  const RS = { data: null, filter: 'jadwal', tanggal: '', pilih: {}, buka: {}, alasan: {} };
+  const KEG_PENDEK = { F: 'Beep test', S: 'Olah sampah', B: 'Bersih kelas', M: 'Keagamaan', Y: 'Pimpin Yasin', R: 'Parkiran', P: 'Perpustakaan', K: 'Konseling BK', O: 'Orang tua', E: 'Edukasi', L: 'Lainnya' };
+  const ALASAN_TIDAK = ['Tanpa keterangan', 'Menolak ikut', 'Pulang lebih dulu'];
+  const LABEL_JEJAK = { terlaksana: 'terlaksana', bolong: 'bolong, diganti satu hari', 'belum dicatat': 'belum dicatat pendamping', tertunda: 'berhalangan, tidak dihitung', 'hari ini': 'hari ini', rencana: 'rencana' };
+
+  function pasangRestorasi() {
+    if (S.siap.restorasi) return;
+    S.siap.restorasi = true;
+    $('rs-segmen').addEventListener('click', (e) => {
+      const b = e.target.closest('button[data-f]'); if (!b) return;
+      RS.filter = b.dataset.f; renderRestorasi();
+    });
+    $('rs-tgl').addEventListener('change', () => { if ($('rs-tgl').value) muatRestorasi($('rs-tgl').value); });
+    document.querySelectorAll('.rs-geser').forEach((b) => b.addEventListener('click', () => geserTanggalRestorasi(Number(b.dataset.geser))));
+    $('rs-daftar').addEventListener('click', klikRestorasi);
+    $('rs-daftar').addEventListener('input', (e) => { const li = e.target.closest('.rs'); if (li) simpanIsianRestorasi(li); });
+  }
+  function geserTanggalRestorasi(arah) {
+    const d = RS.data; if (!d) return;
+    const t = keDate(RS.tanggal || d.hariIni);
+    do { t.setDate(t.getDate() + arah); } while (t.getDay() === 0 || t.getDay() === 6);
+    const ymd = t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0');
+    if (ymd > d.hariIni || ymd < $('rs-tgl').min) { toast(arah > 0 ? 'Tanggal yang akan datang belum bisa dicatat.' : 'Catatan hanya bisa diisi sampai ' + d.mundur + ' hari ke belakang.', 'galat'); return; }
+    muatRestorasi(ymd);
+  }
+  async function muatRestorasi(tanggal) {
+    pasangRestorasi();
+    if (tanggal) RS.tanggal = tanggal;
+    if (!RS.data) $('rs-daftar').innerHTML = '<li class="memuat">Memuat siswa restorasi…</li>';
+    else $('rs-daftar').classList.add('memuat-ulang');
+    try {
+      const d = await api('program.restorasi', { tanggal: RS.tanggal || '' });
+      RS.data = d; RS.tanggal = d.tanggal; RS.pilih = {}; RS.buka = {}; RS.alasan = {}; RS.isian = {};
+      if (RS.filter === 'jadwal' && !d.ringkas.terjadwal && d.ringkas.menungguValidasi && d.bolehValidasi) RS.filter = 'tuntas';
+      renderRestorasi();
+    } catch (e) {
+      if (!RS.data) $('rs-daftar').innerHTML = '<li class="kosong">' + esc(e.message) + '</li>';
+      else toast(e.message, 'galat', 5000);
+    }
+    $('rs-daftar').classList.remove('memuat-ulang');
+  }
+  const terjadwalPada = (p) => p.status === 'Berjalan' && p.pakaiSesi && p.padaTgl && ['libur', 'daring'].indexOf(p.padaTgl.status) === -1;
+  function renderRestorasi() {
+    const d = RS.data; if (!d) return;
+    const t = $('rs-tgl');
+    t.max = d.hariIni; t.min = hariIniGeser(d.hariIni, -d.mundur); t.value = d.tanggal;
+    $('rs-tgl-teks').textContent = d.tanggal === d.hariIni ? 'Hari ini, ' + tglManis(d.tanggal) : tglManis(d.tanggal, true);
+    document.querySelector('.rs-geser[data-geser="1"]').disabled = d.tanggal >= d.hariIni;
+    const kelompok = {
+      jadwal: d.program.filter(terjadwalPada),
+      tuntas: d.program.filter((p) => p.status === 'Berjalan' && p.tahap === 'Tuntas'),
+      selesai: d.program.filter((p) => p.status === 'Selesai')
+    };
+    const belumCatat = kelompok.jadwal.filter((p) => !p.padaTgl.sesi && ['hari ini', 'belum dicatat', 'bolong'].indexOf(p.padaTgl.status) > -1);
+    const r = d.ringkas;
+    $('rs-ringkas').innerHTML = kelompok.jadwal.length
+      ? '<b>' + kelompok.jadwal.length + '</b> siswa terjadwal · <b>' + (kelompok.jadwal.length - belumCatat.length) + '</b> sudah dicatat' + (belumCatat.length ? ' · <b class="rs-sisa">' + belumCatat.length + '</b> belum' : '')
+      : 'Tidak ada siswa terjadwal pada tanggal ini.';
+    const nB = (id, n) => { $(id).textContent = n ? String(n) : ''; $(id).hidden = !n; };
+    nB('rs-n-jadwal', belumCatat.length); nB('rs-n-tuntas', kelompok.tuntas.length);
+    document.querySelectorAll('#rs-segmen button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.f === RS.filter)));
+    const ket = {
+      jadwal: 'Ketuk Hadir bila siswa mengikuti kegiatan. Hari yang lewat tanpa catatan hadir menjadi bolong dan jadwalnya bertambah satu hari.',
+      tuntas: d.bolehValidasi ? 'Program yang hari terlaksananya sudah lengkap. Periksa Kartu Kendali, lalu validasi agar poin dipotong.' : 'Program yang sudah lengkap dan menunggu validasi Tim Tata Tertib.',
+      selesai: 'Program yang sudah divalidasi dalam 3 minggu terakhir. Kartu Kendali bisa dicetak sebagai bukti.'
+    }[RS.filter];
+    $('rs-ket').textContent = ket + (r.tinjau && RS.filter === 'jadwal' ? ' ' + r.tinjau + ' siswa sudah bolong 3 kali atau lebih.' : '');
+    let daftar = kelompok[RS.filter];
+    if (RS.filter === 'jadwal') daftar = daftar.slice().sort((a, b) => (!!a.padaTgl.sesi - !!b.padaTgl.sesi) || a.kelas.localeCompare(b.kelas) || a.nama.localeCompare(b.nama));
+    if (!daftar.length) {
+      const belumMulai = d.program.filter((p) => p.status === 'Berjalan' && p.tahap === 'Belum mulai').length;
+      $('rs-daftar').innerHTML = '<li class="kosong">' + esc({
+        jadwal: 'Tidak ada siswa yang menjalani restorasi pada ' + (d.tanggal === d.hariIni ? 'hari ini' : tglManis(d.tanggal, true)) + '.' + (belumMulai ? ' ' + belumMulai + ' program belum dimulai.' : '') + (d.bolehAtur ? ' Program baru ditetapkan dari menu Pembinaan.' : ''),
+        tuntas: 'Belum ada program yang menunggu validasi.',
+        selesai: 'Belum ada program yang divalidasi dalam 3 minggu terakhir.'
+      }[RS.filter]) + '</li>';
+      return;
+    }
+    $('rs-daftar').innerHTML = daftar.map(kartuRestorasi).join('');
+    daftar.forEach((p) => muatFoto(p.nis));
+  }
+  function hariIniGeser(ymd, n) {
+    const t = keDate(ymd); t.setDate(t.getDate() + n);
+    return t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0');
+  }
+  function jejakHtml(p) {
+    return '<ol class="rs-jejak" aria-label="' + p.terlaksana + ' dari ' + p.jumlah + ' hari terlaksana' + (p.bolong ? ', ' + p.bolong + ' hari bolong' : '') + '">' +
+      p.hari.map((x) => {
+        const dt = keDate(x.tgl);
+        return '<li class="j-' + x.status.replace(' ', '-') + (x.tgl === RS.tanggal ? ' j-pilih' : '') + '" title="' + esc(tglManis(x.tgl, true) + ': ' + (LABEL_JEJAK[x.status] || x.status)) + '">' +
+          '<span>' + (x.status === 'bolong' ? '×' : dt.getDate()) + '</span></li>';
+      }).join('') + '</ol>';
+  }
+  function kartuRestorasi(p) {
+    const tg = p.padaTgl || {};
+    const sesi = tg.sesi;
+    const kelas = p.status === 'Selesai' ? 'rs-selesai' : p.tahap === 'Tuntas' ? 'rs-tuntas' : sesi ? (sesi.status === 'Hadir' ? 'rs-hadir' : 'rs-absen') : 'rs-belum';
+    let h = '<li class="rs ' + kelas + (p.tinjau ? ' rs-tinjau' : '') + '" data-id="' + esc(p.id) + '">' +
+      '<div class="rs-kepala">' + fotoHtml(p) +
+      '<span class="rs-identitas"><span class="nm">' + esc(p.nama) + '</span><span class="kl">' + esc(p.kelas) + ' · ' + esc(p.jenis) + '</span></span>' +
+      '<span class="rs-hitung" aria-label="' + p.terlaksana + ' dari ' + p.jumlah + ' hari"><b>' + p.terlaksana + '</b><small>dari ' + p.jumlah + ' hari</small></span></div>' +
+      '<p class="rs-bentuk">' + p.bentuk.map(esc).join(' · ') + '</p>' +
+      (p.pelanggaran ? '<p class="rs-kasus">Karena ' + esc(p.pelanggaran) + '</p>' : '') +
+      jejakHtml(p) +
+      '<p class="rs-fakta">' + (p.status === 'Selesai'
+        ? 'Divalidasi ' + esc(p.validasi ? p.validasi.nama + ', ' + p.validasi.tanggal : '')
+        : p.tahap === 'Tuntas' ? 'Lengkap ' + p.jumlah + ' hari. Menunggu validasi Tim Tata Tertib.'
+        : 'Sisa ' + p.sisa + ' hari · perkiraan selesai ' + esc(tglManis(p.selesai, true))) +
+      (p.bolong ? ' · <span class="rs-bolong">' + p.bolong + ' bolong, +' + p.bolong + ' hari</span>' : '') +
+      (p.belum ? ' · <span class="rs-belum-teks">' + p.belum + ' hari belum dicatat</span>' : '') + '</p>';
+    if (p.tinjau && p.status === 'Berjalan') h += '<p class="rs-peringatan">' + ikon('awas') + 'Bolong ' + p.bolong + ' kali. Sesuai SOP, dibahas di rapat Tim Tata Tertib.</p>';
+    if (RS.filter === 'jadwal' && p.status === 'Berjalan') h += aksiCatatHtml(p, tg, sesi);
+    if (RS.filter === 'tuntas' && RS.data.bolehValidasi) {
+      h += '<div class="rs-validasi"><label class="label" for="rv-' + esc(p.id) + '">Catatan validasi (boleh kosong)</label>' +
+        '<input id="rv-' + esc(p.id) + '" class="isian" maxlength="300" data-isi="catatanValidasi" placeholder="Contoh: sikap membaik, beep test naik dua level">' +
+        '<button type="button" class="tombol tombol-utama" data-aksi="validasi">' + ikon('cek') + 'Validasi selesai</button></div>';
+    }
+    h += '<div class="rs-kaki">' + (p.bolehKartu ? '<button type="button" class="tautan" data-aksi="kartu">' + ikon('surat') + (p.status === 'Selesai' ? 'Kartu Kendali (PDF)' : 'Kartu Kendali, draf (PDF)') + '</button>' : '') + '</div>' +
+      '<div class="rs-pdf"></div></li>';
+    return h;
+  }
+  function aksiCatatHtml(p, tg, sesi) {
+    if (tg.status === 'tertunda' && !RS.buka[p.id]) {
+      return '<div class="rs-info tertunda">' + esc(tg.ket || 'Berhalangan') + '. Hari ini tidak dihitung.<button type="button" class="tautan" data-aksi="ubah">Tetap catat</button></div>';
+    }
+    if (sesi && !RS.buka[p.id]) {
+      const hadir = sesi.status === 'Hadir';
+      const isi = hadir ? [sesi.kegiatan, sesi.beep ? 'level ' + sesi.beep : '', sesi.hasil, sesi.sikap && sesi.sikap !== 'Baik' ? 'sikap ' + sesi.sikap.toLowerCase() : ''].filter(Boolean).join(' · ') : (sesi.alasan || 'Tidak hadir');
+      return '<div class="rs-tercatat ' + (hadir ? 'ok' : 'tidak') + '">' + ikon(hadir ? 'cek' : 'awas') +
+        '<span><strong>' + (hadir ? 'Hadir' : 'Tidak hadir, bolong') + '</strong><small>' + esc(isi) + (sesi.catatan ? '. ' + esc(sesi.catatan) : '') + '</small>' +
+        '<small class="oleh">Dicatat ' + esc(namaPendek(sesi.pendamping)) + '</small></span>' +
+        '<button type="button" class="tautan" data-aksi="ubah">Ubah</button></div>';
+    }
+    const pilih = RS.pilih[p.id] || (sesi && sesi.kode && sesi.kode.length ? sesi.kode.slice() : (p.terakhir && p.terakhir.length ? p.terakhir.slice(0, 2) : p.saran.slice(0, 1)));
+    RS.pilih[p.id] = pilih;
+    const semua = RS.buka[p.id + ':semua'];
+    const kode = semua ? RS.data.kegiatan.map((k) => k.k) : Array.from(new Set(p.saran.concat(p.terakhir || [], pilih)));
+    const isian = (sesi && RS.buka[p.id]) ? sesi : {};
+    const keg = (k) => RS.data.kegiatan.filter((x) => x.k === k)[0] || {};
+    const labelHasil = pilih.map((k) => keg(k).hasil).filter(Boolean)[0] || 'Hasil kegiatan';
+    const alasanTerbuka = RS.alasan[p.id];
+    let h = '<div class="rs-form">' +
+      '<div class="rs-keg" role="group" aria-label="Kegiatan ' + esc(p.nama) + '">' +
+      kode.map((k) => '<button type="button" class="rs-chip" data-keg="' + k + '" aria-pressed="' + (pilih.indexOf(k) > -1) + '">' + esc(KEG_PENDEK[k] || k) + '</button>').join('') +
+      (semua ? '' : '<button type="button" class="rs-chip lain" data-aksi="semua-keg">Kegiatan lain</button>') + '</div>';
+    if (!alasanTerbuka) {
+      h += '<div class="rs-tombol"><button type="button" class="tombol tombol-utama" data-aksi="hadir">' + ikon('cek') + 'Hadir</button>' +
+        '<button type="button" class="tombol tombol-garis" data-aksi="tidak">Tidak hadir</button></div>' +
+        '<details class="rs-detail"' + (RS.buka[p.id + ':detail'] || (isian.hasil || isian.beep || isian.catatan) ? ' open' : '') + '><summary>Hasil, sikap, dan catatan</summary>' +
+        (pilih.indexOf('F') > -1 ? '<label class="label">Level beep test<input class="isian" type="number" inputmode="decimal" step="0.1" min="1" max="21" data-isi="beep" value="' + esc(isian.beep || '') + '" placeholder="Contoh: 6.5"></label>' : '') +
+        '<label class="label">' + esc(labelHasil) + '<input class="isian" maxlength="200" data-isi="hasil" value="' + esc(isian.hasil || '') + '"></label>' +
+        '<span class="label">Sikap</span><div class="rs-sikap" role="radiogroup">' + RS.data.sikap.map((s) => '<label><input type="radio" name="sk-' + esc(p.id) + '" value="' + s + '"' + ((isian.sikap || 'Baik') === s ? ' checked' : '') + '>' + s + '</label>').join('') + '</div>' +
+        '<label class="label">Catatan<input class="isian" maxlength="300" data-isi="catatan" value="' + esc(isian.catatan || '') + '" placeholder="Contoh: datang tepat waktu, mau membantu teman"></label></details>';
+    } else {
+      h += '<div class="rs-alasan"><span class="label">Alasan tidak hadir</span><div class="rs-keg">' +
+        ALASAN_TIDAK.map((a) => '<button type="button" class="rs-chip" data-alasan="' + esc(a) + '" aria-pressed="' + (alasanTerbuka === a) + '">' + esc(a) + '</button>').join('') + '</div>' +
+        '<input class="isian" maxlength="200" data-isi="alasan" value="' + esc(ALASAN_TIDAK.indexOf(alasanTerbuka) > -1 ? alasanTerbuka : (alasanTerbuka === true ? '' : alasanTerbuka)) + '" placeholder="Tulis alasannya">' +
+        '<p class="keterangan">Hari ini menjadi bolong dan jadwal bertambah satu hari. Bila siswa izin atau sakit, catat dari menu Absen agar tidak dihitung bolong.</p>' +
+        '<div class="rs-tombol"><button type="button" class="tombol tombol-utama rs-tombol-merah" data-aksi="simpan-tidak">Simpan tidak hadir</button><button type="button" class="tombol tombol-garis" data-aksi="batal-tidak">Batal</button></div></div>';
+    }
+    if (sesi) h += '<div class="rs-ubah-kaki"><button type="button" class="tautan" data-aksi="tutup">Batal ubah</button><button type="button" class="tautan merah" data-aksi="hapus">Hapus catatan</button></div>';
+    return h + '</div>';
+  }
+  /** Isian detail disimpan di memori supaya tidak hilang saat kartu dirender ulang. */
+  function simpanIsianRestorasi(li) {
+    const id = li.dataset.id;
+    RS.isian = RS.isian || {};
+    const o = RS.isian[id] = RS.isian[id] || {};
+    li.querySelectorAll('[data-isi]').forEach((x) => { o[x.dataset.isi] = x.value; });
+    const sk = li.querySelector('.rs-sikap input:checked'); if (sk) o.sikap = sk.value;
+    if (o.alasan !== undefined && RS.alasan[id]) RS.alasan[id] = o.alasan || true;
+  }
+  function gantiRestorasi(p) {
+    const i = RS.data.program.findIndex((x) => x.id === p.id);
+    if (i > -1) RS.data.program[i] = p; else RS.data.program.push(p);
+    // Ringkasan dihitung ulang dari daftar.
+    const r = RS.data.ringkas;
+    r.menungguValidasi = RS.data.program.filter((x) => x.status === 'Berjalan' && x.tahap === 'Tuntas').length;
+    renderRestorasi();
+  }
+  async function klikRestorasi(e) {
+    const li = e.target.closest('.rs'); if (!li) return;
+    const id = li.dataset.id;
+    const p = RS.data.program.filter((x) => x.id === id)[0]; if (!p) return;
+    const chip = e.target.closest('button[data-keg]');
+    if (chip) {
+      const k = chip.dataset.keg, daftar = RS.pilih[id] || [];
+      const i = daftar.indexOf(k);
+      if (i > -1) daftar.splice(i, 1); else daftar.push(k);
+      RS.pilih[id] = daftar;
+      simpanIsianRestorasi(li);
+      RS.buka[id + ':detail'] = !!li.querySelector('.rs-detail[open]');
+      ulangKartu(li, p);
+      return;
+    }
+    const al = e.target.closest('button[data-alasan]');
+    if (al) { RS.alasan[id] = al.dataset.alasan; ulangKartu(li, p); return; }
+    const a = e.target.closest('[data-aksi]'); if (!a) return;
+    const aksi = a.dataset.aksi;
+    if (aksi === 'semua-keg') { RS.buka[id + ':semua'] = true; simpanIsianRestorasi(li); ulangKartu(li, p); return; }
+    if (aksi === 'ubah') { RS.buka[id] = true; ulangKartu(li, p); return; }
+    if (aksi === 'tutup') { RS.buka[id] = false; RS.alasan[id] = false; ulangKartu(li, p); return; }
+    if (aksi === 'tidak') { simpanIsianRestorasi(li); RS.alasan[id] = true; ulangKartu(li, p); const x = li.querySelector('[data-isi="alasan"]'); if (x) x.focus(); return; }
+    if (aksi === 'batal-tidak') { RS.alasan[id] = false; ulangKartu(li, p); return; }
+    if (aksi === 'kartu') {
+      a.disabled = true; const teks = a.innerHTML; a.textContent = 'Menyusun Kartu Kendali…';
+      try { const d = await api('program.kartuKendali', { id: id }); li.querySelector('.rs-pdf').innerHTML = tautanPdf(d.draf ? 'Kartu Kendali (draf, belum divalidasi)' : 'Kartu Kendali siap dicetak', pdfDariBase64(d)); }
+      catch (er) { toast(er.message, 'galat', 5000); }
+      a.disabled = false; a.innerHTML = teks; return;
+    }
+    if (aksi === 'validasi') {
+      if (a.dataset.yakin !== '1') { a.dataset.yakin = '1'; a.innerHTML = ikon('cek') + 'Ketuk lagi: ' + esc(namaPendek(p.nama)) + ' selesai'; return; }
+      a.disabled = true; a.textContent = 'Memvalidasi…';
+      const cat = li.querySelector('[data-isi="catatanValidasi"]');
+      try {
+        const d = await api('program.validasi', { id: id, catatan: cat ? cat.value.trim() : '' });
+        toast(p.nama + ': program selesai. ' + (d.ketPotongan || ''), 'hadir', 6000);
+        const baru = Object.assign({}, p, { status: 'Selesai', tahap: 'Selesai', validasi: d.program.validasi });
+        gantiRestorasi(baru);
+        if (S.tab === 'restorasi') muatRestorasi();
+      } catch (er) { a.disabled = false; a.textContent = 'Validasi selesai'; toast(er.message, 'galat', 6000); }
+      return;
+    }
+    if (aksi === 'hapus') {
+      if (a.dataset.yakin !== '1') { a.dataset.yakin = '1'; a.textContent = 'Ketuk lagi untuk menghapus'; return; }
+      await kirimSesi(li, p, { hapus: true }, a);
+      return;
+    }
+    if (aksi === 'hadir' || aksi === 'simpan-tidak') {
+      simpanIsianRestorasi(li);
+      const o = (RS.isian || {})[id] || {};
+      if (aksi === 'hadir') {
+        const keg = RS.pilih[id] || [];
+        if (!keg.length) { toast('Pilih kegiatan yang dijalankan siswa.', 'galat'); return; }
+        await kirimSesi(li, p, { status: 'Hadir', kegiatan: keg, beep: o.beep || '', hasil: o.hasil || '', sikap: o.sikap || 'Baik', catatan: o.catatan || '' }, a);
+      } else {
+        const alasan = String(o.alasan || '').trim();
+        if (alasan.length < 3) { toast('Tulis alasan siswa tidak hadir.', 'galat'); return; }
+        await kirimSesi(li, p, { status: 'Tidak hadir', alasan: alasan, catatan: o.catatan || '' }, a);
+      }
+    }
+  }
+  function ulangKartu(li, p) {
+    const baru = document.createElement('div');
+    baru.innerHTML = kartuRestorasi(p);
+    const el = baru.firstChild;
+    li.replaceWith(el);
+    isiUlangRestorasi(el, p.id);
+    muatFoto(p.nis);
+  }
+  function isiUlangRestorasi(li, id) {
+    const o = (RS.isian || {})[id]; if (!o) return;
+    li.querySelectorAll('[data-isi]').forEach((x) => { if (o[x.dataset.isi] !== undefined && !x.value) x.value = o[x.dataset.isi]; });
+    if (o.sikap) { const r = li.querySelector('.rs-sikap input[value="' + o.sikap + '"]'); if (r) r.checked = true; }
+  }
+  async function kirimSesi(li, p, data, tombol) {
+    const teks = tombol.innerHTML;
+    tombol.disabled = true; tombol.textContent = 'Menyimpan…';
+    try {
+      const d = await api('program.catatSesi', Object.assign({ id: p.id, tanggal: RS.tanggal }, data));
+      RS.buka[p.id] = false; RS.alasan[p.id] = false; RS.pilih[p.id] = null; if (RS.isian) delete RS.isian[p.id];
+      gantiRestorasi(d.program);
+      const n = d.program;
+      toast(data.hapus ? 'Catatan dihapus.' : data.status === 'Hadir'
+        ? p.nama + ': hadir, ' + n.terlaksana + ' dari ' + n.jumlah + ' hari.' + (d.tuntas ? ' Program lengkap, menunggu validasi Tim Tatib.' : '')
+        : p.nama + ': tidak hadir. Jadwal bertambah satu hari.', data.status === 'Tidak hadir' ? '' : 'hadir', 4500);
+    } catch (er) { tombol.disabled = false; tombol.innerHTML = teks; toast(er.message, 'galat', 6000); }
+  }
+
+  /* =================================================================
+   *  TITIPAN HP DAN BARANG SITAAN (v1.18)
+   * ================================================================= */
+  const TT = { data: null, siswa: null, q: '', kunci: '' };
+  function pasangTitipan() {
+    if (S.siap.titipan) return;
+    S.siap.titipan = true;
+    pemilihSiswa($('tt-siswa-pilih'), { id: 'ttp', label: 'Siswa pemilik barang', pilih: (s) => { TT.siswa = s; pilihanTerpilih($('tt-siswa-pilih'), s, 'ganti-tt'); } });
+    $('tt-siswa-pilih').addEventListener('click', (e) => { if (e.target.closest('[data-aksi="ganti-tt"]')) { TT.siswa = null; pilihanTerpilih($('tt-siswa-pilih'), null); } });
+    document.querySelectorAll('input[name="tt-lama"]').forEach((r) => r.addEventListener('change', aturLamaTitipan));
+    document.querySelectorAll('input[name="tt-jenis"]').forEach((r) => r.addEventListener('change', () => {
+      const j = jenisTitipan();
+      const lama = document.querySelector('input[name="tt-lama"][value="' + (j === 'HP' ? 'minggu' : 'tahun') + '"]');
+      if (lama) { lama.checked = true; aturLamaTitipan(); }
+      $('tt-ciri').placeholder = j === 'HP' ? 'Contoh: Samsung A15 hitam, casing biru' : j === 'Aksesoris' ? 'Contoh: gelang kulit cokelat' : 'Contoh: kartu remi satu set';
+    }));
+    $('tt-simpan').addEventListener('click', simpanTitipan);
+    $('tt-daftar').addEventListener('click', klikTitipan);
+    $('tt-hasil').addEventListener('click', klikTitipan);
+    $('tt-q').addEventListener('input', () => { TT.q = $('tt-q').value.trim().toLowerCase(); renderTitipan(); });
+    $('tt-kode-daftar').innerHTML = ['S.2.3', 'S.2.10', 'R.1.4', 'S.1.6'].map((k) => { const m = S.master.get(k); return '<option value="' + k + '">' + esc(m ? m.nama : '') + '</option>'; }).join('');
+    aturLamaTitipan();
+  }
+  const jenisTitipan = () => (document.querySelector('input[name="tt-jenis"]:checked') || {}).value || 'HP';
+  const lamaTitipan = () => (document.querySelector('input[name="tt-lama"]:checked') || {}).value || 'minggu';
+  function aturLamaTitipan() {
+    const lain = lamaTitipan() === 'lain';
+    $('tt-ambil-wadah').hidden = !lain;
+    if (lain && !$('tt-ambil').value) $('tt-ambil').value = hariIni(7);
+    $('tt-ambil').min = hariIni();
+  }
+  async function muatTitipan() {
+    pasangTitipan();
+    $('tt-form').hidden = !S.akses.titipan;
+    if (!TT.data) $('tt-daftar').innerHTML = '<li class="memuat">Memuat titipan…</li>';
+    try { TT.data = await api('titipan.daftar'); renderTitipan(); }
+    catch (e) { if (!TT.data) $('tt-daftar').innerHTML = '<li class="kosong">' + esc(e.message) + '</li>'; }
+  }
+  function renderTitipan() {
+    const d = TT.data; if (!d) return;
+    const ada = d.item.filter((x) => x.status === 'Dititipkan');
+    const siap = ada.filter((x) => x.siap).length;
+    $('tt-n').textContent = ada.length ? ada.length + ' barang' + (siap ? ', ' + siap + ' siap diambil' : '') : '';
+    $('tt-ket').textContent = d.bolehKembalikan ? 'Catat pengembalian saat orang tua mengambil barang dengan tanda terima.' : 'Pengembalian barang dicatat oleh Tim Tata Tertib.';
+    const q = TT.q;
+    const cocok = (x) => !q || [x.nama, x.kelas, x.no, x.ciri, x.jenis].join(' ').toLowerCase().indexOf(q) > -1;
+    const daftar = d.item.filter(cocok).sort((a, b) => (a.status !== 'Dititipkan') - (b.status !== 'Dititipkan') || (b.siap - a.siap));
+    $('tt-daftar').innerHTML = daftar.length ? daftar.map(kartuTitipan).join('') : '<li class="kosong">' + (q ? 'Tidak ada titipan yang cocok.' : 'Belum ada barang yang dititipkan.') + '</li>';
+    daftar.forEach((x) => muatFoto(x.nis));
+  }
+  function kartuTitipan(x) {
+    const ada = x.status === 'Dititipkan';
+    return '<li class="kasus tt ' + (ada ? (x.siap ? 'k-ringan' : 'k-sedang') : '') + '" data-no="' + esc(x.no) + '">' +
+      '<div class="kasus-kepala">' + fotoHtml(x) + '<span><span class="nm">' + esc(x.nama) + '</span><span class="kl">' + esc(x.kelas) + ' · ' + esc(x.no) + '</span></span><span class="wkt">' + esc(x.tanggal.slice(0, 5)) + '</span></div>' +
+      '<p class="plg">' + esc(x.jenis) + ': ' + esc(x.ciri) + (x.kode ? ' <span class="tag">' + esc(x.kode) + '</span>' : '') + '</p>' +
+      '<p class="meta">' + (ada
+        ? (x.siap ? '<span class="tag hijau">Siap diambil orang tua</span>' : 'Boleh diambil orang tua mulai ' + esc(tglManis(x.bolehDiambil, true))) + ' · kondisi ' + esc(x.kondisi.toLowerCase())
+        : esc(x.status) + (x.diambilOleh ? ' kepada ' + esc(x.diambilOleh) : '') + ', ' + esc(x.tglKembali) + (x.petugas ? ' oleh ' + esc(x.petugas) : '')) +
+      ' · dicatat ' + esc(x.pencatat) + '</p>' +
+      '<div class="aksi"><button type="button" class="tombol tombol-garis" data-aksi="tt-pdf">' + ikon('surat') + 'Tanda terima (PDF)</button>' +
+      (ada && TT.data.bolehKembalikan ? '<button type="button" class="tombol tombol-utama" data-aksi="tt-buka-kembali">' + ikon('cek') + 'Diambil orang tua</button>' : '') + '</div>' +
+      (ada && TT.data.bolehKembalikan ? '<div class="tt-kembali" hidden><label class="label">Nama orang tua/wali yang mengambil<input class="isian" maxlength="120" data-tt="oleh" placeholder="Contoh: Bapak Sumarno (ayah)"></label>' +
+        '<label class="label">Catatan (boleh kosong)<input class="isian" maxlength="300" data-tt="catatan"></label>' +
+        '<div class="aksi"><button type="button" class="tombol tombol-utama" data-aksi="tt-kembali">Simpan pengembalian</button>' +
+        '<button type="button" class="tautan" data-aksi="tt-putus">Keputusan Kepala Sekolah</button></div></div>' : '') +
+      '<div class="tt-pdf"></div></li>';
+  }
+  async function simpanTitipan() {
+    const s = TT.siswa;
+    if (!s) { toast('Pilih siswa pemilik barang.', 'galat'); return; }
+    const b = $('tt-simpan'); b.disabled = true; b.textContent = 'Menyimpan…';
+    TT.kunci = TT.kunci || uuid();
+    try {
+      const d = await api('titipan.catat', { nis: s.nis, jenis: jenisTitipan(), ciri: $('tt-ciri').value.trim(), kondisi: $('tt-kondisi').value,
+        kode: $('tt-kode').value.trim(), lama: lamaTitipan(), bolehDiambil: $('tt-ambil').value, catatan: $('tt-catatan').value.trim(), kunci: TT.kunci });
+      TT.kunci = '';
+      const x = d.item;
+      let h = '<div class="tt-sukses"><p><strong>Tersimpan, nomor ' + esc(x.no) + '.</strong> ' + esc(x.jenis + ' ' + x.nama) + ' boleh diambil orang tua mulai ' + esc(tglManis(x.bolehDiambil, true)) + '.</p>' +
+        '<p>' + (d.wa ? 'Orang tua dikabari lewat WA otomatis.' : d.waOrtu ? 'Kabari orang tua lewat WA:' : 'WA otomatis belum aktif. Kabari orang tua lewat wali kelas.') + '</p>' +
+        '<div class="aksi">' + (d.waOrtu && d.pesanWa ? '<a class="tombol-wa" href="' + esc(waLink(d.waOrtu, d.pesanWa)) + '" target="_blank" rel="noopener">' + ikon('wa') + 'WA orang tua</a>' : '') +
+        '<button type="button" class="tombol tombol-utama" data-aksi="tt-pdf" data-no="' + esc(x.no) + '">' + ikon('surat') + 'Cetak tanda terima rangkap dua</button></div><div class="tt-pdf"></div></div>';
+      $('tt-hasil').innerHTML = h;
+      $('tt-ciri').value = ''; $('tt-kode').value = ''; $('tt-catatan').value = ''; TT.siswa = null; pilihanTerpilih($('tt-siswa-pilih'), null);
+      if (TT.data) { TT.data.item.unshift(x); renderTitipan(); }
+      toast('Titipan ' + x.no + ' tersimpan.', 'hadir');
+    } catch (e) { toast(e.message, 'galat', 5000); } finally { b.disabled = false; b.textContent = 'Simpan titipan'; }
+  }
+  async function klikTitipan(e) {
+    const a = e.target.closest('[data-aksi]'); if (!a) return;
+    const li = a.closest('[data-no]') || a.closest('.tt-sukses');
+    const no = (a.dataset.no || (li && li.dataset.no) || '');
+    const aksi = a.dataset.aksi;
+    if (aksi === 'tt-pdf') {
+      const wadah = (a.closest('.tt-sukses') || li).querySelector('.tt-pdf');
+      a.disabled = true; const teks = a.innerHTML; a.textContent = 'Menyusun PDF…';
+      try { const d = await api('titipan.tandaTerima', { no: no }); wadah.innerHTML = tautanPdf('Tanda terima ' + no + ' siap dicetak', pdfDariBase64(d)); }
+      catch (er) { toast(er.message, 'galat', 5000); }
+      a.disabled = false; a.innerHTML = teks; return;
+    }
+    if (aksi === 'tt-buka-kembali') { const f = li.querySelector('.tt-kembali'); f.hidden = !f.hidden; if (!f.hidden) f.querySelector('input').focus(); return; }
+    if (aksi === 'tt-kembali' || aksi === 'tt-putus') {
+      const oleh = li.querySelector('[data-tt="oleh"]').value.trim(), catatan = li.querySelector('[data-tt="catatan"]').value.trim();
+      if (aksi === 'tt-putus' && a.dataset.yakin !== '1') {
+        a.dataset.yakin = '1'; a.textContent = 'Tulis keputusannya di Catatan, lalu ketuk lagi';
+        li.querySelector('[data-tt="catatan"]').placeholder = 'Contoh: dimusnahkan sesuai keputusan Kepala Sekolah tanggal ...';
+        li.querySelector('[data-tt="catatan"]').focus(); return;
+      }
+      a.disabled = true;
+      try {
+        const d = await api('titipan.kembalikan', { no: no, cara: aksi === 'tt-putus' ? 'putus' : 'kembali', diambilOleh: oleh, catatan: catatan });
+        const i = TT.data.item.findIndex((x) => x.no === no); if (i > -1) TT.data.item[i] = d.item;
+        renderTitipan(); toast(no + ': ' + d.item.status.toLowerCase() + '.', 'hadir');
+      } catch (er) { a.disabled = false; toast(er.message, 'galat', 5000); }
+    }
   }
 
   /* =================================================================
@@ -2659,7 +3065,7 @@
     const d = keDate(ymd); if (!d) return '-';
     return (panjang ? NAMA_HARI_PENDEK[d.getDay()] + ', ' : '') + d.getDate() + ' ' + NAMA_BULAN_PENDEK[d.getMonth()] + (panjang && d.getFullYear() !== new Date().getFullYear() ? ' ' + d.getFullYear() : '');
   }
-  const LABEL_HARI = { terlaksana: 'Terlaksana', 'hari ini': 'Hari ini', rencana: 'Rencana', tertunda: 'Tidak dihitung', libur: 'Libur', daring: 'Daring' };
+  const LABEL_HARI = { terlaksana: 'Terlaksana', 'hari ini': 'Hari ini', rencana: 'Rencana', tertunda: 'Tidak dihitung', libur: 'Libur', daring: 'Daring', bolong: 'Bolong', 'belum dicatat': 'Belum dicatat' };
   const kelasTahap = (t) => ({ 'Berjalan': 'berjalan', 'Belum mulai': 'belum', 'Tuntas': 'tuntas', 'Selesai': 'selesai', 'Dibatalkan': 'batal' }[t] || 'berjalan');
 
   function pasangProgram() {
@@ -2714,7 +3120,7 @@
     $('prg-n-aktif').textContent = nAktif ? String(nAktif) : '';
     $('prg-n-aktif').hidden = !nAktif;
     $('prg-ket').textContent = PR.filter === 'aktif'
-      ? (nAktif ? 'Hari yang tidak dihitung (izin, sakit, pulang sakit, libur, daring) otomatis menggeser tanggal selesai.' : '')
+      ? (nAktif ? 'Hari yang tidak dihitung (izin, sakit, pulang sakit, libur, daring) dan hari bolong otomatis menggeser tanggal selesai. Kehadiran harian dicatat pendamping di menu Restorasi.' : '')
       : 'Masa pembinaan yang sudah selesai atau dibatalkan dalam 45 hari terakhir.';
     if (!daftar.length) {
       $('prg-daftar').innerHTML = '<li class="kosong">' + (PR.filter === 'aktif'
@@ -2738,9 +3144,12 @@
       '<div class="prg-meter" role="img" aria-label="' + p.terlaksana + ' dari ' + p.jumlah + ' hari terlaksana"><span style="width:' + persen + '%"></span></div>' +
       '<dl class="prg-fakta"><div><dt>Terlaksana</dt><dd><b>' + p.terlaksana + '</b> / ' + p.jumlah + ' hari</dd></div>' +
       '<div><dt>' + (p.tahap === 'Selesai' || p.tahap === 'Dibatalkan' ? 'Rencana selesai' : 'Perkiraan selesai') + '</dt><dd>' + esc(tglManis(p.selesai, true)) + '</dd></div>' +
-      (p.tertunda ? '<div class="tunda"><dt>Diperpanjang</dt><dd>+' + p.tertunda + ' hari</dd></div>' : '') +
+      (p.tertunda ? '<div class="tunda"><dt>Berhalangan</dt><dd>+' + p.tertunda + ' hari</dd></div>' : '') +
+      (p.bolong ? '<div class="bolong"><dt>Bolong</dt><dd>' + p.bolong + ' hari, +' + p.bolong + '</dd></div>' : '') +
       '<div class="' + (p.setuju ? 'setuju' : 'belum-setuju') + '"><dt>Orang tua</dt><dd>' + (p.setuju ? 'Sudah tanda tangan' : 'Belum tanda tangan') + '</dd></div></dl>' +
       (p.hariIni && p.tahap === 'Berjalan' ? '<p class="prg-hariini">Hari ini: ' + esc(LABEL_HARI[p.hariIni] || p.hariIni) + '</p>' : '') +
+      (p.tahap === 'Tuntas' && p.status === 'Berjalan' ? '<p class="prg-hariini">Lengkap, menunggu validasi Tim Tata Tertib.</p>' : '') +
+      (p.validasi ? '<p class="prg-hariini selesai">Divalidasi ' + esc(p.validasi.nama) + ', ' + esc(p.validasi.tanggal) + '</p>' : '') +
       '</div><div class="prg-rinci" ' + (terbuka ? '' : 'hidden') + '></div></li>';
     return h;
   }
@@ -2771,9 +3180,11 @@
     if (p.catatan) h += '<p class="meta">Catatan: ' + esc(p.catatan) + '</p>';
     h += '<p class="meta">Mulai ' + esc(tglManis(p.mulai, true)) + ', ' + p.jumlah + ' hari sekolah. Ditetapkan ' + esc(namaPendek(p.penetap)) + '.</p>';
     h += kalenderHariHtml(p.hari || []);
-    h += '<div class="prg-legenda"><span class="kh-terlaksana">Terlaksana</span><span class="kh-hari-ini">Hari ini</span><span class="kh-rencana">Rencana</span><span class="kh-tertunda">Tidak dihitung</span><span class="kh-libur">Libur/daring</span></div>';
+    h += '<div class="prg-legenda"><span class="kh-terlaksana">Terlaksana</span><span class="kh-hari-ini">Hari ini</span><span class="kh-rencana">Rencana</span><span class="kh-tertunda">Tidak dihitung</span>' +
+      (p.pakaiSesi ? '<span class="kh-bolong">Bolong</span><span class="kh-belum-dicatat">Belum dicatat</span>' : '') + '<span class="kh-libur">Libur/daring</span></div>';
     h += '<div class="aksi-riwayat">';
     h += '<button type="button" class="tombol tombol-garis" data-aksi="pdf">' + ikon('surat') + 'Surat persetujuan ortu (PDF)</button>';
+    if (p.pakaiSesi) h += '<button type="button" class="tombol tombol-garis" data-aksi="kartu">' + ikon('surat') + 'Kartu Kendali (PDF)</button>';
     if (p.bolehUnggah && p.status !== 'Dibatalkan') {
       h += '<label class="tombol ' + (p.setuju ? 'tombol-garis' : 'tombol-utama') + ' tombol-foto">' + ikon('kamera') + (p.setuju ? 'Ganti foto lembar bertanda tangan' : 'Unggah foto lembar bertanda tangan') +
         '<input type="file" class="input-foto" accept="image/*" capture="environment" data-unggah="' + esc(p.id) + '"></label>';
@@ -2785,7 +3196,7 @@
         '<div><label class="label">Jumlah hari sekolah</label><input type="number" class="isian" min="1" max="60" data-ubah="hari" value="' + p.jumlah + '"></div></div>' +
         '<label class="label">Alasan perubahan</label><input type="text" class="isian" maxlength="200" data-ubah="alasan" placeholder="Contoh: kesepakatan dengan orang tua">' +
         '<div class="aksi-riwayat"><button type="button" class="tombol tombol-utama" data-aksi="simpan-ubah">Simpan perubahan</button>' +
-        (p.status === 'Berjalan' ? '<button type="button" class="tombol tombol-garis" data-aksi="selesai">Tandai selesai</button>' : '<button type="button" class="tombol tombol-garis" data-aksi="lanjut">Buka lagi</button>') +
+        (p.status === 'Berjalan' ? '<button type="button" class="tombol tombol-garis" data-aksi="selesai">' + (p.tahap === 'Tuntas' ? 'Validasi selesai' : 'Selesaikan lebih awal') + '</button>' : '<button type="button" class="tombol tombol-garis" data-aksi="lanjut">Buka lagi</button>') +
         '<button type="button" class="tautan merah" data-aksi="batal">Batalkan masa pembinaan</button></div></details>';
     }
     if ((p.riwayatUbah || []).length) h += '<details class="prg-log"><summary>Riwayat perubahan</summary><ul>' + p.riwayatUbah.map((x) => '<li>' + esc(x) + '</li>').join('') + '</ul></details>';
@@ -2803,9 +3214,12 @@
       if (lama) { lama.querySelector('.prg-rinci').hidden = true; lama.querySelector('.prg-kepala').setAttribute('aria-expanded', 'false'); }
       PR.buka = id; muatRinciProgram(id, li); return;
     }
-    if (aksi === 'pdf') {
+    if (aksi === 'pdf' || aksi === 'kartu') {
       a.disabled = true; const teks = a.innerHTML; a.textContent = 'Menyusun PDF…';
-      try { const d = await api('program.pdf', { id: id }); li.querySelector('.prg-pdf').innerHTML = tautanPdf('Surat persetujuan siap dicetak', pdfDariBase64(d)); }
+      try {
+        const d = await api(aksi === 'kartu' ? 'program.kartuKendali' : 'program.pdf', { id: id });
+        li.querySelector('.prg-pdf').innerHTML = tautanPdf(aksi === 'kartu' ? (d.draf ? 'Kartu Kendali (draf)' : 'Kartu Kendali siap dicetak') : 'Surat persetujuan siap dicetak', pdfDariBase64(d));
+      }
       catch (er) { toast(er.message, 'galat', 5000); }
       a.disabled = false; a.innerHTML = teks; return;
     }
@@ -2824,7 +3238,7 @@
     try {
       const d = await api('program.ubah', kirim);
       gantiProgram(d.program);
-      toast(aksi === 'simpan-ubah' ? 'Jadwal diperbarui. Selesai ' + tglManis(d.program.selesai, true) + '.' : 'Status: ' + d.program.tahap + '.', 'hadir', 4000);
+      toast(aksi === 'simpan-ubah' ? 'Jadwal diperbarui. Selesai ' + tglManis(d.program.selesai, true) + '.' : 'Status: ' + d.program.tahap + '.' + (d.ketPotongan ? ' ' + d.ketPotongan : ''), 'hadir', 5000);
     } catch (er) { a.disabled = false; toast(er.message, 'galat', 5000); }
   }
 

@@ -359,6 +359,63 @@
         </div>
       </section>
 
+      <!-- RESTORASI HARIAN -->
+      <section id="p-restorasi" class="panel" hidden>
+        <div class="rs-atas">
+          <div class="rs-tgl">
+            <button type="button" class="rs-geser" data-geser="-1" aria-label="Hari sekolah sebelumnya">&lsaquo;</button>
+            <label class="rs-tgl-label"><small>Tanggal kegiatan</small><span id="rs-tgl-teks">Hari ini</span><input id="rs-tgl" type="date" aria-label="Pilih tanggal kegiatan"></label>
+            <button type="button" class="rs-geser" data-geser="1" aria-label="Hari sekolah berikutnya">&rsaquo;</button>
+          </div>
+          <p class="rs-ringkas" id="rs-ringkas" aria-live="polite"></p>
+        </div>
+        <div class="segmen segmen-3" id="rs-segmen" role="group" aria-label="Tampilkan">
+          <button type="button" data-f="jadwal" aria-pressed="true">Jadwal <span class="badge" id="rs-n-jadwal" hidden></span></button>
+          <button type="button" data-f="tuntas" aria-pressed="false">Validasi <span class="badge" id="rs-n-tuntas" hidden></span></button>
+          <button type="button" data-f="selesai" aria-pressed="false">Selesai</button>
+        </div>
+        <p class="keterangan" id="rs-ket"></p>
+        <ol class="rs-daftar" id="rs-daftar"></ol>
+      </section>
+
+      <!-- TITIPAN HP DAN BARANG SITAAN -->
+      <section id="p-titipan" class="panel" hidden>
+        <div class="blok" id="tt-form">
+          <h2 class="judul-blok">Catat titipan</h2>
+          <p class="keterangan">HP disimpan dalam keadaan mati di lemari terkunci ruang Tata Tertib. Guru tidak membuka isi HP.</p>
+          <div id="tt-siswa-pilih"></div>
+          <span class="label">Jenis barang</span>
+          <div class="tt-jenis" role="radiogroup" aria-label="Jenis barang">
+            <label><input type="radio" name="tt-jenis" value="HP" checked>HP</label>
+            <label><input type="radio" name="tt-jenis" value="Aksesoris">Aksesoris</label>
+            <label><input type="radio" name="tt-jenis" value="Barang bawaan">Barang bawaan</label>
+            <label><input type="radio" name="tt-jenis" value="Lainnya">Lainnya</label>
+          </div>
+          <label class="label" for="tt-ciri">Merek, warna, ciri</label>
+          <input id="tt-ciri" class="isian" type="text" maxlength="160" placeholder="Contoh: Samsung A15 hitam, casing biru">
+          <div class="dua-kolom">
+            <div><label class="label" for="tt-kondisi">Kondisi</label><select id="tt-kondisi" class="isian"><option>Baik</option><option>Retak/rusak</option><option>Lainnya</option></select></div>
+            <div><label class="label" for="tt-kode">Kode pelanggaran</label><input id="tt-kode" class="isian" type="text" maxlength="40" list="tt-kode-daftar" placeholder="S.2.3"><datalist id="tt-kode-daftar"></datalist></div>
+          </div>
+          <span class="label">Lama penitipan</span>
+          <div class="opsi" role="radiogroup" aria-label="Lama penitipan">
+            <label><input type="radio" name="tt-lama" value="minggu" checked><span><strong>1 minggu</strong><small>HP dipakai di luar jam pelajaran tanpa pengawasan guru (SE Dinas)</small></span></label>
+            <label><input type="radio" name="tt-lama" value="pelajaran"><span><strong>Sampai pelajaran selesai</strong><small>Diambil hari ini oleh orang tua</small></span></label>
+            <label><input type="radio" name="tt-lama" value="tahun"><span><strong>Akhir tahun ajaran</strong><small>Barang sitaan diambil orang tua dengan tanda terima</small></span></label>
+            <label><input type="radio" name="tt-lama" value="lain"><span><strong>Sesuai kesepakatan</strong><small>Tentukan tanggal boleh diambil</small></span></label>
+          </div>
+          <div id="tt-ambil-wadah" hidden><label class="label" for="tt-ambil">Boleh diambil mulai</label><input id="tt-ambil" class="isian" type="date"></div>
+          <label class="label" for="tt-catatan">Catatan</label>
+          <textarea id="tt-catatan" class="isian" rows="2" maxlength="300" placeholder="Contoh: disita saat jam istirahat di kantin"></textarea>
+          <button id="tt-simpan" class="tombol tombol-utama" type="button">Simpan titipan</button>
+          <div id="tt-hasil" aria-live="polite"></div>
+        </div>
+        <h2 class="judul-bagian">Barang di ruang Tata Tertib <small id="tt-n"></small></h2>
+        <p class="keterangan" id="tt-ket"></p>
+        <input id="tt-q" class="isian" type="search" placeholder="Cari nama, kelas, nomor, atau ciri barang" aria-label="Cari titipan">
+        <ol class="daftar-kartu" id="tt-daftar"></ol>
+      </section>
+
       <!-- ABSEN -->
       <section id="p-absen" class="panel" hidden>
         <div class="blok">
