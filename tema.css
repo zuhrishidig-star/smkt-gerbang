@@ -484,3 +484,23 @@ body.kios .k-merah { box-shadow: none; }
 .rj-urut li + li { margin-top: 4px; }
 #rj-pdf .surat-siap { margin-top: 4px; }
 .rj-pdf-wadah:empty { display: none; }
+
+/* v1.21 · Dasbor BK: rujukan otomatis, tren, kehadiran */
+.ly-ringkas { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 4px 0 10px; }
+.ly-alasan { margin: 8px 0 0; font-weight: 600; line-height: 1.4; }
+.label-kecil { margin: 10px 0 0; font-size: 13px; font-weight: 700; color: var(--teks-redup); }
+.ly-periode { margin: 0 0 10px; }
+.ly-tren { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.ly-tren > li { background: var(--putih); border: 1px solid var(--garis); border-radius: 12px; overflow: hidden; }
+.ly-tren-baris { display: grid; grid-template-columns: 1fr minmax(110px, 38%); gap: 10px; width: 100%; padding: 10px 12px; background: none; border: 0; text-align: left; font: inherit; color: inherit; cursor: pointer; align-items: center; }
+.ly-tren-baris[aria-expanded="true"] { background: var(--latar); }
+.ly-tren-baris .nm { font-weight: 700; line-height: 1.3; }
+.ly-tren-baris .nm small { display: block; font-weight: 500; font-size: 12.5px; color: var(--teks-redup); }
+.ly-tren-baris .jml { display: grid; grid-template-columns: 1fr auto auto; gap: 2px 6px; align-items: center; }
+.ly-tren-baris .jml .batang { height: 8px; border-radius: 4px; background: var(--dongker); }
+.ly-tren-baris .jml small { grid-column: 1 / -1; font-size: 12.5px; color: var(--teks-redup); }
+.ly-tren-siswa { padding: 0 12px 10px; }
+.ly-hadir .ly-angka { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.ly-tren .tren { font-size: 11px; }
+.ly-tren .tren.naik { color: var(--berat); }
+.ly-tren .tren.turun { color: var(--hadir); }

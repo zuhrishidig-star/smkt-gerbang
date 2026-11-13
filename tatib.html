@@ -361,14 +361,13 @@
 
       <!-- LAYANAN BK -->
       <section id="p-layanan" class="panel" hidden>
-        <div class="segmen segmen-3" id="ly-segmen" role="group" aria-label="Tampilkan">
-          <button type="button" data-f="sinyal" aria-pressed="true">Deteksi dini</button>
-          <button type="button" data-f="rujukan" aria-pressed="false">Rujukan</button>
-          <button type="button" data-f="pola" aria-pressed="false">Pola</button>
+        <div class="segmen" id="ly-segmen" role="group" aria-label="Tampilkan">
+          <button type="button" data-f="rujukan" aria-pressed="true">Rujukan</button>
+          <button type="button" data-f="tren" aria-pressed="false">Tren</button>
+          <button type="button" data-f="hadir" aria-pressed="false">Kehadiran</button>
+          <button type="button" data-f="sinyal" aria-pressed="false">Deteksi dini</button>
         </div>
         <p class="keterangan" id="ly-ket"></p>
-        <button type="button" id="ly-baru" class="tombol tombol-garis" hidden>Rujuk murid lain</button>
-        <div id="ly-pilih" class="blok" hidden></div>
         <div id="ly-isi"></div>
       </section>
 
@@ -727,43 +726,6 @@
       <div class="modal-aksi">
         <button id="kor-batal" class="tombol tombol-garis" type="button">Batal</button>
         <button id="kor-simpan" class="tombol tombol-utama" type="button">Simpan koreksi</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="modal-rujuk" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="rj-judul">
-    <div class="modal-isi">
-      <h2 id="rj-judul" class="judul-blok">Rujuk ke layanan BK</h2>
-      <p id="rj-siswa" style="font-weight:700;margin:0"></p>
-      <div id="rj-form">
-        <p class="keterangan" id="rj-ket"></p>
-        <p id="rj-sinyal" class="rj-sinyal" hidden></p>
-        <div id="rj-ulang" class="rj-ulang" hidden></div>
-        <label class="label" for="rj-sumber">Jenis rujukan</label>
-        <select id="rj-sumber" class="isian"></select>
-        <label class="label" for="rj-perilaku">Perilaku yang diamati</label>
-        <select id="rj-perilaku" class="isian"><option value="">Memuat panduan BK…</option></select>
-        <p class="keterangan" id="rj-penanganan"></p>
-        <fieldset class="rj-pilihan"><legend class="label">Alasan dirujuk ke BK</legend><div id="rj-centang"></div></fieldset>
-        <label class="label" for="rj-alasan">Fakta yang diamati</label>
-        <textarea id="rj-alasan" class="isian" rows="3" maxlength="600"></textarea>
-        <p class="pesan-galat" id="rj-pesan" aria-live="polite"></p>
-        <div class="modal-aksi">
-          <button id="rj-batal" class="tombol tombol-garis" type="button">Batal</button>
-          <button id="rj-kirim" class="tombol tombol-utama" type="button">Simpan dan buat formulir</button>
-        </div>
-      </div>
-      <div id="rj-hasil" hidden>
-        <p class="rj-langkah" id="rj-langkah"></p>
-        <ol class="rj-urut">
-          <li>Cetak formulir rujukan.</li>
-          <li>Tanda tangani sebagai perujuk, lalu mintakan tanda tangan wali kelas.</li>
-          <li>Serahkan lembar asli ke Guru BK dan minta beliau mengisi kolom <em>Diterima Guru BK</em>. Simpan salinannya sebagai bukti.</li>
-        </ol>
-        <div id="rj-pdf"><p class="memuat">Menyusun formulir PDF…</p></div>
-        <div class="modal-aksi">
-          <button id="rj-tutup" class="tombol tombol-utama" type="button">Selesai</button>
-        </div>
       </div>
     </div>
   </div>
