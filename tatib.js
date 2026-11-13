@@ -2478,6 +2478,7 @@
     if (RS.filter === 'tuntas' && RS.data.bolehValidasi) {
       h += '<div class="rs-validasi"><label class="label" for="rv-' + esc(p.id) + '">Catatan validasi (boleh kosong)</label>' +
         '<input id="rv-' + esc(p.id) + '" class="isian" maxlength="300" data-isi="catatanValidasi" placeholder="Contoh: sikap membaik, beep test naik dua level">' +
+        '<label class="rj-cek"><input type="checkbox" data-isi="rujukBK" checked> <span>Rujuk ke BK untuk refleksi perilaku dan komitmen (formulir dicetak setelah validasi)</span></label>' +
         '<button type="button" class="tombol tombol-utama" data-aksi="validasi">' + ikon('cek') + 'Validasi selesai</button></div>';
     }
     h += '<div class="rs-kaki">' + (p.bolehKartu ? '<button type="button" class="tautan" data-aksi="kartu">' + ikon('surat') + (p.status === 'Selesai' ? 'Kartu Kendali (PDF)' : 'Kartu Kendali, draf (PDF)') + '</button>' : '') + '</div>' +
@@ -2578,8 +2579,10 @@
       a.disabled = true; a.textContent = 'Memvalidasi…';
       const cat = li.querySelector('[data-isi="catatanValidasi"]');
       try {
-        const d = await api('program.validasi', { id: id, catatan: cat ? cat.value.trim() : '' });
+        const rj = li.querySelector('[data-isi="rujukBK"]');
+        const d = await api('program.validasi', { id: id, catatan: cat ? cat.value.trim() : '', rujukBK: !!(rj && rj.checked) });
         toast(p.nama + ': program selesai. ' + (d.ketPotongan || ''), 'hadir', 6000);
+        rujukanSesudahValidasi(d.rujukan);
         const baru = Object.assign({}, p, { status: 'Selesai', tahap: 'Selesai', validasi: d.program.validasi });
         gantiRestorasi(baru);
         if (S.tab === 'restorasi') muatRestorasi();
@@ -2754,36 +2757,80 @@
    *  tahap sanksi. Isi layanan BK tidak disimpan di aplikasi.
    * ================================================================= */
   const LY = { f: '', rujukan: null, sinyal: null, pola: null };
-  const RJ = { nis: '', sesudah: null, kunci: '' };
-  function bukaRujuk(o) {
-    RJ.nis = o.nis; RJ.sesudah = o.sesudah || null; RJ.kunci = uuid();
+  const RJ = { nis: '', sesudah: null, kunci: '', panduan: null };
+  // v1.20: rujukan tertulis. Formulir PDF dicetak, ditandatangani, dan diserahkan ke Guru BK.
+  async function bukaRujuk(o) {
+    RJ.nis = o.nis; RJ.sesudah = o.sesudah || null; RJ.kunci = uuid(); RJ.panduan = null;
     const s = S.siswa.get(o.nis) || { nama: o.nama || o.nis, kelas: o.kelas || '' };
     const bk = !!S.akses.layananBK;
     $('rj-judul').textContent = bk ? 'Catat layanan BK' : 'Rujuk ke layanan BK';
     $('rj-siswa').textContent = s.nama + ' · ' + s.kelas;
-    $('rj-ket').textContent = bk ? 'Catat murid yang datang sendiri, dirujuk orang tua, atau ditemukan dari deteksi dini. Isi konseling tidak dicatat di aplikasi.'
-      : 'Rujukan tidak menambah poin dan tidak menggantikan pembinaan kedisiplinan. Guru BK menerima pemberitahuan tanpa alasan rujukan; Anda hanya melihat statusnya.';
-    $('rj-sumber-wadah').hidden = !bk;
+    $('rj-ket').textContent = bk ? 'Catat murid yang dirujuk orang tua atau datang sendiri. Isi konseling tetap di rekap BK, tidak di aplikasi.'
+      : 'Rujukan bukan sanksi dan tidak menambah poin. Setelah disimpan, cetak formulirnya dan serahkan tertulis ke Guru BK.';
     $('rj-sinyal').innerHTML = (o.sinyal || []).map((x) => '<span class="chip info">' + esc(x) + '</span>').join(' ');
     $('rj-sinyal').hidden = !(o.sinyal || []).length;
     $('rj-sinyal').dataset.teks = (o.sinyal || []).join('; ');
-    $('rj-alasan').value = ''; $('rj-pesan').textContent = '';
-    $('rj-alasan').placeholder = bk ? 'Contoh: datang sendiri, ingin berbicara tentang hubungan dengan teman' : 'Contoh: tiga minggu ini sering murung dan alfa, orang tua bercerai';
-    $('modal-rujuk').hidden = false; $('rj-alasan').focus();
+    $('rj-ulang').hidden = true;
+    $('rj-alasan').value = ''; $('rj-pesan').textContent = ''; $('rj-penanganan').textContent = ''; $('rj-centang').innerHTML = '';
+    $('rj-alasan').placeholder = bk ? 'Contoh: diantar orang tua, ingin dibantu soal hubungan dengan teman' : 'Contoh: berkelahi di kantin dengan teman sekelas, setelah itu masih saling menyindir di kelas';
+    $('rj-sumber').innerHTML = ''; $('rj-perilaku').innerHTML = '<option value="">Memuat panduan BK…</option>';
+    $('rj-form').hidden = false; $('rj-hasil').hidden = true; $('rj-kirim').disabled = true;
+    $('modal-rujuk').hidden = false;
+    try {
+      const d = await api('bk.panduan', { nis: o.nis });
+      if (RJ.nis !== o.nis) return;
+      RJ.panduan = d;
+      $('rj-sumber').innerHTML = d.sumber.map((x) => '<option>' + esc(x) + '</option>').join('');
+      const awal = o.sumber || (d.berulang.length ? 'Berulang setelah perjanjian' : 'Rujukan guru');
+      if (d.sumber.indexOf(awal) > -1) $('rj-sumber').value = awal;
+      if (d.berulang.length) {
+        $('rj-ulang').innerHTML = '<strong>Mengulang setelah perjanjian</strong><ul>' + d.berulang.map((x) => '<li>' + esc(x) + '</li>').join('') + '</ul>';
+        $('rj-ulang').hidden = false;
+      }
+      $('rj-perilaku').innerHTML = d.panduan.map((x, i) => '<option value="' + i + '">' + esc(x.perilaku) + (x.tercatat ? ' (tercatat ' + x.tercatat + ' kali)' : '') + '</option>').join('') +
+        '<option value="-">Lainnya, belum ada di panduan</option>';
+      $('rj-perilaku').value = d.panduan.length && d.panduan[0].tercatat ? '0' : '-';
+      if (o.perilaku) { const i = d.panduan.findIndex((x) => x.perilaku === o.perilaku); if (i > -1) $('rj-perilaku').value = String(i); }
+      gambarCentang();
+      $('rj-kirim').disabled = false;
+      $('rj-alasan').focus();
+    } catch (e) { $('rj-pesan').textContent = e.message; $('rj-perilaku').innerHTML = '<option value="-">Lainnya</option>'; }
+  }
+  function gambarCentang() {
+    const d = RJ.panduan; if (!d) return;
+    const v = $('rj-perilaku').value, row = v === '-' ? null : d.panduan[Number(v)];
+    const umum = d.alasanUmum[$('rj-sumber').value];
+    const lama = new Set([...document.querySelectorAll('#rj-centang input:checked')].map((x) => x.value));
+    const daftar = (umum ? [umum] : []).concat(row ? row.alasan : []);
+    if (!row) daftar.push('Membutuhkan pendampingan pribadi, sosial, belajar, atau karier');
+    $('rj-penanganan').textContent = row && row.penanganan ? 'Penanganan Tata Tertib: ' + row.penanganan + '.' : '';
+    $('rj-centang').innerHTML = daftar.map((x, i) => '<label class="rj-cek"><input type="checkbox" value="' + esc(x) + '"' + ((x === umum || lama.has(x)) ? ' checked' : '') + '> <span>' + esc(x) + '</span></label>').join('');
   }
   async function kirimRujuk() {
     const alasan = $('rj-alasan').value.trim();
-    if (alasan.length < 10) { $('rj-pesan').textContent = 'Tulis alasan singkat dan faktual, minimal 10 huruf.'; return; }
+    const pilihan = [...document.querySelectorAll('#rj-centang input:checked')].map((x) => x.value);
+    if (!pilihan.length) { $('rj-pesan').textContent = 'Centang minimal satu alasan dirujuk ke BK.'; return; }
+    if (alasan.length < 10) { $('rj-pesan').textContent = 'Tulis fakta yang diamati, minimal 10 huruf.'; $('rj-alasan').focus(); return; }
+    const v = $('rj-perilaku').value, row = RJ.panduan && v !== '-' && v !== '' ? RJ.panduan.panduan[Number(v)] : null;
     $('rj-kirim').disabled = true; $('rj-pesan').textContent = '';
     try {
-      const d = await api('bk.rujuk', { nis: RJ.nis, alasan: alasan, sinyal: $('rj-sinyal').dataset.teks || '', sumber: $('rj-sumber').value, kunci: RJ.kunci });
-      $('modal-rujuk').hidden = true;
-      toast(d.sudahAda ? d.rujukan.nama + ' sudah dirujuk dan masih ditangani BK (' + d.rujukan.status.toLowerCase() + ').'
-        : S.akses.layananBK ? 'Tercatat di daftar layanan BK.' : 'Rujukan terkirim ke Guru BK.', 'hadir', 4500);
+      const d = await api('bk.rujuk', { nis: RJ.nis, alasan: alasan, pilihan: pilihan, perilaku: row ? row.perilaku : '', sinyal: $('rj-sinyal').dataset.teks || '', sumber: $('rj-sumber').value, kunci: RJ.kunci });
       LY.rujukan = null;
       if (RJ.sesudah) RJ.sesudah(d.rujukan);
+      tampilHasilRujuk(d.rujukan, d.sudahAda);
     } catch (e) { $('rj-pesan').textContent = e.message; }
     $('rj-kirim').disabled = false;
+  }
+  /** Langkah sesudah rujukan tersimpan: formulir PDF untuk diserahkan tertulis. */
+  async function tampilHasilRujuk(r, sudahAda) {
+    $('rj-judul').textContent = 'Formulir rujukan BK';
+    $('rj-siswa').textContent = r.nama + ' · ' + r.kelas;
+    $('rj-form').hidden = true; $('rj-hasil').hidden = false; $('modal-rujuk').hidden = false;
+    $('rj-langkah').textContent = sudahAda ? r.nama + ' sudah dirujuk sebelumnya (' + r.status.toLowerCase() + '). Formulir rujukan yang sama bisa dicetak ulang.'
+      : 'Rujukan ' + r.id + ' tersimpan. Rujukan sah setelah formulirnya diserahkan tertulis ke Guru BK.';
+    $('rj-pdf').innerHTML = '<p class="memuat">Menyusun formulir PDF…</p>';
+    try { const d = await api('bk.pdf', { id: r.id }); $('rj-pdf').innerHTML = tautanPdf('Formulir rujukan siap dicetak', pdfDariBase64(d)); }
+    catch (e) { $('rj-pdf').innerHTML = '<p class="pesan-galat">' + esc(e.message) + '</p>'; }
   }
   function pasangLayanan() {
     if (S.siap.layanan) return;
@@ -2802,7 +2849,7 @@
   async function muatLayanan() {
     pasangLayanan();
     const bk = !!S.akses.layananBK;
-    const bisaSinyal = bk || punya(['Wali Kelas', 'Tim Tatib', 'Koordinator Tatib', 'Wakasek']);
+    const bisaSinyal = (punya(['Wali Kelas']) && !!S.guru.kelasWali) || punya(['Tim Tatib', 'Koordinator Tatib', 'Wakasek']);
     const bisaRujuk = !!S.akses.rujukBK;
     if (!LY.f) LY.f = bisaSinyal ? 'sinyal' : bisaRujuk ? 'rujukan' : 'pola';
     $('ly-segmen').querySelector('[data-f="pola"]').hidden = !S.akses.polaBK;
@@ -2812,11 +2859,11 @@
     $('ly-segmen').querySelector('[data-f="rujukan"]').textContent = bk ? 'Rujukan' : 'Rujukan saya';
     document.querySelectorAll('#ly-segmen button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.f === LY.f)));
     $('ly-baru').hidden = LY.f !== 'rujukan';
-    $('ly-baru').textContent = bk ? 'Catat murid datang sendiri' : 'Rujuk murid lain';
+    $('ly-baru').textContent = bk ? 'Catat rujukan orang tua / datang sendiri' : 'Rujuk murid lain';
     $('ly-pilih').hidden = true;
     const ket = {
-      sinyal: 'Murid yang menunjukkan tanda perlu perhatian. Ini bahan pertimbangan, bukan rujukan otomatis' + (bk ? '; Guru BK yang menentukan perlu layanan atau tidak.' : '; Anda yang memutuskan merujuk atau cukup membina sendiri.'),
-      rujukan: bk ? 'Rujukan dari guru dan murid yang datang sendiri. Isi konseling tidak dicatat di aplikasi.' : 'Status rujukan yang Anda buat. Isi layanan BK bersifat rahasia.',
+      sinyal: 'Murid yang menunjukkan tanda perlu perhatian, termasuk yang mengulang setelah perjanjian. Ini bahan pertimbangan, bukan rujukan otomatis; Anda yang memutuskan merujuk atau cukup membina sendiri.',
+      rujukan: bk ? 'Rujukan tertulis yang masuk. Formulir aslinya diserahkan perujuk; isi layanan tetap di rekap BK.' : 'Rujukan yang Anda buat. Cetak formulirnya dan serahkan ke Guru BK; isi layanan BK bersifat rahasia.',
       pola: 'Pola pelanggaran tanpa nama murid, bahan merencanakan bimbingan klasikal dan pencegahan.'
     };
     $('ly-ket').textContent = ket[LY.f];
@@ -2833,10 +2880,9 @@
     const bk = !!S.akses.layananBK;
     $('ly-isi').innerHTML = '<ol class="daftar-kartu">' + d.map((x) => '<li class="kasus ly-sinyal' + (x.rujukan ? '' : ' k-sedang') + '" data-nis="' + esc(x.nis) + '">' +
       '<div class="kasus-kepala">' + fotoHtml(x) + '<span><span class="nm">' + esc(x.nama) + '</span><span class="kl">' + esc(x.kelas) + '</span></span>' +
-      (x.rujukan ? '<span class="tag hijau">BK: ' + esc(x.rujukan.toLowerCase()) + '</span>' : '') + '</div>' +
+      (x.rujukan ? '<span class="tag hijau">BK: ' + esc(x.rujukan.toLowerCase()) + '</span>' : x.berulang ? '<span class="tag emas">Mengulang setelah perjanjian</span>' : '') + '</div>' +
       '<ul class="ly-tanda">' + x.sinyal.map((t) => '<li>' + esc(t) + '</li>').join('') + '</ul>' +
-      (x.rujukan ? '' : '<div class="aksi"><button type="button" class="tombol ' + (bk ? 'tombol-garis' : 'tombol-utama') + '" data-aksi="rujuk">' +
-        (bk ? 'Terima sebagai layanan' : 'Rujuk ke BK') + '</button>' + (S.akses.riwayat ? '<button type="button" class="tautan" data-aksi="riwayat">Riwayat siswa</button>' : '') + '</div>') + '</li>').join('') + '</ol>';
+      (x.rujukan ? '' : '<div class="aksi"><button type="button" class="tombol ' + (x.berulang ? 'tombol-utama' : 'tombol-garis') + '" data-aksi="rujuk">Rujuk ke BK</button>' + (S.akses.riwayat ? '<button type="button" class="tautan" data-aksi="riwayat">Riwayat siswa</button>' : '') + '</div>') + '</li>').join('') + '</ol>';
     d.forEach((x) => muatFoto(x.nis));
   }
   const URUT_STATUS_RJ = ['Baru', 'Diterima', 'Ditindaklanjuti', 'Selesai'];
@@ -2849,7 +2895,10 @@
         '<div class="kasus-kepala">' + fotoHtml(x) + '<span><span class="nm">' + esc(x.nama) + '</span><span class="kl">' + esc(x.kelas) + '</span></span><span class="wkt">' + esc(x.waktu.slice(0, 10)) + '</span></div>' +
         '<p class="meta">' + esc(x.sumber) + (x.perujuk ? ' · ' + esc(x.perujuk) : '') + ' · <strong>' + esc(x.status) + '</strong>' + (x.bk && x.status !== 'Baru' ? ' oleh ' + esc(x.bk) : '') + '</p>' +
         (x.alasan ? '<div class="catatan">' + esc(x.alasan) + '</div>' : '') +
+        (x.perilaku ? '<p class="meta">Perilaku: ' + esc(x.perilaku) + '</p>' : '') +
+        ((x.pilihan || []).length ? '<ul class="ly-tanda">' + x.pilihan.map((p) => '<li>' + esc(p) + '</li>').join('') + '</ul>' : '') +
         (x.sinyal ? '<p class="meta">Sinyal: ' + esc(x.sinyal) + '</p>' : '') +
+        '<div class="aksi"><button type="button" class="tautan" data-aksi="pdf">' + ikon('surat') + (x.pdf ? 'Formulir rujukan (PDF)' : 'Buat formulir rujukan (PDF)') + '</button></div><div class="rj-pdf-wadah"></div>' +
         (d.bk && i < 3 ? '<div class="aksi">' + URUT_STATUS_RJ.slice(i + 1).map((st, k) => '<button type="button" class="tombol ' + (k === 0 ? 'tombol-utama' : 'tombol-garis') + '" data-status="' + st + '">' + st + '</button>').join('') + '</div>' : '') +
         '</li>';
     }).join('') + '</ol>';
@@ -2879,9 +2928,14 @@
     const li = a.closest('[data-nis]');
     if (a.dataset.aksi === 'rujuk') {
       const x = LY.sinyal.item.filter((y) => y.nis === li.dataset.nis)[0];
-      bukaRujuk({ nis: x.nis, nama: x.nama, kelas: x.kelas, sinyal: x.sinyal, sesudah: () => { x.rujukan = S.akses.layananBK ? 'Diterima' : 'Baru'; renderSinyal(); } });
-      if (S.akses.layananBK) $('rj-sumber').value = 'Deteksi dini';
+      bukaRujuk({ nis: x.nis, nama: x.nama, kelas: x.kelas, sinyal: x.sinyal, sumber: x.berulang ? 'Berulang setelah perjanjian' : '', sesudah: () => { x.rujukan = 'Baru'; renderSinyal(); } });
       return;
+    }
+    if (a.dataset.aksi === 'pdf') {
+      const w = li.querySelector('.rj-pdf-wadah'); a.disabled = true; w.innerHTML = '<p class="memuat">Menyusun formulir…</p>';
+      try { const d = await api('bk.pdf', { id: li.dataset.id }); w.innerHTML = tautanPdf('Formulir rujukan siap dicetak', pdfDariBase64(d)); }
+      catch (er) { w.innerHTML = '<p class="pesan-galat">' + esc(er.message) + '</p>'; }
+      a.disabled = false; return;
     }
     if (a.dataset.aksi === 'riwayat') { bukaRiwayatDari(li.dataset.nis); return; }
     if (a.dataset.status) {
@@ -2892,6 +2946,11 @@
         renderRujukan(); toast('Status rujukan: ' + d.rujukan.status + '.', 'hadir');
       } catch (er) { a.disabled = false; toast(er.message, 'galat', 5000); }
     }
+  }
+  function rujukanSesudahValidasi(r) {
+    if (!r) return;
+    if (r.galat) { toast('Program selesai, tetapi rujukan BK gagal dibuat: ' + r.galat, 'galat', 7000); return; }
+    tampilHasilRujuk(r, false);
   }
   function berandaBK(b) {
     if (!b) return '';
@@ -3361,6 +3420,7 @@
         '<div class="dua-kolom"><div><label class="label">Mulai</label><input type="date" class="isian" data-ubah="mulai" value="' + esc(p.mulai) + '"></div>' +
         '<div><label class="label">Jumlah hari sekolah</label><input type="number" class="isian" min="1" max="60" data-ubah="hari" value="' + p.jumlah + '"></div></div>' +
         '<label class="label">Alasan perubahan</label><input type="text" class="isian" maxlength="200" data-ubah="alasan" placeholder="Contoh: kesepakatan dengan orang tua">' +
+        (p.status === 'Berjalan' ? '<label class="rj-cek"><input type="checkbox" data-ubah-cek="rujukBK" checked> <span>Bila diselesaikan, rujuk ke BK untuk refleksi perilaku dan komitmen</span></label>' : '') +
         '<div class="aksi-riwayat"><button type="button" class="tombol tombol-utama" data-aksi="simpan-ubah">Simpan perubahan</button>' +
         (p.status === 'Berjalan' ? '<button type="button" class="tombol tombol-garis" data-aksi="selesai">' + (p.tahap === 'Tuntas' ? 'Validasi selesai' : 'Selesaikan lebih awal') + '</button>' : '<button type="button" class="tombol tombol-garis" data-aksi="lanjut">Buka lagi</button>') +
         '<button type="button" class="tautan merah" data-aksi="batal">Batalkan masa pembinaan</button></div></details>';
@@ -3393,7 +3453,7 @@
     const nilai = (k) => { const x = rinci.querySelector('[data-ubah="' + k + '"]'); return x ? x.value.trim() : ''; };
     let kirim = null;
     if (aksi === 'simpan-ubah') kirim = { id: id, mulai: nilai('mulai'), jumlahHari: nilai('hari'), alasan: nilai('alasan') };
-    if (aksi === 'selesai') kirim = { id: id, ubah: 'selesai', alasan: nilai('alasan') };
+    if (aksi === 'selesai') { const cek = rinci.querySelector('[data-ubah-cek="rujukBK"]'); kirim = { id: id, ubah: 'selesai', alasan: nilai('alasan'), rujukBK: !!(cek && cek.checked) }; }
     if (aksi === 'lanjut') kirim = { id: id, ubah: 'lanjut', alasan: nilai('alasan') };
     if (aksi === 'batal') {
       if (a.dataset.yakin !== '1') { a.dataset.yakin = '1'; a.textContent = 'Ketuk lagi untuk membatalkan'; if (!nilai('alasan')) { rinci.querySelector('[data-ubah="alasan"]').focus(); toast('Tulis alasan pembatalan dulu.', 'galat'); } return; }
@@ -3404,6 +3464,7 @@
     try {
       const d = await api('program.ubah', kirim);
       gantiProgram(d.program);
+      if (aksi === 'selesai') rujukanSesudahValidasi(d.rujukan);
       toast(aksi === 'simpan-ubah' ? 'Jadwal diperbarui. Selesai ' + tglManis(d.program.selesai, true) + '.' : 'Status: ' + d.program.tahap + '.' + (d.ketPotongan ? ' ' + d.ketPotongan : ''), 'hadir', 5000);
     } catch (er) { a.disabled = false; toast(er.message, 'galat', 5000); }
   }
@@ -3775,6 +3836,9 @@
     $('kor-batal').addEventListener('click', () => { $('modal-koreksi').hidden = true; });
     $('rj-batal').addEventListener('click', () => { $('modal-rujuk').hidden = true; });
     $('rj-kirim').addEventListener('click', kirimRujuk);
+    $('rj-tutup').addEventListener('click', () => { $('modal-rujuk').hidden = true; });
+    $('rj-perilaku').addEventListener('change', gambarCentang);
+    $('rj-sumber').addEventListener('change', gambarCentang);
     $('kor-simpan').addEventListener('click', simpanKoreksi);
     $('modal-foto').addEventListener('click', (e) => { if (e.target === $('modal-foto')) $('modal-foto').hidden = true; });
     $('scan-tutup').addEventListener('click', tutupScan);

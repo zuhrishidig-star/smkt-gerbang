@@ -470,3 +470,17 @@ body.kios .k-merah { box-shadow: none; }
 .ly-kelas small { display: block; font-size: 12.5px; margin-top: 2px; }
 .ly-jenjang { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 0; }
 @media (max-width: 599px) { .ly-pola .ang { display: none; } }
+
+/* v1.20 · Rujukan tertulis ke BK */
+.rj-ulang { margin: 8px 0 0; padding: 10px 12px; border-radius: 10px; background: var(--emas-latar); font-size: 14.5px; }
+.rj-ulang ul { margin: 4px 0 0; padding-left: 18px; }
+.rj-pilihan { border: 0; margin: 10px 0 0; padding: 0; min-width: 0; }
+.rj-pilihan legend { padding: 0; }
+.rj-cek { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; font-size: 15px; line-height: 1.35; cursor: pointer; }
+.rj-cek input { width: 20px; height: 20px; flex: none; margin: 1px 0 0; accent-color: var(--dongker); }
+.rs-validasi .rj-cek, .prg-ubah .rj-cek { margin-top: 4px; }
+.rj-langkah { font-weight: 600; margin: 8px 0 4px; }
+.rj-urut { margin: 0 0 10px; padding-left: 20px; font-size: 14.5px; }
+.rj-urut li + li { margin-top: 4px; }
+#rj-pdf .surat-siap { margin-top: 4px; }
+.rj-pdf-wadah:empty { display: none; }

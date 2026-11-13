@@ -735,16 +735,35 @@
     <div class="modal-isi">
       <h2 id="rj-judul" class="judul-blok">Rujuk ke layanan BK</h2>
       <p id="rj-siswa" style="font-weight:700;margin:0"></p>
-      <p class="keterangan" id="rj-ket"></p>
-      <p id="rj-sinyal" class="rj-sinyal" hidden></p>
-      <div id="rj-sumber-wadah" hidden><label class="label" for="rj-sumber">Asal</label>
-        <select id="rj-sumber" class="isian"><option>Datang sendiri</option><option>Orang tua</option><option>Deteksi dini</option><option>Rujukan guru</option></select></div>
-      <label class="label" for="rj-alasan">Alasan singkat dan faktual</label>
-      <textarea id="rj-alasan" class="isian" rows="3" maxlength="500"></textarea>
-      <p class="pesan-galat" id="rj-pesan" aria-live="polite"></p>
-      <div class="modal-aksi">
-        <button id="rj-batal" class="tombol tombol-garis" type="button">Batal</button>
-        <button id="rj-kirim" class="tombol tombol-utama" type="button">Kirim</button>
+      <div id="rj-form">
+        <p class="keterangan" id="rj-ket"></p>
+        <p id="rj-sinyal" class="rj-sinyal" hidden></p>
+        <div id="rj-ulang" class="rj-ulang" hidden></div>
+        <label class="label" for="rj-sumber">Jenis rujukan</label>
+        <select id="rj-sumber" class="isian"></select>
+        <label class="label" for="rj-perilaku">Perilaku yang diamati</label>
+        <select id="rj-perilaku" class="isian"><option value="">Memuat panduan BK…</option></select>
+        <p class="keterangan" id="rj-penanganan"></p>
+        <fieldset class="rj-pilihan"><legend class="label">Alasan dirujuk ke BK</legend><div id="rj-centang"></div></fieldset>
+        <label class="label" for="rj-alasan">Fakta yang diamati</label>
+        <textarea id="rj-alasan" class="isian" rows="3" maxlength="600"></textarea>
+        <p class="pesan-galat" id="rj-pesan" aria-live="polite"></p>
+        <div class="modal-aksi">
+          <button id="rj-batal" class="tombol tombol-garis" type="button">Batal</button>
+          <button id="rj-kirim" class="tombol tombol-utama" type="button">Simpan dan buat formulir</button>
+        </div>
+      </div>
+      <div id="rj-hasil" hidden>
+        <p class="rj-langkah" id="rj-langkah"></p>
+        <ol class="rj-urut">
+          <li>Cetak formulir rujukan.</li>
+          <li>Tanda tangani sebagai perujuk, lalu mintakan tanda tangan wali kelas.</li>
+          <li>Serahkan lembar asli ke Guru BK dan minta beliau mengisi kolom <em>Diterima Guru BK</em>. Simpan salinannya sebagai bukti.</li>
+        </ol>
+        <div id="rj-pdf"><p class="memuat">Menyusun formulir PDF…</p></div>
+        <div class="modal-aksi">
+          <button id="rj-tutup" class="tombol tombol-utama" type="button">Selesai</button>
+        </div>
       </div>
     </div>
   </div>
