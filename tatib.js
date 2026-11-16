@@ -729,9 +729,9 @@
     return '<section class="b-alfa"><h2 class="judul-bagian">Alfa ' + esc(a.semester) + '<small>' + a.jumlah + ' siswa 3 kali atau lebih</small></h2>' +
       '<ul class="daftar-pembinaan">' + a.siswa.map((x) => '<li><button type="button" class="tautan-baris" data-riwayat="' + esc(x.nis) + '"><span class="nm">' + esc(x.nama) +
         ' <span class="tag ' + (x.alfa >= 12 ? 'merah' : x.alfa >= 6 ? 'emas' : '') + '">' + x.alfa + ' alfa</span></span>' +
-        '<span class="mt">' + esc(x.kelas) + ' · ' + esc(tahap[x.tahap] || '') + (x.sisa <= 4 ? ' · <strong>' + (x.sisa ? 'sisa ' + x.sisa + ' hari sebelum batas ' + a.batas : 'mencapai batas ' + a.batas + ' (tidak naik kelas)') + '</strong>' : '') + '</span></button></li>').join('') +
+        '<span class="mt">' + esc(x.kelas) + ' · ' + esc(tahap[x.tahap] || '') + (x.sisa <= 4 ? ' · <strong>' + (x.sisa ? 'sisa ' + x.sisa + ' hari sebelum batas ' + a.batas : (x.alfa > a.batas ? 'melewati' : 'mencapai') + ' batas ' + a.batas + ' alfa; dibahas rapat kenaikan kelas') + '</strong>' : '') + '</span></button></li>').join('') +
         (a.jumlah > a.siswa.length ? '<li class="keterangan">dan ' + (a.jumlah - a.siswa.length) + ' siswa lainnya</li>' : '') + '</ul>' +
-      '<p class="keterangan">Alfa ke-3 ditangani wali kelas, ke-6 pertemuan orang tua bersama Tim Tatib, ke-12 ditangani Tim Tatib. Rujuk ke BK bila ada masalah di baliknya. Hitungan mulai dari nol setiap semester.</p></section>';
+      '<p class="keterangan">Alfa ke-3 ditangani wali kelas, ke-6 pertemuan orang tua bersama Tim Tatib, ke-12 ditangani Tim Tatib. Batas ' + a.batas + ' alfa dalam satu tahun pelajaran. Hitungan mulai dari nol setiap tahun pelajaran.</p></section>';
   }
   function renderBeranda() {
     const d = B.data;
@@ -1944,7 +1944,7 @@
     const k = d.kehadiran || {};
     h += '<div class="statistik">' + ['Hadir', 'Terlambat', 'Sakit', 'Izin', 'Alfa'].map((x) => '<div><b>' + (k[x] || 0) + '</b><span>' + x + '</span></div>').join('') + '</div>';
     if (d.alfaSemester) h += '<p class="keterangan">Alfa ' + esc(d.semester) + ': <strong>' + d.alfaSemester + ' hari</strong>' +
-      (d.alfaSemester >= 12 ? ', ditangani Tim Tatib' : d.alfaSemester >= 6 ? ', pertemuan orang tua bersama Tim Tatib' : d.alfaSemester >= 3 ? ', dipanggil wali kelas' : '') + '. Batas kenaikan kelas 14 hari.</p>';
+      (d.alfaSemester >= 12 ? ', ditangani Tim Tatib' : d.alfaSemester >= 6 ? ', pertemuan orang tua bersama Tim Tatib' : d.alfaSemester >= 3 ? ', dipanggil wali kelas' : '') + '. Batas ' + (d.batasAlfa || 12) + ' alfa dalam satu tahun pelajaran.</p>';
     h += '<h3 class="sub-judul">Pelanggaran (' + d.pelanggaran.length + ')</h3>';
     h += d.pelanggaran.length ? '<ol class="linimasa">' + d.pelanggaran.map((p) =>
       '<li class="' + kelasKat(p.kategori) + '"><strong>+' + p.poin + '</strong> ' + esc(p.pelanggaran) + (p.melawan ? ' <span class="tag merah">membangkang</span>' : '') +
@@ -2852,11 +2852,11 @@
     const d = LY.hadir;
     let h = '<div class="saring ly-periode" role="group" aria-label="Tampilkan"><button type="button" data-hadir="pantau" aria-pressed="' + (LY.hadirS === 'pantau') + '">Perlu pantauan</button>' +
       '<button type="button" data-hadir="semua" aria-pressed="' + (LY.hadirS === 'semua') + '">Semua</button></div>' +
-      '<p class="keterangan">Tahun ajaran ' + esc(d.tahun) + ' · ' + d.jumlah + ' murid. Alfa dihitung juga per semester (batas ' + d.batasAlfa + ').</p>';
+      '<p class="keterangan">Tahun ajaran ' + esc(d.tahun) + ' · ' + d.jumlah + ' murid. Batas alfa ' + d.batasAlfa + ' kali dalam satu tahun pelajaran.</p>';
     if (!d.item.length) { $('ly-isi').innerHTML = h + '<p class="kosong">' + (LY.hadirS === 'pantau' ? 'Tidak ada murid yang perlu pantauan kehadiran.' : 'Belum ada catatan alfa atau terlambat.') + '</p>'; return; }
     h += '<ul class="daftar-pembinaan ly-hadir">' + d.item.map((x) => '<li><button type="button" class="tautan-baris" data-riwayat-ly="' + esc(x.nis) + '"><span class="nm">' + esc(x.nama) + '</span>' +
       '<span class="mt">' + esc(x.kelas) + '</span><span class="ly-angka">' +
-      '<span class="tag' + (x.alfa >= d.ambang.alfa ? ' merah' : '') + '">Alfa ' + x.alfa + (x.alfaSem !== x.alfa ? ' (semester ini ' + x.alfaSem + ')' : '') + '</span>' +
+      '<span class="tag' + (x.alfa >= d.ambang.alfa ? ' merah' : '') + '">Alfa ' + x.alfa + '</span>' +
       '<span class="tag' + (x.telatBulan >= d.ambang.telat ? ' emas' : '') + '">Terlambat ' + esc(d.bulan) + ' ' + x.telatBulan + '</span>' +
       '<span class="tag">Terlambat setahun ' + x.telat + '</span>' + (x.izin || x.sakit ? '<span class="tag">Izin ' + x.izin + ' · Sakit ' + x.sakit + '</span>' : '') + '</span></button></li>').join('') + '</ul>';
     $('ly-isi').innerHTML = h;
