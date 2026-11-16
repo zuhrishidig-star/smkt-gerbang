@@ -1544,14 +1544,14 @@
     const b = $('c-simpan');
     if (C.plg.id === ID_LAPOR_BERAT) {
       b.textContent = C.menyimpan ? 'Mengirim…' : 'Laporkan ke Tim Tatib' + (C.lain.length ? ' (' + semuaTerlibat().length + ' siswa)' : '');
-      b.disabled = C.menyimpan || $('c-ket').value.trim().length < 15;
+      b.disabled = !!C.menyimpan;   // cerita kurang dari 15 huruf dijelaskan lewat pesan
       $('c-melawan-ket').hidden = true;
       return;
     }
     const k = keputusanLapor();
     b.textContent = C.menyimpan ? 'Menyimpan…' : (k.terus ? 'Simpan dan teruskan ke ' + k.ke : 'Simpan, selesai ditangani') + (C.lain.length ? ' (' + semuaTerlibat().length + ' siswa)' : '');
-    const kurangFakta = k.melawan && $('c-ket').value.trim().length < 10;
-    b.disabled = C.menyimpan || (!k.terus && !$('c-tindakan').value.trim()) || kurangFakta;
+    // Tombol tetap bisa diketuk; isian wajib yang kosong dijelaskan lewat pesan saat menyimpan.
+    b.disabled = !!C.menyimpan;
     $('c-melawan-ket').hidden = !k.melawan;
     if ($('c-ket-opsional')) $('c-ket-opsional').textContent = k.melawan ? '(wajib: ucapan atau tindakan siswa)' : '(opsional)';
   }
@@ -1559,7 +1559,7 @@
     if (C.menyimpan || !C.siswa || !C.plg) return;
     const k = keputusanLapor(), tindakan = $('c-tindakan').value.trim();
     if (!k.terus && !tindakan) { $('c-tindakan').focus(); toast('Tulis dulu tindakan yang sudah Anda lakukan.', 'galat'); return; }
-    if (k.melawan && $('c-ket').value.trim().length < 10) { $('c-ket').focus(); return; }
+    if (k.melawan && $('c-ket').value.trim().length < 10) { $('c-ket').focus(); toast('Siswa membangkang: tulis apa yang diucapkan atau dilakukan siswa di Keterangan kejadian.', 'galat', 6000); return; }
     const s = C.siswa, m = C.plg, r = C.ringkas;
     if (C.lain.length) { bukaKonfirmasiBanyak(k); return; }
     if (m.id === ID_LAPOR_BERAT) {
