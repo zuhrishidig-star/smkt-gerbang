@@ -78,7 +78,7 @@
     { id: 'siswa', label: 'Siswa', ikon: 'siswa', judul: 'Riwayat siswa', boleh: (a) => a.riwayat, ket: 'Poin, kehadiran, dan pembinaan per siswa' },
     { id: 'waspada', label: 'Waspada', ikon: 'waspada', judul: 'Waspada', boleh: (a) => a.zona, ket: 'Siswa yang poinnya mencapai level tindakan' },
     { id: 'pembinaan', label: 'Pembinaan', ikon: 'pembinaan', judul: 'Masa pembinaan', boleh: (a) => a.program, ket: 'Jadwal pembinaan dan skorsing per hari sekolah' },
-    { id: 'layanan', label: 'Pantauan BK', ikon: 'pulih', judul: 'Pantauan dan rujukan BK', boleh: (a) => a.layananBK || a.polaBK || a.sinyalBK, ket: 'Rujukan otomatis ke BK, tren pelanggaran, kehadiran, dan deteksi dini' },
+    { id: 'layanan', label: 'Pantauan BK', ikon: 'pulih', judul: 'Pantauan dan rujukan BK', boleh: (a) => a.layananBK || a.polaBK || a.sinyalBK || a.rujukBK, ket: 'Rujuk ke BK, tren pelanggaran, kehadiran, dan deteksi dini' },
     { id: 'restorasi', label: 'Restorasi', ikon: 'restorasi', judul: 'Restorasi', boleh: (a) => a.restorasi, ket: 'Catat kehadiran dan kegiatan siswa restorasi, Kartu Kendali' },
     { id: 'pulih', label: 'Pulih', ikon: 'pulih', judul: 'Pulih', boleh: (a) => a.pemulihan, ket: 'Program fisik dan pembinaan lain' },
     { id: 'titipan', label: 'Titipan', ikon: 'titipan', judul: 'Titipan HP dan barang', boleh: (a) => a.titipan, ket: 'HP dan barang sitaan: catat, tanda terima, pengembalian' },
@@ -106,7 +106,7 @@
   /** Nama menu yang disesuaikan per ruang kerja. */
   const MENU_RUANG = {
     bk: {
-      layanan: { label: 'Layanan BK', judul: 'Layanan BK', ket: 'Rujukan otomatis, tren pelanggaran, dan pantauan kehadiran murid' },
+      layanan: { label: 'Layanan BK', judul: 'Layanan BK', ket: 'Rujukan dari wali kelas dan Tim Tatib, tren pelanggaran, dan pantauan kehadiran murid' },
       kotak: { label: 'Layanan BK', judul: 'Permintaan layanan BK', ket: 'Siswa yang dirujuk untuk layanan konseling' },
       pulih: { label: 'Konseling', judul: 'Catatan layanan konseling', ket: 'Konseling individu, kelompok, dan tindak lanjut pengentasan' }
     },
@@ -2749,7 +2749,7 @@
    *  lanjutan. Rujukan dibuat otomatis oleh aplikasi; BK memantau tren
    *  pelanggaran dan kehadiran. Isi layanan BK dicatat di rekap BK.
    * ================================================================= */
-  const LY = { f: '', rujukan: null, sinyal: null, tren: null, trenP: 'ta', buka: '', hadir: null, hadirS: 'pantau', semuaRj: false };
+  const LY = { f: '', usulan: null, rujukan: null, sinyal: null, tren: null, trenP: 'ta', buka: '', hadir: null, hadirS: 'pantau', semuaRj: false };
   function pasangLayanan() {
     if (S.siap.layanan) return;
     S.siap.layanan = true;
@@ -2758,6 +2758,7 @@
   }
   function bagianLayanan() {
     return {
+      usulan: !!S.akses.rujukBK,
       rujukan: !!S.akses.layananBK || !!S.akses.polaBK,
       sinyal: !!S.akses.sinyalBK,
       tren: !!S.akses.polaBK,
@@ -2767,7 +2768,7 @@
   async function muatLayanan() {
     pasangLayanan();
     const ada = bagianLayanan();
-    const urut = S.akses.layananBK ? ['rujukan', 'tren', 'hadir', 'sinyal'] : ['sinyal', 'rujukan', 'tren', 'hadir'];
+    const urut = S.akses.layananBK ? ['rujukan', 'tren', 'hadir', 'usulan', 'sinyal'] : ['usulan', 'sinyal', 'rujukan', 'tren', 'hadir'];
     if (!LY.f || !ada[LY.f]) LY.f = urut.find((k) => ada[k]) || 'sinyal';
     const seg = $('ly-segmen'); let n = 0;
     seg.querySelectorAll('button[data-f]').forEach((b) => { b.hidden = !ada[b.dataset.f]; if (!b.hidden) n++; b.setAttribute('aria-pressed', String(b.dataset.f === LY.f)); });
@@ -2775,15 +2776,17 @@
     seg.style.gridTemplateColumns = 'repeat(' + Math.max(n, 1) + ', 1fr)';
     seg.hidden = n < 2;
     const ket = {
-      rujukan: 'Rujukan otomatis: pelanggaran Sedang II sampai Berat yang sama 2 kali, terlambat 3 kali dalam sebulan, alfa 3 kali, dan restorasi untuk pelanggaran yang sama kedua kalinya (per tahun ajaran).' + (S.akses.layananBK ? '' : ' Status diperbarui oleh Guru BK.'),
-      sinyal: 'Murid yang menunjukkan tanda perlu perhatian. Bila memenuhi ketentuan, murid dirujuk otomatis ke BK.',
+      usulan: 'Tombol Rujuk ke BK muncul otomatis untuk murid yang memenuhi ketentuan: pelanggaran Sedang II sampai Berat yang sama 2 kali dalam satu semester, terlambat 3 kali dalam sebulan, alfa 3 kali dalam setahun, atau restorasi untuk pelanggaran yang sama kedua kalinya.',
+      rujukan: 'Rujukan dari wali kelas dan Tim Tata Tertib.' + (S.akses.layananBK ? '' : ' Status diperbarui oleh Guru BK.'),
+      sinyal: 'Murid yang menunjukkan tanda perlu perhatian, sebagai bahan pembinaan.',
       tren: 'Jenis pelanggaran dan jumlahnya sebagai bahan asesmen dan bimbingan klasikal. Ketuk satu jenis untuk melihat murid yang melakukannya.',
       hadir: 'Pantauan kehadiran tahun ajaran ini. Alfa 3 kali dan terlambat 3 kali dalam sebulan perlu pantauan.'
     };
     $('ly-ket').textContent = ket[LY.f];
     $('ly-isi').innerHTML = '<p class="memuat">Memuat…</p>';
     try {
-      if (LY.f === 'sinyal') { LY.sinyal = await api('bk.sinyal'); renderSinyal(); }
+      if (LY.f === 'usulan') { LY.usulan = await api('bk.usulan'); renderUsulan(); }
+      else if (LY.f === 'sinyal') { LY.sinyal = await api('bk.sinyal'); renderSinyal(); }
       else if (LY.f === 'rujukan') { LY.rujukan = await api('bk.daftar'); renderRujukan(); }
       else if (LY.f === 'tren') { await muatTren(); }
       else { LY.hadir = await api('bk.hadir', { saring: LY.hadirS }); renderHadir(); }
@@ -2799,6 +2802,20 @@
       (S.akses.riwayat ? '<div class="aksi"><button type="button" class="tautan" data-aksi="riwayat">Riwayat siswa</button></div>' : '') + '</li>').join('') + '</ol>';
     d.forEach((x) => muatFoto(x.nis));
   }
+  function renderUsulan() {
+    const d = LY.usulan.item;
+    if (!d.length) { $('ly-isi').innerHTML = '<p class="kosong">Belum ada murid yang memenuhi ketentuan rujukan ke BK.</p>'; return; }
+    $('ly-isi').innerHTML = '<ol class="daftar-kartu">' + d.map((x) => '<li class="kasus k-sedang" data-kunci="' + esc(x.kunci) + '" data-nis="' + esc(x.nis) + '">' +
+      '<div class="kasus-kepala">' + fotoHtml(x) + '<span><span class="nm">' + esc(x.nama) + '</span><span class="kl">' + esc(x.kelas) + '</span></span><span class="wkt">' + esc(x.waktu) + '</span></div>' +
+      '<p class="meta"><span class="tag emas">' + esc(x.sumber) + '</span>' + (x.rujukanBK ? ' <span class="tag hijau">sudah ada rujukan lain: ' + esc(x.rujukanBK.toLowerCase()) + '</span>' : '') + '</p>' +
+      '<p class="ly-alasan">' + esc(x.alasan) + (x.sinyal ? ' <span class="redup">(' + esc(x.sinyal) + ')</span>' : '') + '</p>' +
+      ((x.penanganan || []).length ? '<p class="label-kecil">Penanganan Tata Tertib</p><ul class="ly-tanda">' + x.penanganan.map((p) => '<li>' + esc(p) + '</li>').join('') + '</ul>' : '') +
+      '<label class="label-kecil" for="us-' + esc(x.kunci) + '">Catatan untuk Guru BK (boleh dikosongkan)</label>' +
+      '<input id="us-' + esc(x.kunci) + '" class="isian" maxlength="400" data-isi="catatan" placeholder="Contoh: sudah dinasihati dua kali, orang tua sudah dihubungi">' +
+      '<div class="aksi"><button type="button" class="tombol tombol-utama" data-aksi="rujuk">Rujuk ke BK</button>' +
+      (S.akses.riwayat ? '<button type="button" class="tautan" data-aksi="riwayat">Riwayat siswa</button>' : '') + '</div></li>').join('') + '</ol>';
+    d.forEach((x) => muatFoto(x.nis));
+  }
   const URUT_STATUS_RJ = ['Baru', 'Diterima', 'Ditindaklanjuti', 'Selesai'];
   function renderRujukan() {
     const d = LY.rujukan;
@@ -2812,6 +2829,7 @@
       return '<li class="kasus ' + (x.status === 'Baru' ? 'k-sedang' : x.status === 'Selesai' ? 'k-ringan' : '') + '" data-id="' + esc(x.id) + '" data-nis="' + esc(x.nis) + '">' +
         '<div class="kasus-kepala">' + fotoHtml(x) + '<span><span class="nm">' + esc(x.nama) + '</span><span class="kl">' + esc(x.kelas) + '</span></span><span class="wkt">' + esc(x.waktu.slice(0, 10)) + '</span></div>' +
         '<p class="meta"><span class="tag emas">' + esc(x.sumber) + '</span> · <strong>' + esc(x.status) + '</strong>' + (x.bk && x.status !== 'Baru' ? ' oleh ' + esc(x.bk) : '') + '</p>' +
+        (x.perujuk && !x.otomatis ? '<p class="meta">Dirujuk oleh ' + esc(x.perujuk) + '</p>' : '') +
         '<p class="ly-alasan">' + esc(x.alasan || '') + (x.sinyal ? ' <span class="redup">(' + esc(x.sinyal) + ')</span>' : '') + '</p>' +
         ((x.penanganan || []).length ? '<p class="label-kecil">Penanganan Tata Tertib</p><ul class="ly-tanda">' + x.penanganan.map((p) => '<li>' + esc(p) + '</li>').join('') + '</ul>' : '') +
         ((x.kemungkinan || []).length ? '<p class="label-kecil">Kemungkinan kebutuhan (panduan BK' + (x.perilaku ? ': ' + esc(x.perilaku.toLowerCase()) : '') + ')</p><ul class="ly-tanda">' + x.kemungkinan.map((p) => '<li>' + esc(p) + '</li>').join('') + '</ul>' : '') +
@@ -2876,6 +2894,17 @@
     }
     const li = a.closest('[data-nis]');
     if (a.dataset.aksi === 'riwayat') { bukaRiwayatDari(li.dataset.nis); return; }
+    if (a.dataset.aksi === 'rujuk') {
+      a.disabled = true;
+      try {
+        const cat = li.querySelector('[data-isi="catatan"]');
+        const d = await api('bk.rujuk', { kunci: li.dataset.kunci, catatan: cat ? cat.value.trim() : '' });
+        LY.usulan.item = LY.usulan.item.filter((x) => x.kunci !== li.dataset.kunci);
+        toast(d.rujukan.nama + (d.sudahAda ? ' sudah dirujuk ke BK sebelumnya.' : ' dirujuk ke BK.'), 'hadir', 5000);
+        renderUsulan(); LY.rujukan = null;
+      } catch (er) { a.disabled = false; toast(er.message, 'galat', 5000); }
+      return;
+    }
     if (a.dataset.status) {
       a.disabled = true;
       try {
@@ -2888,11 +2917,12 @@
   function berandaBK(b) {
     if (!b) return '';
     let h = '';
-    if (b.rujukanBaru) h += '<section><h2 class="judul-bagian">Layanan BK</h2><ul class="baris-aksi">' + barisAksi('#layanan', 'emas', 'siswa', 'Rujukan baru', b.rujukanBaru + ' murid dirujuk otomatis ke BK', b.rujukanBaru) + '</ul></section>';
+    if (b.rujukanBaru) h += '<section><h2 class="judul-bagian">Layanan BK</h2><ul class="baris-aksi">' + barisAksi('#layanan', 'emas', 'siswa', 'Rujukan baru', b.rujukanBaru + ' murid dirujuk ke BK', b.rujukanBaru) + '</ul></section>';
+    if (b.usulan) h += '<section><h2 class="judul-bagian">Rujukan ke BK</h2><ul class="baris-aksi">' + barisAksi('#layanan', 'emas', 'pulih', 'Siap dirujuk ke BK', b.usulan + ' murid memenuhi ketentuan pengulangan', b.usulan) + '</ul></section>';
     if (b.sinyal) {
       h += '<section class="b-sinyal"><h2 class="judul-bagian">Deteksi dini<small>' + b.sinyal + ' murid perlu perhatian</small></h2><ul class="daftar-pembinaan">' +
         b.contoh.map((x) => '<li><button type="button" class="tautan-baris" data-riwayat="' + esc(x.nis) + '"><span class="nm">' + esc(x.nama) + '</span><span class="mt">' + esc(x.kelas) + ' · ' + esc(x.sinyal.slice(0, 2).join('; ')) + '</span></button></li>').join('') +
-        '</ul><p class="keterangan"><a href="#layanan">Lihat semua</a>. Murid yang memenuhi ketentuan dirujuk otomatis ke BK.</p></section>';
+        '</ul><p class="keterangan"><a href="#layanan">Lihat semua</a>.</p></section>';
     }
     return h;
   }
