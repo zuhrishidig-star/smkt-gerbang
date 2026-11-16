@@ -487,6 +487,11 @@ textarea.isian { min-height: 0; resize: vertical; }
 /* ---------- Dasbor ---------- */
 #b-dasbor { margin-top: 14px; }
 #b-dasbor:empty { display: none; }
+/* Tugas utama ruang kerja (tugas piket, rujukan BK) di atas ringkasan sekolah */
+.b-utama:empty { display: none; }
+.b-utama > section .judul-bagian { margin-top: 18px; }
+.tautan-baris.tanpa-tautan { cursor: default; }
+.ly-arti { margin: 4px 0 10px; }
 .dasbor-stat { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .stat {
   background: var(--putih); border-radius: 18px; padding: 14px 16px; min-width: 0;

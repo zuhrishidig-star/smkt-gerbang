@@ -82,7 +82,7 @@
     { id: 'restorasi', label: 'Restorasi', ikon: 'restorasi', judul: 'Restorasi', boleh: (a) => a.restorasi, ket: 'Catat kehadiran dan kegiatan siswa restorasi, Kartu Kendali' },
     { id: 'pulih', label: 'Pulih', ikon: 'pulih', judul: 'Pulih', boleh: (a) => a.pemulihan, ket: 'Program fisik dan pembinaan lain' },
     { id: 'titipan', label: 'Titipan', ikon: 'titipan', judul: 'Titipan HP dan barang', boleh: (a) => a.titipan, ket: 'HP dan barang sitaan: catat, tanda terima, pengembalian' },
-    { id: 'absen', label: 'Absen', ikon: 'absen', judul: 'Absen', boleh: (a) => a.izin, ket: 'Catat izin atau sakit siswa' },
+    { id: 'absen', label: 'Izin', ikon: 'absen', judul: 'Izin, sakit, pulang, UKS', boleh: (a) => a.izin, ket: 'Izin tidak masuk, pulang awal dijemput, istirahat di UKS, dispensasi' },
     { id: 'ekskul', label: 'Ekskul', ikon: 'ekskul', judul: 'Absensi ekskul', boleh: (a) => a.ekskul, ket: 'Kehadiran anggota ekstrakurikuler yang Anda bina' },
     { id: 'akun', label: 'Akun guru', ikon: 'siswa', judul: 'Kelola akun guru', boleh: (a) => a.akun, ket: 'Email, peran, dan kelas wali setiap guru' },
     { id: 'bintang', label: 'Bintang Pagi', ikon: 'bintang', judul: 'Bintang Pagi', boleh: (a) => a.bintang, ket: 'Siswa yang konsisten datang pagi, per siswa dan per kelas' },
@@ -106,13 +106,13 @@
   /** Nama menu yang disesuaikan per ruang kerja. */
   const MENU_RUANG = {
     bk: {
-      layanan: { label: 'Layanan BK', judul: 'Layanan BK', ket: 'Rujukan dari wali kelas dan Tim Tatib, tren pelanggaran, dan pantauan kehadiran murid' },
+      layanan: { label: 'Layanan BK', judul: 'Layanan BK', ket: 'Rujukan dari wali kelas dan Tim Tatib, tren pelanggaran, dan pantauan kehadiran siswa' },
       kotak: { label: 'Layanan BK', judul: 'Permintaan layanan BK', ket: 'Siswa yang dirujuk untuk layanan konseling' },
       pulih: { label: 'Konseling', judul: 'Catatan layanan konseling', ket: 'Konseling individu, kelompok, dan tindak lanjut pengentasan' }
     },
     agama: { pulih: { label: 'Spiritual', judul: 'Pembinaan spiritual', ket: 'Sholat berjamaah, baca Yasin, BTQ untuk siswa binaan' } },
     olahraga: { pulih: { label: 'Fisik', judul: 'Pembinaan fisik', ket: 'Program fisik untuk siswa binaan' } },
-    piket: { absen: { label: 'Izin', judul: 'Izin, sakit, pulang, UKS', ket: 'Izin tidak masuk, pulang awal dijemput, istirahat di UKS, dispensasi' } }
+    piket: {}
   };
   /** Istilah layanan BK: fokus pengentasan masalah, bukan penanganan kasus. */
   const ISTILAH_BK = [
@@ -134,7 +134,7 @@
   const istilah = (teks) => (S.ruang === 'bk' ? ISTILAH_BK.reduce((t, x) => t.replace(x[0], x[1]), teks) : teks);
   const KET_RUANG = {
     wali: 'Siswa kelas Anda: keterlambatan, kasus, verifikasi foto, dan pembinaan.',
-    bk: 'Layanan bimbingan dan konseling: pengentasan masalah siswa di jenjang Anda.',
+    bk: 'Rujukan dari wali kelas dan Tim Tatib, tren pelanggaran, dan pantauan kehadiran siswa.',
     tatib: 'Kasus berat, Waspada, Surat Peringatan (SP), masa pembinaan, dan kios gerbang.',
     wakasek: 'Waka Kesiswaan: kasus tangga pimpinan dan pemantauan kedisiplinan sekolah.',
     kepsek: 'Ringkasan dan pemantauan sekolah. Ruang ini tidak untuk melapor atau menindak.',
@@ -452,7 +452,8 @@
 
   function bukaMenu() {
     const g = S.guru || {};
-    $('menu-info').textContent = g.nama + ': ' + (g.peran || []).join(', ') + (g.kelasWali ? ', wali kelas ' + g.kelasWali : '');
+    const rk = S.daftarRuang.filter((r) => r.kode === S.ruang)[0];
+    $('menu-info').textContent = g.nama + (rk ? '. Bekerja sebagai ' + rk.nama : ': ' + (g.peran || []).join(', ') + (g.kelasWali ? ', wali kelas ' + g.kelasWali : ''));
     $('menu').hidden = false; $('tombol-menu').setAttribute('aria-expanded', 'true');
   }
   function tutupMenu() { $('menu').hidden = true; $('tombol-menu').setAttribute('aria-expanded', 'false'); }
@@ -683,8 +684,10 @@
       const hari = (w) => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jakarta' }).format(new Date(w));
       if (simpananCocok(lama) && hari(lama.waktu) === hari(Date.now())) B.data = lama.data;   // hanya data hari ini
     }
-    if (!B.data) $('b-lain').innerHTML = '<p class="memuat">Memuat ringkasan hari ini…</p>';
-    else renderBeranda();
+    if (!B.data) {
+      $('b-lain').innerHTML = '<p class="memuat">Memuat ringkasan hari ini…</p>';
+      $('b-utama').innerHTML = S.ruang === 'piket' ? berandaPiket({}) : '';   // tugas piket langsung tampil
+    } else renderBeranda();
     if (DS.data) renderDasbor();
     muatDasbor();
     jadwalDasbor();
@@ -698,10 +701,14 @@
     }
   }
   function wadahBeranda() {
-    if (!$('b-dasbor')) $('b-isi').innerHTML = '<div id="b-dasbor"></div><div id="b-lain" class="b-lain"></div>';
+    // b-utama: tugas utama ruang kerja (tugas piket, rujukan BK) di atas ringkasan kehadiran sekolah.
+    if (!$('b-dasbor')) $('b-isi').innerHTML = '<div id="b-utama" class="b-utama"></div><div id="b-dasbor"></div><div id="b-lain" class="b-lain"></div>';
     return $('b-lain');
   }
+  /** Halaman ada di menu ruang kerja yang sedang dipilih. Tautan ke halaman lain tidak ditampilkan. */
+  function adaMenu(id) { return (S.menu || []).some((m) => m.id === id); }
   function barisAksi(href, kelasLingkar, ik, judul, ket, angka) {
+    if (!adaMenu(href.replace('#', ''))) return '';
     return '<li><a href="' + href + '"><span class="lingkar ' + kelasLingkar + '">' + ikon(ik) + '</span>' +
       '<span class="teks"><strong>' + esc(judul) + '</strong><small>' + esc(ket) + '</small></span>' +
       '<span class="angka' + (angka ? '' : ' nol') + '">' + angka + '</span>' + ikon('kanan') + '</a></li>';
@@ -709,7 +716,7 @@
   function berandaPiket(d) {
     const iz = d.izinHarian || {};
     return '<section class="b-piket"><h2 class="judul-bagian">Tugas piket hari ini</h2><div class="piket-aksi">' +
-      '<a class="piket-kartu utama" href="./?mode=Masuk">' + ikon('qr') + '<span><strong>Bantu kios: pindai QR</strong><small>Pakai HP ini sebagai pemindai kedua di gerbang agar antrean cepat terurai.</small></span></a>' +
+      '<a class="piket-kartu utama" href="./?mode=Masuk">' + ikon('qr') + '<span><strong>Bantu kios: scan QR</strong><small>Pakai HP ini sebagai pemindai kedua di gerbang agar antrean cepat terurai.</small></span></a>' +
       '<a class="piket-kartu" href="./?mode=' + encodeURIComponent('Manual Lupa ID') + '">' + ikon('siswa') + '<span><strong>Absen manual tanpa kartu</strong><small>Siswa lupa atau kehilangan kartu: cari nama atau NIS, cocokkan foto, simpan.</small></span></a>' +
       '<a class="piket-kartu" href="#absen">' + ikon('absen') + '<span><strong>Izin, pulang awal, UKS</strong><small>' +
         (iz.jumlah ? iz.jumlah + ' catatan hari ini' + (iz.diUks ? ', ' + iz.diUks + ' siswa masih di UKS' : '') : 'Izin tidak masuk, dijemput orang tua, istirahat di UKS, dispensasi.') + '</small></span></a>' +
@@ -735,7 +742,8 @@
   }
   function renderBeranda() {
     const d = B.data;
-    let h = S.ruang === 'piket' ? berandaPiket(d) : '';
+    $('b-utama').innerHTML = (S.ruang === 'piket' ? berandaPiket(d) : '') + berandaRujukan(d.bk);
+    let h = '';
     let ba = '';
     if (S.akses.tindakLanjut) {
       ba += S.ruang === 'bk'
@@ -757,7 +765,7 @@
     }
     if (S.akses.catat !== false) ba += barisAksi('#lapor', '', 'lapor', 'Laporan saya, 7 hari', d.laporanSaya ? d.sendiriSaya + ' selesai Anda tangani sendiri' : 'Belum ada laporan minggu ini', d.laporanSaya);
     if (ba) h += '<section class="b-aksi"><h2 class="judul-bagian">Perlu perhatian</h2><ul class="baris-aksi">' + ba + '</ul></section>';
-    h += berandaBK(d.bk);
+    h += berandaSinyal(d.bk);
     if (S.ruang === 'kepsek' || S.ruang === 'pantau') h += berandaPembinaan(d.pembinaan);
     h += berandaAlfa(d.alfa);
 
@@ -811,7 +819,14 @@
       '<details><summary>Siapa melakukan apa</summary><dl>' + S.tangga.map((x) => '<div><dt>' + x.tangga + '. ' + esc(x.peran) + '</dt><dd>' + esc(x.tugas) +
         (x.kapan ? ' Masuk bila ' + esc(x.kapan.charAt(0).toLowerCase() + x.kapan.slice(1)) + '.' : '') + '</dd></div>').join('') + '</dl></details></div></section>';
     wadahBeranda().innerHTML = h;
-    wadahBeranda().querySelectorAll('[data-riwayat]').forEach((b) => b.addEventListener('click', () => bukaRiwayatDari(b.dataset.riwayat)));
+    rapikanTautanRiwayat(wadahBeranda());
+  }
+  /** Nama siswa di Beranda membuka Riwayat siswa, hanya bila menu Siswa ada di ruang kerja ini. */
+  function rapikanTautanRiwayat(akar) {
+    akar.querySelectorAll('[data-riwayat]').forEach((b) => {
+      if (adaMenu('siswa')) b.addEventListener('click', () => bukaRiwayatDari(b.dataset.riwayat));
+      else { b.disabled = true; b.classList.add('tanpa-tautan'); }
+    });
   }
 
   /* =================================================================
@@ -876,7 +891,7 @@
       statTile('telat', 'Terlambat', r.terlambat, 'masuk setelah pukul ' + titikJam(d.batas)) +
       statTile('belum', 'Belum tercatat', r.belum, 'belum scan dan tanpa keterangan') +
       statTile('izin', 'Izin atau sakit', r.izinSakit, r.alfa ? r.alfa + ' siswa alfa' : 'dicatat wali kelas') +
-      (S.akses.tindakLanjut ? statTile('', 'Kasus menunggu', d.menunggu, d.pelanggaran.hariIni + ' pelanggaran dilaporkan hari ini', '#kotak')
+      (S.akses.tindakLanjut && adaMenu('kotak') ? statTile('', 'Kasus menunggu', d.menunggu, d.pelanggaran.hariIni + ' pelanggaran dilaporkan hari ini', '#kotak')
         : statTile('', 'Pelanggaran hari ini', d.pelanggaran.hariIni, d.pelanggaran.minggu + ' dalam 7 hari terakhir')) +
       '</div><div class="dasbor-grid">';
 
@@ -890,7 +905,7 @@
       d.perKelas.map((k) => '<tr><td>' + esc(k.kelas) + '</td><td>' + k.hadir + '</td><td>' + k.terlambat + '</td><td>' + k.izinSakit + '</td><td>' + k.alfa + '</td><td>' + k.belum + '</td></tr>').join('') +
       '</tbody></table></details></article>';
 
-    h += '<article class="kartu-d d-log"><header><h2>Scan terbaru</h2>' + (S.akses.verifikasi ? '<a href="#verifikasi">Verifikasi foto</a>' : '') + '</header>' +
+    h += '<article class="kartu-d d-log"><header><h2>Scan terbaru</h2>' + (S.akses.verifikasi && adaMenu('verifikasi') ? '<a href="#verifikasi">Verifikasi foto</a>' : '') + '</header>' +
       (d.log.length ? '<ul class="log-scan">' + d.log.slice(0, 8).map((x) => '<li><span class="thumb"' + (x.adaFoto ? ' data-fs="' + esc(x.idScan) + '"' : '') + '>' + esc(inisial(x.nama)) + '</span>' +
         '<span><span class="nm">' + esc(x.nama) + '</span><span class="kl">' + esc(x.kelas) + (x.kios ? ', kios ' + esc(x.kios) : '') + '</span></span>' +
         '<span><span class="chip ' + (x.status === 'Terlambat' ? 'telat' : 'hadir') + '">' + esc(x.status) + '</span><span class="log-jam">' + esc(titikJam(x.jam)) + '</span></span></li>').join('') + '</ul>'
@@ -1514,7 +1529,7 @@
     $('c-penanganan').className = 'penanganan';
     const wajibTulis = !k.terus;
     $('c-tindakan').placeholder = wajibTulis ? 'Contoh: ditegur, seragam dirapikan saat itu juga' : 'Contoh: siswa diamankan dan dibawa ke ruang BK';
-    document.querySelector('label[for="c-tindakan"]').innerHTML = wajibTulis ? 'Tindakan yang sudah Anda lakukan' : 'Tindakan awal yang sudah Anda lakukan <span class="redup">(opsional)</span>';
+    document.querySelector('label[for="c-tindakan"]').innerHTML = wajibTulis ? 'Tindakan yang sudah Anda lakukan <span class="redup">(wajib diisi)</span>' : 'Tindakan awal yang sudah Anda lakukan <span class="redup">(opsional)</span>';
 
     let pr = 'Poin <strong>+' + k.poin + '</strong>' + (k.melawan ? ' (membangkang: diteruskan ke wali kelas)' : '') + '.';
     if (C.ringkas) {
@@ -1649,8 +1664,8 @@
   async function simpanLapor() {
     if (C.menyimpan || !C.siswa || !C.plg) return;
     const k = keputusanLapor(), tindakan = $('c-tindakan').value.trim();
-    if (!k.terus && !tindakan) { $('c-tindakan').focus(); return; }
-    if (k.melawan && $('c-ket').value.trim().length < 10) { $('c-ket').focus(); return; }
+    if (!k.terus && !tindakan) { $('c-tindakan').focus(); toast('Tulis dulu tindakan yang sudah Anda lakukan, misalnya: ditegur.', 'galat', 5000); return; }
+    if (k.melawan && $('c-ket').value.trim().length < 10) { $('c-ket').focus(); toast('Siswa membangkang: tulis apa yang diucapkan atau dilakukan siswa di Keterangan kejadian.', 'galat', 6000); return; }
     C.menyimpan = true; aturTombolSimpan();
     try {
       const d = await api('tatib.catat', { nis: C.siswa.nis, idPlg: C.plg.id, melawan: k.melawan, keterangan: $('c-ket').value.trim(), tindakan: tindakan,
@@ -2516,7 +2531,7 @@
       h += '<div class="rs-alasan"><span class="label">Alasan tidak hadir</span><div class="rs-keg">' +
         ALASAN_TIDAK.map((a) => '<button type="button" class="rs-chip" data-alasan="' + esc(a) + '" aria-pressed="' + (alasanTerbuka === a) + '">' + esc(a) + '</button>').join('') + '</div>' +
         '<input class="isian" maxlength="200" data-isi="alasan" value="' + esc(ALASAN_TIDAK.indexOf(alasanTerbuka) > -1 ? alasanTerbuka : (alasanTerbuka === true ? '' : alasanTerbuka)) + '" placeholder="Tulis alasannya">' +
-        '<p class="keterangan">Hari ini menjadi bolong dan jadwal bertambah satu hari. Bila siswa izin atau sakit, catat dari menu Absen agar tidak dihitung bolong.</p>' +
+        '<p class="keterangan">Hari ini menjadi bolong dan jadwal bertambah satu hari. Bila siswa izin atau sakit, catat dari menu Izin agar tidak dihitung bolong.</p>' +
         '<div class="rs-tombol"><button type="button" class="tombol tombol-utama rs-tombol-merah" data-aksi="simpan-tidak">Simpan tidak hadir</button><button type="button" class="tombol tombol-garis" data-aksi="batal-tidak">Batal</button></div></div>';
     }
     if (sesi) h += '<div class="rs-ubah-kaki"><button type="button" class="tautan" data-aksi="tutup">Batal ubah</button><button type="button" class="tautan merah" data-aksi="hapus">Hapus catatan</button></div>';
@@ -2776,11 +2791,11 @@
     seg.style.gridTemplateColumns = 'repeat(' + Math.max(n, 1) + ', 1fr)';
     seg.hidden = n < 2;
     const ket = {
-      usulan: 'Tombol Rujuk ke BK muncul otomatis untuk murid yang memenuhi ketentuan: pelanggaran Sedang II sampai Berat yang sama 2 kali dalam satu semester, terlambat 3 kali dalam sebulan, alfa 3 kali dalam setahun, atau restorasi untuk pelanggaran yang sama kedua kalinya.',
+      usulan: 'Tombol Rujuk ke BK muncul otomatis untuk siswa yang memenuhi ketentuan: pelanggaran Sedang II sampai Berat yang sama 2 kali dalam satu semester, terlambat 3 kali dalam sebulan, alfa 3 kali dalam setahun, atau restorasi untuk pelanggaran yang sama kedua kalinya.',
       rujukan: 'Rujukan dari wali kelas dan Tim Tata Tertib.' + (S.akses.layananBK ? '' : ' Status diperbarui oleh Guru BK.'),
-      sinyal: 'Murid yang menunjukkan tanda perlu perhatian, sebagai bahan pembinaan.',
-      tren: 'Jenis pelanggaran dan jumlahnya sebagai bahan asesmen dan bimbingan klasikal. Ketuk satu jenis untuk melihat murid yang melakukannya.',
-      hadir: 'Pantauan kehadiran tahun ajaran ini. Alfa 3 kali dan terlambat 3 kali dalam sebulan perlu pantauan.'
+      sinyal: 'Siswa yang menunjukkan tanda perlu perhatian, sebagai bahan pembinaan.',
+      tren: 'Jenis pelanggaran dan jumlahnya sebagai bahan asesmen dan bimbingan klasikal. Ketuk satu jenis untuk melihat siswa yang melakukannya.',
+      hadir: 'Pantauan kehadiran tahun pelajaran ini. Alfa 3 kali dan terlambat 3 kali dalam sebulan perlu pantauan.'
     };
     $('ly-ket').textContent = ket[LY.f];
     $('ly-isi').innerHTML = '<p class="memuat">Memuat…</p>';
@@ -2794,7 +2809,7 @@
   }
   function renderSinyal() {
     const d = LY.sinyal.item;
-    if (!d.length) { $('ly-isi').innerHTML = '<p class="kosong">Tidak ada murid dengan sinyal deteksi dini saat ini.</p>'; return; }
+    if (!d.length) { $('ly-isi').innerHTML = '<p class="kosong">Tidak ada siswa dengan sinyal deteksi dini saat ini.</p>'; return; }
     $('ly-isi').innerHTML = '<ol class="daftar-kartu">' + d.map((x) => '<li class="kasus ly-sinyal' + (x.rujukan ? '' : ' k-sedang') + '" data-nis="' + esc(x.nis) + '">' +
       '<div class="kasus-kepala">' + fotoHtml(x) + '<span><span class="nm">' + esc(x.nama) + '</span><span class="kl">' + esc(x.kelas) + '</span></span>' +
       (x.rujukan ? '<span class="tag hijau">Dirujuk ke BK: ' + esc(x.rujukan.toLowerCase()) + '</span>' : x.berulang ? '<span class="tag emas">Mengulang setelah perjanjian</span>' : '') + '</div>' +
@@ -2804,7 +2819,7 @@
   }
   function renderUsulan() {
     const d = LY.usulan.item;
-    if (!d.length) { $('ly-isi').innerHTML = '<p class="kosong">Belum ada murid yang memenuhi ketentuan rujukan ke BK.</p>'; return; }
+    if (!d.length) { $('ly-isi').innerHTML = '<p class="kosong">Belum ada siswa yang memenuhi ketentuan rujukan ke BK.</p>'; return; }
     $('ly-isi').innerHTML = '<ol class="daftar-kartu">' + d.map((x) => '<li class="kasus k-sedang" data-kunci="' + esc(x.kunci) + '" data-nis="' + esc(x.nis) + '">' +
       '<div class="kasus-kepala">' + fotoHtml(x) + '<span><span class="nm">' + esc(x.nama) + '</span><span class="kl">' + esc(x.kelas) + '</span></span><span class="wkt">' + esc(x.waktu) + '</span></div>' +
       '<p class="meta"><span class="tag emas">' + esc(x.sumber) + '</span>' + (x.rujukanBK ? ' <span class="tag hijau">sudah ada rujukan lain: ' + esc(x.rujukanBK.toLowerCase()) + '</span>' : '') + '</p>' +
@@ -2822,8 +2837,9 @@
     const semua = d.item, buka = semua.filter((x) => x.status !== 'Selesai');
     const tampil = LY.semuaRj ? semua : buka;
     let h = '<div class="ly-ringkas">' + URUT_STATUS_RJ.map((st) => { const n = semua.filter((x) => x.status === st).length; return '<span class="chip' + (st === 'Baru' && n ? ' info' : '') + '">' + st + ': ' + n + '</span>'; }).join(' ') +
-      (semua.length > buka.length ? ' <button type="button" class="tautan" data-aksi="semua-rj">' + (LY.semuaRj ? 'Sembunyikan yang selesai' : 'Tampilkan yang selesai') + '</button>' : '') + '</div>';
-    if (!tampil.length) { $('ly-isi').innerHTML = h + '<p class="kosong">' + (semua.length ? 'Semua rujukan sudah selesai ditangani.' : 'Belum ada rujukan. Rujukan muncul otomatis bila murid memenuhi ketentuan.') + '</p>'; return; }
+      (semua.length > buka.length ? ' <button type="button" class="tautan" data-aksi="semua-rj">' + (LY.semuaRj ? 'Sembunyikan yang selesai' : 'Tampilkan yang selesai') + '</button>' : '') + '</div>' +
+      (d.bk ? '<p class="keterangan ly-arti"><strong>Diterima</strong>: rujukan sudah dibaca. <strong>Ditindaklanjuti</strong>: layanan BK sedang berjalan. <strong>Selesai</strong>: layanan tuntas. Status terlihat oleh wali kelas dan Tim Tata Tertib.</p>' : '');
+    if (!tampil.length) { $('ly-isi').innerHTML = h + '<p class="kosong">' + (semua.length ? 'Semua rujukan sudah selesai ditangani.' : 'Belum ada rujukan. Rujukan masuk setelah wali kelas atau Tim Tata Tertib menekan tombol Rujuk ke BK.') + '</p>'; return; }
     h += '<ol class="daftar-kartu">' + tampil.map((x) => {
       const i = URUT_STATUS_RJ.indexOf(x.status);
       return '<li class="kasus ' + (x.status === 'Baru' ? 'k-sedang' : x.status === 'Selesai' ? 'k-ringan' : '') + '" data-id="' + esc(x.id) + '" data-nis="' + esc(x.nis) + '">' +
@@ -2839,26 +2855,27 @@
     $('ly-isi').innerHTML = h;
     tampil.forEach((x) => muatFoto(x.nis));
   }
-  const PERIODE_TREN = [['bulan', 'Bulan ini'], ['3bulan', '3 bulan'], ['ta', 'Tahun ajaran']];
+  const namaPeriode = (t) => String(t || '').replace(/tahun ajaran/gi, (m) => (m[0] === 'T' ? 'Tahun' : 'tahun') + ' pelajaran');
+  const PERIODE_TREN = [['bulan', 'Bulan ini'], ['3bulan', '3 bulan'], ['ta', 'Tahun pelajaran']];
   async function muatTren() { LY.tren = await api('bk.tren', { periode: LY.trenP }); LY.buka = ''; renderTren(); }
   function renderTren() {
     const d = LY.tren;
     let h = '<div class="saring ly-periode" role="group" aria-label="Periode">' + PERIODE_TREN.map(([k, l]) => '<button type="button" data-periode="' + k + '" aria-pressed="' + (LY.trenP === k) + '">' + l + '</button>').join('') + '</div>';
-    if (!d.total) { $('ly-isi').innerHTML = h + '<p class="kosong">Belum ada pelanggaran tercatat pada ' + esc(d.periode.toLowerCase()) + '.</p>'; return; }
-    h += '<p class="keterangan">' + esc(d.periode) + ': ' + d.total + ' catatan. ' +
+    if (!d.total) { $('ly-isi').innerHTML = h + '<p class="kosong">Belum ada pelanggaran tercatat pada ' + esc(namaPeriode(d.periode).toLowerCase()) + '.</p>'; return; }
+    h += '<p class="keterangan">' + esc(namaPeriode(d.periode)) + ': ' + d.total + ' catatan. ' +
       URUT_KATEGORI.concat(['Lainnya']).filter((k) => d.kategori[k]).map((k) => '<span class="kat ' + kelasKat(k) + '">' + esc(k) + ' ' + d.kategori[k] + '</span>').join(' ') + '</p>';
     const maks = Math.max.apply(null, d.kode.map((k) => k.total));
     h += '<ul class="ly-tren">' + d.kode.map((k) => '<li data-kode="' + esc(k.kode) + '"><button type="button" class="ly-tren-baris" data-aksi="tren" aria-expanded="' + (LY.buka === k.kode) + '">' +
       '<span class="nm">' + esc(k.nama) + '<small>' + esc(k.kode + (k.kategori ? ' · ' + k.kategori : '')) + '</small></span>' +
       '<span class="jml"><span class="batang" style="width:' + Math.max(4, Math.round(k.total / maks * 100)) + '%"></span><b>' + k.total + '</b>' +
       (k.tren === 'naik' ? '<span class="tren naik" title="bulan ini naik dibanding bulan lalu">▲</span>' : k.tren === 'turun' ? '<span class="tren turun" title="bulan ini turun dibanding bulan lalu">▼</span>' : '') +
-      '<small>' + k.siswa + ' murid</small></span></button><div class="ly-tren-siswa"' + (LY.buka === k.kode ? '' : ' hidden') + '></div></li>').join('') + '</ul>';
+      '<small>' + k.siswa + ' siswa</small></span></button><div class="ly-tren-siswa"' + (LY.buka === k.kode ? '' : ' hidden') + '></div></li>').join('') + '</ul>';
     $('ly-isi').innerHTML = h;
     if (LY.buka) bukaTren(LY.buka);
   }
   async function bukaTren(kode) {
     const li = $('ly-isi').querySelector('li[data-kode="' + CSS.escape(kode) + '"]'); if (!li) return;
-    const w = li.querySelector('.ly-tren-siswa'); w.hidden = false; w.innerHTML = '<p class="memuat">Memuat murid…</p>';
+    const w = li.querySelector('.ly-tren-siswa'); w.hidden = false; w.innerHTML = '<p class="memuat">Memuat siswa…</p>';
     try {
       const d = await api('bk.trenSiswa', { kode: kode, periode: LY.trenP });
       w.innerHTML = '<ul class="daftar-pembinaan">' + d.item.map((x) => '<li><button type="button" class="tautan-baris" data-riwayat-ly="' + esc(x.nis) + '"><span class="nm">' + esc(x.nama) +
@@ -2870,13 +2887,13 @@
     const d = LY.hadir;
     let h = '<div class="saring ly-periode" role="group" aria-label="Tampilkan"><button type="button" data-hadir="pantau" aria-pressed="' + (LY.hadirS === 'pantau') + '">Perlu pantauan</button>' +
       '<button type="button" data-hadir="semua" aria-pressed="' + (LY.hadirS === 'semua') + '">Semua</button></div>' +
-      '<p class="keterangan">Tahun ajaran ' + esc(d.tahun) + ' · ' + d.jumlah + ' murid. Batas alfa ' + d.batasAlfa + ' kali dalam satu tahun pelajaran.</p>';
-    if (!d.item.length) { $('ly-isi').innerHTML = h + '<p class="kosong">' + (LY.hadirS === 'pantau' ? 'Tidak ada murid yang perlu pantauan kehadiran.' : 'Belum ada catatan alfa atau terlambat.') + '</p>'; return; }
+      '<p class="keterangan">Tahun pelajaran ' + esc(String(d.tahun).replace(/^Tahun (ajaran|pelajaran) /i, '')) + ' · ' + d.jumlah + ' siswa. Batas alfa ' + d.batasAlfa + ' kali dalam satu tahun pelajaran.</p>';
+    if (!d.item.length) { $('ly-isi').innerHTML = h + '<p class="kosong">' + (LY.hadirS === 'pantau' ? 'Tidak ada siswa yang perlu pantauan kehadiran.' : 'Belum ada catatan alfa atau terlambat.') + '</p>'; return; }
     h += '<ul class="daftar-pembinaan ly-hadir">' + d.item.map((x) => '<li><button type="button" class="tautan-baris" data-riwayat-ly="' + esc(x.nis) + '"><span class="nm">' + esc(x.nama) + '</span>' +
       '<span class="mt">' + esc(x.kelas) + '</span><span class="ly-angka">' +
-      '<span class="tag' + (x.alfa >= d.ambang.alfa ? ' merah' : '') + '">Alfa ' + x.alfa + '</span>' +
-      '<span class="tag' + (x.telatBulan >= d.ambang.telat ? ' emas' : '') + '">Terlambat ' + esc(d.bulan) + ' ' + x.telatBulan + '</span>' +
-      '<span class="tag">Terlambat setahun ' + x.telat + '</span>' + (x.izin || x.sakit ? '<span class="tag">Izin ' + x.izin + ' · Sakit ' + x.sakit + '</span>' : '') + '</span></button></li>').join('') + '</ul>';
+      '<span class="tag' + (x.alfa >= d.ambang.alfa ? ' merah' : '') + '">Alfa: ' + x.alfa + '</span>' +
+      '<span class="tag' + (x.telatBulan >= d.ambang.telat ? ' emas' : '') + '">Terlambat bulan ' + esc(d.bulan) + ': ' + x.telatBulan + '</span>' +
+      '<span class="tag">Terlambat tahun ini: ' + x.telat + '</span>' + (x.izin || x.sakit ? '<span class="tag">Izin: ' + x.izin + ' · Sakit: ' + x.sakit + '</span>' : '') + '</span></button></li>').join('') + '</ul>';
     $('ly-isi').innerHTML = h;
   }
   async function klikLayanan(e) {
@@ -2906,6 +2923,12 @@
       return;
     }
     if (a.dataset.status) {
+      // Selesai tidak bisa dibatalkan: minta ketukan kedua sebagai konfirmasi.
+      if (a.dataset.status === 'Selesai' && !a.dataset.yakin) {
+        a.dataset.yakin = '1'; a.textContent = 'Ketuk lagi untuk Selesai';
+        setTimeout(() => { if (a.isConnected && !a.disabled) { delete a.dataset.yakin; a.textContent = 'Selesai'; } }, 5000);
+        return;
+      }
       a.disabled = true;
       try {
         const d = await api('bk.status', { id: li.dataset.id, status: a.dataset.status });
@@ -2914,13 +2937,18 @@
       } catch (er) { a.disabled = false; toast(er.message, 'galat', 5000); }
     }
   }
-  function berandaBK(b) {
+  /** Bagian atas Beranda: rujukan baru (Guru BK) atau siswa yang siap dirujuk (wali kelas, Tim Tatib). */
+  function berandaRujukan(b) {
     if (!b) return '';
     let h = '';
-    if (b.rujukanBaru) h += '<section><h2 class="judul-bagian">Layanan BK</h2><ul class="baris-aksi">' + barisAksi('#layanan', 'emas', 'siswa', 'Rujukan baru', b.rujukanBaru + ' murid dirujuk ke BK', b.rujukanBaru) + '</ul></section>';
-    if (b.usulan) h += '<section><h2 class="judul-bagian">Rujukan ke BK</h2><ul class="baris-aksi">' + barisAksi('#layanan', 'emas', 'pulih', 'Siap dirujuk ke BK', b.usulan + ' murid memenuhi ketentuan pengulangan', b.usulan) + '</ul></section>';
-    if (b.sinyal) {
-      h += '<section class="b-sinyal"><h2 class="judul-bagian">Deteksi dini<small>' + b.sinyal + ' murid perlu perhatian</small></h2><ul class="daftar-pembinaan">' +
+    if (b.rujukanBaru) h += '<section><h2 class="judul-bagian">Layanan BK</h2><ul class="baris-aksi">' + barisAksi('#layanan', 'emas', 'siswa', 'Rujukan baru', b.rujukanBaru + ' siswa dirujuk ke BK. Ketuk untuk membuka.', b.rujukanBaru) + '</ul></section>';
+    if (b.usulan) h += '<section><h2 class="judul-bagian">Rujukan ke BK</h2><ul class="baris-aksi">' + barisAksi('#layanan', 'emas', 'pulih', 'Siap dirujuk ke BK', b.usulan + ' siswa memenuhi ketentuan pengulangan', b.usulan) + '</ul></section>';
+    return h;
+  }
+  function berandaSinyal(b) {
+    let h = '';
+    if (b && b.sinyal) {
+      h += '<section class="b-sinyal"><h2 class="judul-bagian">Deteksi dini<small>' + b.sinyal + ' siswa perlu perhatian</small></h2><ul class="daftar-pembinaan">' +
         b.contoh.map((x) => '<li><button type="button" class="tautan-baris" data-riwayat="' + esc(x.nis) + '"><span class="nm">' + esc(x.nama) + '</span><span class="mt">' + esc(x.kelas) + ' · ' + esc(x.sinyal.slice(0, 2).join('; ')) + '</span></button></li>').join('') +
         '</ul><p class="keterangan"><a href="#layanan">Lihat semua</a>.</p></section>';
     }
@@ -3800,7 +3828,13 @@
     $('scan-tutup').addEventListener('click', tutupScan);
     $('nav-bawah').addEventListener('click', (e) => { if (e.target.closest('#nav-lainnya')) $('lembar-lainnya').hidden = false; });
     $('lembar-lainnya').addEventListener('click', (e) => { if (e.target === $('lembar-lainnya')) $('lembar-lainnya').hidden = true; });
-    window.addEventListener('hashchange', () => { if (!$('layar-utama').hidden && S.menu.length) buka(halamanDariHash()); });
+    window.addEventListener('hashchange', () => {
+      if ($('layar-utama').hidden || !S.menu.length) return;
+      const minta = (location.hash || '').replace('#', '');
+      const m = MENU.filter((x) => x.id === minta)[0];
+      if (m && !adaMenu(minta)) toast('Halaman ' + m.label + ' tidak ada di ruang kerja ini. Ganti ruang kerja lewat tombol di kanan atas.', '', 5000);
+      buka(halamanDariHash());
+    });
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
       if (!$('modal-scan').hidden) tutupScan(); else if (!$('modal-foto').hidden) $('modal-foto').hidden = true; else if (!$('modal-titip').hidden) tutupTitip(); else if (!$('modal-pbn').hidden) tutupPernyataan(); else if (!$('modal-prg').hidden) tutupFormProgram(); else if (!$('modal-akun').hidden) tutupFormAkun(); else if (!$('modal-ttdp').hidden) tutupTtdPelatih(); else if (!$('modal-pelatih').hidden) $('modal-pelatih').hidden = true; else if (!$('modal-koreksi').hidden) $('modal-koreksi').hidden = true; else if (!$('ruang-menu').hidden) $('ruang-menu').hidden = true;
