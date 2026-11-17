@@ -172,7 +172,7 @@
   async function keluar() {
     tutupMenu();
     const antre = simpan.get('smkt_antrean', []).length;
-    const tanya = 'Keluar akan menghapus data dan foto siswa dari HP ini.' +
+    const tanya = 'Keluar akan menghapus data dan foto murid dari HP ini.' +
       (antre ? ' ' + antre + ' scan yang belum terkirim tetap disimpan dan terkirim saat login berikutnya.' : '') + ' Lanjutkan?';
     if (!confirm(tanya)) return;
     try { await api('keluar'); } catch (e) { /* tetap keluar */ }
@@ -218,7 +218,7 @@
       $('pita-isi').style.width = Math.round((rasio || 0) * 100) + '%';
     };
     try {
-      pita('Mengunduh data siswa…', 0.05);
+      pita('Mengunduh data murid…', 0.05);
       const d = await api('siswa');
       await DB.set('kv', 'siswa', d.siswa);
       S.siswa = new Map(d.siswa.map((s) => [s.nis, s]));
@@ -239,13 +239,13 @@
       simpan.set('smkt_waktu_sinkron', Date.now());
       const aktif = d.siswa.filter((s) => s.aktif).length;
       const tanpaFoto = d.siswa.filter((s) => s.aktif && !s.fotoV).length;
-      let pesan = 'Data ' + aktif + ' siswa aktif siap dipakai.';
+      let pesan = 'Data ' + aktif + ' murid aktif siap dipakai.';
       if (tanpaFoto) pesan += ' ' + tanpaFoto + ' belum punya foto.';
       if (besar.length) pesan += ' ' + besar.length + ' foto terlalu besar, kecilkan di bawah 250 KB.';
       toast(pesan, tanpaFoto || besar.length ? 'telat' : 'hadir', 4500);
     } catch (e) {
       if (e.kode === 'SESI') { tampilLogin(e.message); return; }
-      toast('Data siswa belum terunduh: ' + e.message, 'galat', 5000);
+      toast('Data murid belum terunduh: ' + e.message, 'galat', 5000);
     } finally {
       $('pita').hidden = true;
     }
@@ -277,7 +277,7 @@
     $('panel-cari').hidden = false;
     const hanyaNis = S.mode === MODE.MASUK;
     $('label-cari').textContent = hanyaNis ? 'Ketik NIS yang tercetak di kartu presensi digital'
-      : S.mode === MODE.MANUAL ? 'Cari siswa yang lupa membawa kartu' : 'Cari nama atau NIS siswa';
+      : S.mode === MODE.MANUAL ? 'Cari murid yang lupa membawa kartu' : 'Cari nama atau NIS murid';
     $('input-cari').placeholder = hanyaNis ? 'NIS' : 'Nama atau NIS';
     $('input-cari').inputMode = hanyaNis ? 'numeric' : 'text';
     $('tombol-kembali-kamera').hidden = S.mode === MODE.MANUAL;
@@ -302,7 +302,7 @@
     if (!hasil.length) {
       const li = document.createElement('li');
       li.className = 'kosong';
-      li.textContent = hanyaNis ? 'NIS ' + q + ' tidak ditemukan.' : 'Tidak ada siswa aktif yang cocok.';
+      li.textContent = hanyaNis ? 'NIS ' + q + ' tidak ditemukan.' : 'Tidak ada murid aktif yang cocok.';
       ul.appendChild(li);
       return;
     }
@@ -420,7 +420,7 @@
     const s = S.siswa.get(nis);
     if (!s) {
       getar([90, 60, 90]);
-      toast('QR tidak dikenal (' + nis + '). Jika siswa baru, buka menu lalu Perbarui data siswa.', 'galat', 4000);
+      toast('QR tidak dikenal (' + nis + '). Jika murid baru, buka menu lalu Perbarui data murid.', 'galat', 4000);
       return;
     }
     if (!s.aktif) {
@@ -690,7 +690,7 @@
   function bukaMenu() {
     const m = $('menu');
     const t = simpan.get('smkt_waktu_sinkron', 0);
-    $('menu-info').textContent = (S.siswa.size ? S.siswa.size + ' siswa tersimpan di HP. ' : 'Data siswa belum diunduh. ') +
+    $('menu-info').textContent = (S.siswa.size ? S.siswa.size + ' murid tersimpan di HP. ' : 'Data murid belum diunduh. ') +
       (t ? 'Diperbarui ' + new Date(t).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + '.' : '');
     m.hidden = false;
     $('tombol-menu').setAttribute('aria-expanded', 'true');

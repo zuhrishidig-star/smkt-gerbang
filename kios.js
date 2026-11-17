@@ -383,7 +383,7 @@
     if (!qr || !qr.teks) { S.stabil = { nis: '', n: 0 }; return; }
     const nis = qr.teks;
     const s = S.siswa.get(nis);
-    if (!s) { tampilHasil({ jenis: 'galat', status: 'Kartu tidak dikenal', nama: 'QR ' + nis.slice(0, 20), kelas: 'Minta Tim Tatib memperbarui data siswa.', ket: '' }); return; }
+    if (!s) { tampilHasil({ jenis: 'galat', status: 'Kartu tidak dikenal', nama: 'QR ' + nis.slice(0, 20), kelas: 'Minta Tim Tatib memperbarui data murid.', ket: '' }); return; }
     if ((S.terakhir[nis] || 0) > Date.now()) return;   // baru saja tercatat
     if (!n.ok) {
       S.stabil = { nis: '', n: 0 };
@@ -591,7 +591,7 @@
     $('atur-tutup').addEventListener('click', () => { $('k-atur').hidden = true; });
     $('atur-muat').addEventListener('click', async () => {
       $('atur-pesan').textContent = 'Memuat…';
-      $('atur-pesan').textContent = (await muatData(true)) ? 'Daftar siswa diperbarui.' : 'Belum bisa memuat. Periksa sinyal.';
+      $('atur-pesan').textContent = (await muatData(true)) ? 'Daftar murid diperbarui.' : 'Belum bisa memuat. Periksa sinyal.';
       isiAtur();
     });
     $('atur-kirim').addEventListener('click', () => { kirimAntrean(); $('atur-pesan').textContent = 'Mengirim ulang…'; setTimeout(isiAtur, 1500); });
@@ -614,7 +614,7 @@
     const k = simpan.get('smkt_kios', {}) || {};
     const n = await perbaruiAntre();
     const d = S.data || {};
-    const baris = [['Nama kios', k.nama || '-'], ['Berlaku sampai', k.sampai || '-'], ['Siswa aktif', String(S.siswa.size)],
+    const baris = [['Nama kios', k.nama || '-'], ['Berlaku sampai', k.sampai || '-'], ['Murid aktif', String(S.siswa.size)],
       ['Daftar dimuat', d.dimuat ? new Intl.DateTimeFormat('id-ID', Object.assign({ dateStyle: 'short', timeStyle: 'short' }, zona)).format(new Date(d.dimuat)) : '-'],
       ['Belum terkirim', String(n) + (n && S.galatKirim ? ': ' + S.galatKirim : '')],
       ['Ditolak server', ((simpan.get('smkt_kios_ditolak', []) || []).slice(-3).map((x) => x.nis + ' ' + x.jam + ' (' + x.pesan + ')').join('; ')) || '-'], ['Pemeriksaan QR', S.barcode ? 'Pembaca bawaan Chrome' : 'jsQR']];
